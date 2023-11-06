@@ -139,12 +139,12 @@ a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} and 
 
 What the Graph-Based heuristic proposed by Lin et al.~\cite{DBLP:conf/sigsoft/0001O00D21} does, is generate a object construction graph (OCG) from a previous code slicing, performed from the program dependency graph and a specific target branch as criteria.
 This branch must be selected from those who have not reached their full coverage, or are ``non-trivial'', and the depth of the intraprocedural dependency should be set as a arbitrary level $t_{\text{dep}}$.
-\textbf{Some explanation of the representation of code by Pynguin and its relevance to the algorithm should be explained.}
+\textbf{Some explanation of the representation of code by Pynguin and its relevance to Graph Based Object Synthesis should be explained.}
 Then, this OCG is used to generate a code template that should be either translated directly into the test code representation of Pynguin or an intermediate form.
 This previous idea was completely implemented in and for Java, which means that part of the work to be done is to ideate a new Python representations of the OCG.\@
 The usage of a external type inference library is mentiones as optional in the hypotethical case of the branch coverage improvement not being as substantial in Pynguin as the one obtained while experimenting over EvoObj, the new instance of EvoSuit.
 After implementation part is done, a study of the extension will be made through the selection of arbitrary sets of Python modules, being these either the original research paper's or a new set that ensures the explicit type of object inputs and a ratio of this kind of inputs of more than $50\%$.
-The final purpose of the thesis is to obtain a Cohen's d effect size over the coverage results between Pynguin and the proposed extension either equal or bigger to the ones obtained between EvoSuite and EvoObj, being this greater than an average of $0.30$ over ¿all? possible algorithms in the different time budgets.
+The final purpose of the thesis is to obtain a Cohen's d effect size over the coverage results between Pynguin and the proposed extension either equal or bigger to the ones obtained between EvoSuite and EvoObj, being this greater than an average of $0.30$ over all possible algorithms in the different time budgets.
 
 
 
@@ -202,7 +202,6 @@ The main objective of this setup, was to review the code coverage increase while
   \item state of the unit test generation in dynamic languages
   \begin{itemize}
     \item JSEFT(JS)~\cite{DBLP:conf/icst/Mirshokraie0P15}
-    \item NxtUnit(GO)~\cite{DBLP:conf/ease/WangMCGSP23}
   \end{itemize}
   \item state of the unit test generation in python
   \begin{itemize}
