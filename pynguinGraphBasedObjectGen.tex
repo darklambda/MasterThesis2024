@@ -182,6 +182,12 @@ After the execution of test cases was complete and statistical tests were applie
 
 \section{NxtUnit}
 
+\begin{figure}[bt]
+  \centering
+  \includegraphics[width=.99\textwidth]{Figures/nxtunit.png}
+  \caption{NxtUnit structure}\label{fig:nxt}
+\end{figure}
+
 Having EvoSuite, Randoop and Pynguin as precedents, in 2023 developers from ByteDance (technology Chinese company) presented NxtUnit~\cite{DBLP:conf/ease/WangMCGSP23}, a automatic randomized test generation tool for the programming language Go.
 Similar to the state of the art tools, the structure of NxtUnit (see Figure~\ref{fig:nxt}) is composed by an initial source code as input, that is translated into Static Single Assignment form as a way to get a graph with call dependencies between functions.
 After this preprocessing, NxtUnit proceeds to synthesize from the call graph a code template that will be filled with appropiate randomly generated parameters and ran during the tool's execution.
@@ -190,13 +196,6 @@ During the code running phase, NxtUnit focuses in three main tasks: mutation of 
 Once the tool comes to a halt, the best test cases are exported into a test suite.
 In the experiment proposed by the authors, NxtUnit was executed on 500 private ByteDance repositories and 13 out of the 100 highly-rated public repositories of Go, both sets that already contain tests.
 The main objective of this setup, was to review the code coverage increase while adding NxtUnit tests to the already existing ones, and it produced an avergae increase of $\%5.51$ for the public repositories and $\%17.26$ for the private ones.
-
-
-\begin{figure}[bt]
-  \centering
-  \includegraphics[width=.99\textwidth]{Figures/nxtunit.png}
-  \caption{NxtUnit structure}\label{fig:nxt}
-\end{figure}
 
 
 \begin{itemize}
