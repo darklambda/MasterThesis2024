@@ -10,3 +10,5 @@
 *.run.xml
 *.synctex*
 *.thm
+/Drafts/*
+/.vscode/*

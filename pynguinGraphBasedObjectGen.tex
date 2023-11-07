@@ -73,7 +73,7 @@
 
 Software Testing is one of the key aspects of Software Developing while trying to ensure quality over a final product, regardless of the context in which the developing process is made.
 This quality can be achieved by the insight provided by the result of the tests, and even because of the defects that can be encountered during the testing phase.
-Nonetheless, even though coding different kinds of tests is a good practice, it is often ignored by new or inexpert developers, who also make this mistake half way by not getting a complete introspection of their own code or, in other words, not getting a complete kind of test coverage.
+Nonetheless, even though coding different kinds of tests is a good practice, it is often ignored by new or inexpert developers, who also make this mistake halfway by not getting a complete introspection of their own code or, in other words, not getting a complete kind of test coverage.
 As of 2017, a study by Trauch and Grabowski~\cite{DBLP:conf/icst/TrautschG17} presented that, over more than 4 million tests, most of them weren't correctly categorized (as unit test or not) and approximately half of them use mocking as a testing technique, which tells some aspects about the developing community of the projects in review. 
 With this general idea into mind, is that researchers in the last decade   have put effort into autonomous test generation, the concept that implies the usage of different methods or techniques in order to identify patterns and generate test sets with little to zero   external intervention.
 In 2015, empirical proof was found who showed the following statements about the usage of automated Java unit test generation:
@@ -82,10 +82,10 @@ In 2015, empirical proof was found who showed the following statements about the
   \item It does not lead to the detection of more faults.
   \item It affects negatively the ability to capture intended class behaviour.
 \end{itemize}
-according to Fraser et al~\cite{DBLP:journals/tosem/FraserSMAP15}.
-The results of this study state fundamentaly that this behaviour  comes from the early stages of the tool in question, and proposes to put more work into the readability of generated tests and  the process of test making itself.
+according to Fraser et al.~\cite{DBLP:journals/tosem/FraserSMAP15}
+The results of this study state fundamentally that this behaviour  comes from the early stages of the tool in question, and proposes to put more work into the readability of generated tests and  the process of test making itself.
 
-Although automatic test generation is achievable with no major problem for statically typed languages like Java~\cite{DBLP:journals/tse/FraserA13} or C, dynamically typed languages such as Python, Javascript or Lua enforce problems at the time of generating correct parameters for the execution of methods or function under test.
+Although automatic test generation is achievable with no major problem for statically typed languages like Java~\cite{DBLP:journals/tse/FraserA13} or C, dynamically typed languages such as Python, JavaScript or Lua enforce problems at the time of generating correct parameters for the execution of methods or function under test.
 %Explain what a dynamically typed language is?
 The major concern about the parameter generation, is that the lack of type information produces ambiguity for the heuristics of the tool at hand at the moment of synthesizing non-primitive types.
 Also, the complexity of this object or callable types might produce runtime errors, which imply a local optima in the search landscape of the test representation~\cite{DBLP:conf/sigsoft/0001O00D21} and therefore an upper bound for coverage.
@@ -101,11 +101,11 @@ Within the scope of Python testing, Pynguin~\cite{DBLP:conf/icse/LukasczykF22} i
 Its structure is presented in Figure~\ref{fig:pyn} and consists of 10 autonomous steps that work in the following manner
 \begin{enumerate}
   \item The unit test generation process starts with the input of a user defined python module that needs to be tested.
-  \item The module is then analyzed in order to obtain primordial information, such as all the functions, classes and their respective attributes and methods, together with their respective parameters.
+  \item The module is then analysed in order to obtain primordial information, such as all the functions, classes and their respective attributes and methods, together with their respective parameters.
   \item In the Test Cluster, all the information gathered from the analysis of the module under test (MUT) and its relevant dependencies.
-  \item As mentioned in the previous item, the Context step performs an interprocedural analysis of all the libraries and modules used by the actual MUT, and joins any new obtained information with the data in the Test Cluster.
+  \item As mentioned in the previous item, the Context step performs an inter procedural analysis of all the libraries and modules used by the actual MUT, and joins any new obtained information with the data in the Test Cluster.
   \item The Test Case Generation step, individually picks functions or methods from the Test Cluster in order to generate the internal representation, firstly by creating a statement using the function or method in question, and then generating an argument for every parameter.
-  \item After a Test Case Generation is perfomed, it is executed to get the desired coverage and analyse if (a) it alreay reacher the maximum or (b) a new better Test Case should be generated.
+  \item After a Test Case Generation is performed, it is executed to get the desired coverage and analyse if (a) it already reacher the maximum or (b) a new better Test Case should be generated.
   \item Once the stopping conditions are met, the test cases are finished with an optional assertion to check the results of the testing.
   \item Alternatively, mutations of the test cases are created using MutPY, so Pynguin can evaluate if the previously created assertion kill or not the mutants.
   If they do not, new assertions are created.
@@ -114,35 +114,38 @@ Its structure is presented in Figure~\ref{fig:pyn} and consists of 10 autonomous
   
 \end{enumerate}
 %Is this plagio?
-At the time of its original release (25th of July 2020), Pynguin was a state of the art open source tool that has made the first step for subsequent researches about how to improve the performance and functionalities of Pynguin itself, including CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, PyLC~\cite{DBLP:conf/sac/SalariEAS23} and many other tools that will be breafly explained in the State of the Art section.
+At the time of its original release (25th of July 2020), Pynguin was a state-of-the-art open source tool that has made the first step for subsequent researches about how to improve the performance and functionalities of Pynguin itself, including CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, PyLC~\cite{DBLP:conf/sac/SalariEAS23} and many other tools that will be briefly explained in the State of the Art section.
 
 These recent new extensions of Pynguin and the aforementioned problem at the time of generating complex object inputs are the principal motivations of this thesis and the related and future work to it.
-
-\iffalse{}
-\begin{summary}{Structure}
-\begin{itemize}
-  \item test generation CHECK
-  \item test generation in dynamic languages and it's difficulties CHECK
-  \item pynguin and its accomplishments
-\end{itemize}
-\end{summary}
-
-\fi
-
 
 \chapter{Proposal}
 
 The original Pynguin research paper~\cite{DBLP:conf/icse/LukasczykF22} stated that after the test generation of 118 Python modules, the average branch coverage over all algorithms was $66.8\%$, which leads to think that improvement is possible.
+For example, taking Listing~\ref{lst:1} as an input to Pynguin and Figure~\ref{lst:2} as the output \textbf{yara yara yara}.
+
+\begin{figure}
+  \centering
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \inputminted{python}{Figures/listing1.py}
+    \captionof{figure}{Module Foo.py\label{lst:1}}
+  \end{minipage}%
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \inputminted{python}{Figures/listing1.py}
+    \captionof{figure}{Module Foo.py again\label{lst:2}}
+  \end{minipage}%
+\end{figure}
 %talk about how coverage isn't everything?
 The current Master's thesis proposes an addition to the original structure of Pynguin~(see~Figure~\ref{fig:pyn}), specifically to sections (5) and (2) by developing
-a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} and optionaly the usage of an external type inference module respectively, in order to diminish the branch coverage gap and try to generate more complex test suites.
+a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} and optionally the usage of an external type inference module respectively, in order to diminish the branch coverage gap and try to generate more complex test suites.
 
-What the Graph-Based heuristic proposed by Lin et al.~\cite{DBLP:conf/sigsoft/0001O00D21} does, is generate a object construction graph (OCG) from a previous code slicing, performed from the program dependency graph and a specific target branch as criteria.
-This branch must be selected from those who have not reached their full coverage, or are ``non-trivial'', and the depth of the intraprocedural dependency should be set as a arbitrary level $t_{\text{dep}}$.
-\textbf{Some explanation of the representation of code by Pynguin and its relevance to Graph Based Object Synthesis should be explained.}
+The Graph-Based heuristic proposed by Lin et al.~\cite{DBLP:conf/sigsoft/0001O00D21} generates an object construction graph (OCG) from a previous code slicing, performed from the program dependency graph and a specific target branch as criteria.
+This branch must be selected from those who have not reached their full coverage, or are ``non-trivial'', and the depth of the intra procedural dependency should be set as an arbitrary level $t_{\text{dep}}$.
 Then, this OCG is used to generate a code template that should be either translated directly into the test code representation of Pynguin or an intermediate form.
+Pynguin, similarly to other search-based test generating tools, represents its test cases as a sequence of implementations of a super class \textit{Statement} that can be later transformed into an Abstract Syntax Tree and an actual block of Python code.
 This previous idea was completely implemented in and for Java, which means that part of the work to be done is to ideate a new Python representations of the OCG.\@
-The usage of a external type inference library is mentiones as optional in the hypotethical case of the branch coverage improvement not being as substantial in Pynguin as the one obtained while experimenting over EvoObj, the new instance of EvoSuit.
+The usage of an external type inference library is mentions as optional in the hypothetical case of the branch coverage improvement not being as substantial in Pynguin as the one obtained while experimenting over EvoObj, the new instance of EvoSuite.
 After implementation part is done, a study of the extension will be made through the selection of arbitrary sets of Python modules, being these either the original research paper's or a new set that ensures the explicit type of object inputs and a ratio of this kind of inputs of more than $50\%$.
 The final purpose of the thesis is to obtain a Cohen's d effect size over the coverage results between Pynguin and the proposed extension either equal or bigger to the ones obtained between EvoSuite and EvoObj, being this greater than an average of $0.30$ over all possible algorithms in the different time budgets.
 
@@ -155,23 +158,23 @@ The final purpose of the thesis is to obtain a Cohen's d effect size over the co
 \end{itemize}
 \centering\textbf{Secondary Objectives}
 \begin{itemize}
-\item  Pick a set of adecuate Python modules to prove the effectiveness of the Pynguin extension
+\item  Pick a set of adequate Python modules to prove the effectiveness of the Pynguin extension
 \item (Optional) Integrate Pynguin with an external type inference~library
-\item Use the arbitrary set of Python modules in order to compare the public version of Pynguin with its soon to be created extension
+\item Use the arbitrary set of Python modules in order to compare the public version of Pynguin with its soon-to-be created extension
 \item Reach an increase in the effect size of the branch coverage results by a factor of $0.30$
 \end{itemize}
 \end{summary}
 
 \chapter{State of the Art}
 
-\textbf{If the state of the art papers mention different kinds of tests (unit, regression, etc), maybe its a good idea to explain them.}
+\textbf{If the state-of-the-art papers mention different kinds of tests (unit, regression, etc), maybe its a good idea to explain them.}
 \textbf{Also, some other concepts should be stated, such as acronyms for subject under test for generalization.}
 
 \section{EvoSuite}
-With respect to Unit Test Generation, EvoSuite~\cite{DBLP:conf/qsic/FraserA11} was (and still is) a state of the art test generation tool for Java, pioneer of the usage of a genetic algorithm so the branch coverage can be optimized as a whole.
-The internal repesentation of EvoSuite for a test suite is a set of \textit{chromosomes} $T$ as a sequence of statements $t_i$ of length $l_i$ and either type primitive statement, constructor statement, field statement, or method statement.
+With respect to Unit Test Generation, EvoSuite~\cite{DBLP:conf/qsic/FraserA11} was (and still is) a state-of-the-art test generation tool for Java, pioneer of the usage of a genetic algorithm, so the branch coverage can be optimized as a whole.
+The internal representation of EvoSuite for a test suite is a set of \textit{chromosomes} $T$ as a sequence of statements $t_i$ of length $l_i$ and either type primitive statement, constructor statement, field statement, or method statement.
 During the chromosome synthesis process, all the information regarding classes, methods and variables of the SUT are gathered via the Java Bytecode and Java Reflection\footnote{https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html}.
-These sequences can be crossovered as a random secuential combination of the two \textit{chromosomes}, or mutated with the insertion, remotion or change of single statements.
+These sequences can be crossovered as a random sequential combination of the two \textit{chromosomes}, or mutated with the insertion, remotion or change of single statements.
 In terms of the optimization, the fitness function of a test suite $T$ is given by the equation
 \[ \text{fitness}(T) = |M| - |M_T| + \sum_{b_k \in B} d(b_k, T) \]
 where $M$ is the total of methods to test, $M_T$ is the number of methods that were actually executed, $b_k$ is a branch in the branch set $B$, and $d(b, T)$ is the branch distance of branch $b$ over the set $T$.
@@ -189,13 +192,13 @@ After the execution of test cases was complete and statistical tests were applie
 \end{figure}
 
 Having EvoSuite, Randoop and Pynguin as precedents, in 2023 developers from ByteDance (technology Chinese company) presented NxtUnit~\cite{DBLP:conf/ease/WangMCGSP23}, a automatic randomized test generation tool for the programming language Go.
-Similar to the state of the art tools, the structure of NxtUnit (see Figure~\ref{fig:nxt}) is composed by an initial source code as input, that is translated into Static Single Assignment form as a way to get a graph with call dependencies between functions.
-After this preprocessing, NxtUnit proceeds to synthesize from the call graph a code template that will be filled with appropiate randomly generated parameters and ran during the tool's execution.
-All the information for the template synthesis and posterior parameter changes will be done thanks to the information provided by Go Reflect~\footnote{https://pkg.go.dev/reflect}.
+Similar to the state-of-the-art tools, the structure of NxtUnit (see Figure~\ref{fig:nxt}) is composed by an initial source code as input, that is translated into Static Single Assignment form as a way to get a graph with call dependencies between functions.
+After this preprocessing, NxtUnit proceeds to synthesize from the call graph a code template that will be filled with appropriate randomly generated parameters and ran during the tool's execution.
+All the information for the template synthesis and posterior parameter changes will be done thanks to the information provided by Go Reflect\footnote{https://pkg.go.dev/reflect}.
 During the code running phase, NxtUnit focuses in three main tasks: mutation of the parameter inputs at runtime, assertion generation for future regression testing, and test case selection based on code coverage.
 Once the tool comes to a halt, the best test cases are exported into a test suite.
 In the experiment proposed by the authors, NxtUnit was executed on 500 private ByteDance repositories and 13 out of the 100 highly-rated public repositories of Go, both sets that already contain tests.
-The main objective of this setup, was to review the code coverage increase while adding NxtUnit tests to the already existing ones, and it produced an avergae increase of $\%5.51$ for the public repositories and $\%17.26$ for the private ones.
+The main objective of this setup, was to review the code coverage increase while adding NxtUnit tests to the already existing ones, and it produced an average increase of $\%5.51$ for the public repositories and $\%17.26$ for the private ones.
 
 
 \begin{itemize}
