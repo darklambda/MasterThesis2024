@@ -1,4 +1,5 @@
-*
-!/Figures/*
-!pynguinGraphBasedObjectGen.tex
-!ref.bib
+_minted-pynguinGraphBasedObjectGen/*
+.vscode/*
+Drafts/*
+pynguinGraphBasedObjectGen.*
+!.tex
