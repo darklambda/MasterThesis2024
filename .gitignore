@@ -1,5 +1,7 @@
 _minted-pynguinGraphBasedObjectGen/*
+_minted-diff/*
 .vscode/*
 Drafts/*
 pynguinGraphBasedObjectGen.*
+diff.*
 !.tex
