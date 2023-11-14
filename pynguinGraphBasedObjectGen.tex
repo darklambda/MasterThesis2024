@@ -123,8 +123,7 @@ These recent new extensions of Pynguin and the aforementioned problem at the tim
 The original Pynguin research paper~\cite{DBLP:conf/icse/LukasczykF22} stated that after the test generation of 118 Python modules, the average branch coverage over all algorithms was $66.8\%$, which leads to think that improvement is possible.
 
 %talk about how coverage isn't everything?
-The current Master's thesis proposes an addition to the original structure of Pynguin~(see~Figure~\ref{fig:pyn}), specifically to sections (5) and (2) by developing
-a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} (GBOS) and optionally the usage of an external type inference module respectively, in order to diminish the branch coverage gap and try to generate more complex test suites.
+The current Master's thesis proposes an addition to the original structure of Pynguin~(see~Figure~\ref{fig:pyn}), specifically to sections (5) and (2) by developing a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} (GBOS) and optionally the usage of an external type inference module respectively, in order to diminish the branch coverage gap and try to generate more complex test suites.
 
 \begin{figure}
     \inputminted[linenos]{python}{Figures/example.py}
@@ -159,7 +158,7 @@ However, this template allows Pynguin to get out of the local optima, if right v
   \caption{Potential test template obtained through the use of an OCG\label{lst:4}}
 \end{figure}
 
-The usage of an external type inference library is mentions as optional in the hypothetical case of the branch coverage improvement not being as substantial in Pynguin as the one obtained while experimenting over EvoObj, the new instance of EvoSuite.
+The usage of an external type inference library is mentions as optional, because it will be applied in the hypothetical case of the branch coverage improvement not being as substantial in Pynguin as the one obtained while experimenting over EvoObj, and if an appropriate library exists.
 The reason for this is, as stated before, Python being a dynamically typed language and not requiring the type of variables in the script in order to be executed.
 To illustrate this, if line 4 in Listing~\ref{lst:1} were to be replaced to \mint{python}|def checkRules(self, action, state) -> bool:| it would make Pynguin not have any information about the type of the parameters, and generate a test suit similar to the one in Listing\ref{lst:5}.
 The behaviour that allows Pynguin to generate the previous suit imply that the current type system implemented as part of Pynguin does not work properly when trying to infer object types.
@@ -188,7 +187,7 @@ In addition, all trivial modules that get full branch coverage in first stages o
 
 \resq{What is the impact of the presence of parameter type information in the automatic generation of tests by the GBOS extension?}
 
-This last research question essentially makes room for two kinds of MUT:
+This last research question essentially makes room for two kinds of MUT:\@
 \begin{itemize}
   \item those who originally do not have type information in their functions' signatures and should be inferred by using any possible mean to improve the coverage and, 
   \item those that do have their respective type information and should lose it to check the impact of this loss.
@@ -287,7 +286,7 @@ The results showed that CodaMOSA performs significantly better, reaching a highe
 
 \iffalse{}
 \begin{itemize}
-  \item state of the unit test generation in python
+  \item State of the unit test generation in python
   \begin{itemize}
     \item PBT-GPT~\cite{DBLP:journals/corr/abs-2307-04346}
     \item CodeT~\cite{DBLP:journals/corr/abs-2207-10397}
