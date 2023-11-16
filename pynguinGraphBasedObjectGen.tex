@@ -225,7 +225,7 @@ After the execution of test cases was complete and statistical tests were applie
 \end{figure}
 
 Having EvoSuite, Randoop and Pynguin as precedents, in 2023 developers from ByteDance (technology Chinese company) presented NxtUnit~\cite{DBLP:conf/ease/WangMCGSP23}, an automatic randomized test generation tool for the programming language Go.
-Similar to the state-of-the-art tools, the structure of NxtUnit (see Figure~\ref{fig:nxt}) is composed by an initial source code as input, that is translated into Static Single Assignment form as a way to get a graph with call dependencies between functions.
+Similar to other state-of-the-art tools, the structure of NxtUnit (see Figure~\ref{fig:nxt}) is composed by an initial source code as input, that is translated into Static Single Assignment form as a way to get a graph with call dependencies between functions.
 After this preprocessing, NxtUnit proceeds to synthesize from the call graph a code template that will be filled with appropriate randomly generated parameters and ran during the tool's execution.
 All the information for the template synthesis and posterior parameter changes will be done thanks to the information provided by Go Reflect\footnote{https://pkg.go.dev/reflect}.
 During the code running phase, NxtUnit focuses in three main tasks: mutation of the parameter inputs at runtime, assertion generation for future regression testing, and test case selection based on code coverage.
@@ -308,7 +308,27 @@ As stated before, CodeT centres around code generation rather than test case gen
 Nonetheless, to check the quality of the generated solutions, the authors also covered in their result analysis the code and branch coverage of the snippets generated from the different LLM models.
 Almost all the models obtained an overall average coverage of \(95\%\).
 
+\section{MutAP}
 
+Mutation testing is one software testing technique, that aims to measure the ability of a test to reveal bugs.
+Taking this approach in mind, Dakhel et al.\@ presented in 2023 MutAP~\cite{DBLP:journals/corr/abs-2308-16557}, another LLM based code generation tool that also introduces prompt augmentation for killing mutants in an iterative process before the actual synthesis of test cases.
+
+\begin{figure}[tb]
+  \centering 
+  \includegraphics[width=.99\textwidth]{Figures/mutap.png}
+  \caption{MutAP structure}\label{fig:mutap}
+\end{figure}
+
+A summary of MutAP's structure is shown in Figure~\ref{fig:mutap}, and after inputting a Python Program Under Test (PUT), it commences with the building of an initial prompt for the obtaining of an initial test case.
+The first step (1), employs one of the two following learning methods; zero-shot, where the PUT is concatenated after the statement  ``Generate test case for the following code''; and few-shot, which concatenates the PUT after a sequence of pairs of a method and its respective unit test.
+After the initial test is synthesized, the second step (2) consists of re-prompting it, so possible syntax errors can be corrected and unintended behaviour can be repaired.
+Then, the third step (3) introduces mutations into the PUT using MutPy\footnote{https://pypi.org/project/MutPy/0.3.0/} so that the quality and effectiveness of the tests can be assessed.
+At this point, the algorithm of MutAP has a conditional path depending on the number of surviving mutants; if there are none, the test cases are considered finished and generated; and in the contrary case, the prompt augmentation step is followed.
+This post conditional step (4), adds information to a new prompt of the LLM, such as the already refined initial test, the statement ``The test function, test(), cannot detect the fault in the
+following code'', one of the mutant survivors, and a final statement ``Provide a new test case to detect the fault in prior code''.
+
+In the experimental trial of this tool's paper, two LLM models were used, OpenAI's Codex and llama2-chat, to be run together with MutAP over the benchmarks; HumanEval, which consists of 164 human written programming problems; and Refactory, consisting of 1710 buggy submissions from students for 5 assignments of a Python programming course.
+The overall results mainly cover the mutation score obtained by all the possibles methods of MutAP, obtaining numbers between \(89.13\%\) and \(93.57\%\) on the average over both models and both datasets.
 
 \iffalse{}
 \begin{itemize}
