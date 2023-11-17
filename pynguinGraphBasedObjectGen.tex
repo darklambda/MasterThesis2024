@@ -330,13 +330,38 @@ following code'', one of the mutant survivors, and a final statement ``Provide a
 In the experimental trial of this tool's paper, two LLM models were used, OpenAI's Codex and llama2-chat, to be run together with MutAP over the benchmarks; HumanEval, which consists of 164 human written programming problems; and Refactory, consisting of 1710 buggy submissions from students for 5 assignments of a Python programming course.
 The overall results mainly cover the mutation score obtained by all the possibles methods of MutAP, obtaining numbers between \(89.13\%\) and \(93.57\%\) on the average over both models and both datasets.
 
+\section{MUTester}
+
+MUTester~\cite{DBLP:journals/corr/abs-2307-00404} is an automatic test generation research software focused on the synthesis of test cases for APIs of the many already existing Deep Learning libraries, i.e. Numpy, Scikit-learn, TensorFlow.
+Its structure is presented in Figure~\ref{fig:mutester}, which describes a methodology that solely relies on heuristics regarding the mining of the documentation and knowledge repositories of the APIs in question. 
+
+\begin{figure}[tb]
+  \centering 
+  \includegraphics[width=.99\textwidth]{Figures/mutester.png}
+  \caption{MUTester structure TODO: Add numbers}\label{fig:mutester}
+\end{figure}
+
+The first half of the repository mining (1) is done by applying web scrapping to the documentation pages of the different methods of the libraries, so that information regarding input type (via signature definition mining) and constraints can be gathered, which as mentioned before, is crucial for a correct test generation.
+Input constraints are collected from the natural language parameter description that is usually presented in Python documentation pages, and rather than extracted using a LLM model, they are identified using by recognizing linguistic patterns.
+A last piece of information that is gathered in this step are any code snippet example, so any useful input can be statically analysed.
+
+Stack Overflow is the source of information for the second half of repository mining (2), from where the authors extracted from any related (question, accepted answer) pair the code snippets that had relevant method sequences in them.
+Then (3), these method call sequences are studied using the Apriori~algorithm~\cite{agrawal1994fast} to look for intrinsic rules between the calls.
+
+Finally, test case generation (4) is managed as a guided synthesis of a call sequence, that ends in the actual method under test, similar to what Pynguin does, but with the help of all the relationship information obtained in the previous steps.
+Similarly, the input generation is conducted.
+
+Throughout the analysis of MUTester, the API documentation and methods of the frameworks,  Scikit-learn, PyTorch, TensorFlow and CNTK were accounted for.
+Regarding test coverage, the baselines for the experimentation were Pynguin and a Python implementation of Randoop, which achieved \(34.16\%\) and \(30.87\%\) line coverage in average, versus the results obtained by MUTester, that showed improvements ranging from \(15.72\%\) to \(27\%\).
+A Wilcoxon signed-rank
+statistical test~\cite{Rey2011} was also applied to the results, obtaining a p-value of less than \(0.05\) suggesting that MUTester outperformed both baselines in the stated datasets.
+
+
 \iffalse{}
 \begin{itemize}
   \item State of the unit test generation in python
   \begin{itemize}
-    \item MutAP~\cite{DBLP:journals/corr/abs-2308-16557}
     \item LExecutor~\cite{DBLP:journals/corr/abs-2302-02343}
-    \item Mutester~\cite{DBLP:journals/corr/abs-2307-00404}
     \item ChatGPT~\cite{li2023nuances}
     \item PyLC~\cite{DBLP:conf/sac/SalariEAS23}
   \end{itemize}
