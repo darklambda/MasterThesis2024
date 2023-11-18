@@ -199,8 +199,13 @@ If a suitable type inference library can be found, the first set of modules will
 
 \chapter{State of the Art}
 
-%\textbf{If the state-of-the-art papers mention different kinds of tests (unit, regression, etc), maybe its a good idea to explain them.}
-%\textbf{Also, some other concepts should be stated, such as acronyms for subject under test for generalization.}
+Before commenting on the different tools, techniques and methods that have a place in the current state of the art of automatic test generation for programming languages, it is worth describing the types of testing and their objectives. The following types were investigated by one or more of the tools mentioned in this section. 
+
+\begin{enumerate}
+  \item Unit testing: a type of functional testing that tries to test individual or atomic units of a software project.
+  \item Regression testing: a type of system testing, which tells if new functionalities of a system produce defects into the latest build of it.
+  \item Fuzz testing: a kind of security testing that consists of providing random, unexpected or large amounts of data to a system, to review its way of behaving to it.
+\end{enumerate}
 
 \section{EvoSuite}
 
@@ -274,15 +279,15 @@ The results showed that CodaMOSA performs significantly better, reaching a highe
 Property-based testing (PBT) is a kind of fuzz testing whose idea is to generate a large amount of random inputs to statistically test a program by checking if the outputs are close to a desired property.
 Within this scope, PBT-GPT~\cite{DBLP:journals/corr/abs-2307-04346} is presented by Vikram et al.\ as an implementation of automatic property-based test generation for Python by means of Large Language Model prompting, through Chat-GPT4.
 The general idea of this testing approach, is to operate with three different prompting approaches to generate Python tests of specific module methods while using \textit{Hypothesis}\footnote{https://hypothesis.readthedocs.io/en/latest/}, a PBT library specialized in input generators, and the API documentation of the so-called method.
-These three strategies for prompt calling are named and described as the following
+These three strategies for prompt calling are named and described as the following:
 
 \begin{itemize}
   \item Independently, where both the prompts for the input generator and properties assertion are synthesized from independent instances of Chat-GPT, and then combined in a single Python code snippet
   \item Consecutively, where the prompts are executed sequentially on the same instance of the LLM and combined at the end
-  \item Together, where all necessary prompts are combined, and called singularly in an instance of LLM
+  \item Together, where all necessary prompts are combined, and called singularly in an instance of LLM.\@
 \end{itemize}
 
-and have as context for the prompt, the LLM being an expert in Python, the LLM needing to review the API documentation, instruction to generate a PBT component, and the desired output format.
+These have as context for the prompt, the LLM being an expert in Python, the LLM needing to review the API documentation, instruction to generate a PBT component, and the desired output format.
 
 For the result evaluation quality, the authors were guided by; generator validity and diversity, that measure either the correct behaviour or diversity of inputs; and property validity, soundness and strength, that measure the encounter of runtime errors, the existence of input/output pairs that violates the property but is valid at the same time, or the ability to check core logic of an API method.
 With these guidelines, the modules/methods under test got measurements close to \(100\%\) in generator validity and property validity, and between \(68\%\) and \(88\%\) for the rest of them, which helps conclude that PBT-GPT is a promising starting point to iterate from.
@@ -341,7 +346,7 @@ Its structure is presented in Figure~\ref{fig:mutester}, which describes a metho
   \caption{MUTester structure TODO: Add numbers}\label{fig:mutester}
 \end{figure}
 
-The first half of the repository mining (1) is done by applying web scrapping to the documentation pages of the different methods of the libraries, so that information regarding input type (via signature definition mining) and constraints can be gathered, which as mentioned before, is crucial for a correct test generation.
+The first half of the repository mining (1) is done by applying web scrapping to the documentation pages of different methods of the libraries, so that information regarding input type (via signature definition mining) and constraints can be gathered, which as mentioned before, is crucial for a correct test generation.
 Input constraints are collected from the natural language parameter description that is usually presented in Python documentation pages, and rather than extracted using a LLM model, they are identified using by recognizing linguistic patterns.
 A last piece of information that is gathered in this step are any code snippet example, so any useful input can be statically analysed.
 
@@ -356,19 +361,31 @@ Regarding test coverage, the baselines for the experimentation were Pynguin and 
 A Wilcoxon signed-rank
 statistical test~\cite{Rey2011} was also applied to the results, obtaining a p-value of less than \(0.05\) suggesting that MUTester outperformed both baselines in the stated datasets.
 
+\section{Differential Prompting}
 
-\iffalse{}
+Detection of software failures can be acknowledged as a benefit that comes from practising software testing.
+Following this direction, Li et al.~\cite{li2023nuances} studied the implications of calling ChatGPT with prompts that bypass the insensibility of it to code nuances, so that fail inducing test cases can be generated.
+Differential Prompting is the name of the proposed technique, and it divides the failure-inducing generation task in three steps:
+
 \begin{itemize}
-  \item State of the unit test generation in python
-  \begin{itemize}
-    \item LExecutor~\cite{DBLP:journals/corr/abs-2302-02343}
-    \item ChatGPT~\cite{li2023nuances}
-    \item PyLC~\cite{DBLP:conf/sac/SalariEAS23}
-  \end{itemize}
+  \item Program intention inference, where ChatGPT is asked from a Program Under Test (PUT) to inference and explain the idea of it as a whole
+  \item Program generation, where ChatGPT is again prompted to generate code snippets similar to the actual PUT, but by implicitly using the output of the last step as context
+  \item Differential testing, in which a test pool of diverse inputs for the PUT is generated in order to test the references from the previous and their outputs.
+  In the case that all outputs are consistent with a same set of inputs, this is marked as a ``valid test'' and compared to the output of the PUT.\@
+  If they are actually the same and all the branches were already covered, then the program is marked as non-faulty.
+  On the contrary, the input set is marked as a failure-inducing test case.
 \end{itemize}
 
-Comments on the state of the art
-\fi
+With these steps, Differential Prompting was put to the test against Pynguin and an out-of-the-shelf ChatGPT usage to evaluate the benchmarks QuixBugs\footnote{https://github.com/jkoppel/QuixBugs} and Codeforces\footnote{https://codeforces.com} in terms of bug presence.
+In these, the success rate of Differential Prompting was \(75\%\) and \(66.7\%\) respectively, in some cases 10 times better than the baselines.
+
+\section{Other applications of automatic test generation}
+
+Rather than only focusing on the application of software testing as a way to get either a good coverage metric or to find defects throughout the development of software, it is possible to make good usage of test case synthesis for other objectives.
+
+A first example is Neatest~\cite{DBLP:conf/kbse/Feldmeier022}, the test generator presented by Feldemeier et al.\@ which is based in neuroevolution and the NEAT algorithm~\cite{stanley2002evolving} for the testing of non-trivial games made on Scratch\footnote{https://scratch.mit.edu}, the educational programming language.
+
+Also, PyLC~\cite{DBLP:conf/sac/SalariEAS23} was presented in 2023 by Ebrahimi et al.\@ as a way of translating Programmable Logic Controller (PLC) representation languages (in graphical or textual form) into Python, to then generate automatic test cases using Pynguin and check the validity of the original systems.
 
 \backmatter{}
 
