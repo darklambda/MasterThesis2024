@@ -122,7 +122,6 @@ These recent new extensions of Pynguin and the aforementioned problem at the tim
 
 The original Pynguin research paper~\cite{DBLP:conf/icse/LukasczykF22} stated that after the test generation of 118 Python modules, the average branch coverage over all algorithms was $66.8\%$, which leads to think that improvement is possible.
 
-%talk about how coverage isn't everything?
 The current Master's thesis proposes an addition to the original structure of Pynguin~(see~Figure~\ref{fig:pyn}), specifically to sections (5) and (2) by developing a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} (GBOS) and the usage of a type information modifier module respectively, in order to diminish the branch coverage gap, try to generate more complex test suites and empirically study the effect of the presence of type information.
 
 \begin{figure}
@@ -260,8 +259,6 @@ For the export of event-driven and function-level tests, the frameworks Selenium
 The experiment section of the author's paper, shows the study of JSEFT's usage on 13 JavaScript web applications so the line coverage and usefulness of the assertions at the time of finding regression faults.
 For the specified metrics, the tool got a \(68.4\%\) of line coverage and a \(100\%\) precision in fault detection.
 
-%\section{LUTG}
-
 \section{CodaMOSA}
 
 One of the many tools presented in papers that have cited Pynguin in their research is CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, software created by Microsoft developers, has Pynguin as a base and extends its functionality calling OpenAI's Codex\footnote{https://openai.com/blog/openai-codex} API to get template suggestions for test cases that are in a coverage stall, similar to what this thesis works over.
@@ -340,10 +337,12 @@ The overall results mainly cover the mutation score obtained by all the possible
 MUTester~\cite{DBLP:journals/corr/abs-2307-00404} is an automatic test generation research software focused on the synthesis of test cases for APIs of the many already existing Deep Learning libraries, i.e. Numpy, Scikit-learn, TensorFlow.
 Its structure is presented in Figure~\ref{fig:mutester}, which describes a methodology that solely relies on heuristics regarding the mining of the documentation and knowledge repositories of the APIs in question. 
 
+%TODO: Add numbers
+
 \begin{figure}[tb]
   \centering 
   \includegraphics[width=.99\textwidth]{Figures/mutester.png}
-  \caption{MUTester structure TODO: Add numbers}\label{fig:mutester}
+  \caption{MUTester structure }\label{fig:mutester}
 \end{figure}
 
 The first half of the repository mining (1) is done by applying web scrapping to the documentation pages of different methods of the libraries, so that information regarding input type (via signature definition mining) and constraints can be gathered, which as mentioned before, is crucial for a correct test generation.
@@ -386,6 +385,13 @@ Rather than only focusing on the application of software testing as a way to get
 A first example is Neatest~\cite{DBLP:conf/kbse/Feldmeier022}, the test generator presented by Feldemeier et al.\@ which is based in neuroevolution and the NEAT algorithm~\cite{stanley2002evolving} for the testing of non-trivial games made on Scratch\footnote{https://scratch.mit.edu}, the educational programming language.
 
 Also, PyLC~\cite{DBLP:conf/sac/SalariEAS23} was presented in 2023 by Ebrahimi et al.\@ as a way of translating Programmable Logic Controller (PLC) representation languages (in graphical or textual form) into Python, to then generate automatic test cases using Pynguin and check the validity of the original systems.
+
+\iffalse{}
+\chapter{Implementation}
+
+%Notes on the process
+
+\fi
 
 \backmatter{}
 
