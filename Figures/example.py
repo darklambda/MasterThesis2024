@@ -2,8 +2,8 @@ from dependencies import GameState, Player, Action
 
 class BasicRules:
     def checkRules(self, action: Action, state: GameState) -> bool:
-        actor = state.player(action.getActor())
-        target = state.player(action.getTarget())
+        actor: Player = state.player(action.getActor())
+        target: Player = state.player(action.getTarget())
 
         if actor == None:
             return False

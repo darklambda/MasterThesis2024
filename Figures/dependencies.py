@@ -15,7 +15,7 @@ class Action:
         self.setTarget(target)
 
 class GameState:
-    players = []
+    players: list[Player] = []
     
     def player(self, id : int) -> Player:
         if (id < 0 or id >= 128):
