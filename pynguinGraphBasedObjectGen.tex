@@ -25,11 +25,17 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage[caption=false]{subfig}
 
 \addbibresource{ref.bib}
 
-\usepackage{hyperref}
-\usepackage[caption=false]{subfig}
+
+
+\newcommand{\classname}[1]{\texttt{#1}}
+\newcommand{\callable}[1]{\texttt{#1}}
+\newcommand{\field}[1]{\texttt{#1}}
 
 \author{Gonzalo A. Oberreuter Álvarez}
 \title{Effects of the Implementation of a Graph-Based Object Synthesis Heuristic on Pynguin}
@@ -95,12 +101,12 @@ Also, the complexity of these class instances in terms of their internal field v
 
 Within the scope of Python testing, Pynguin~\cite{DBLP:conf/icse/LukasczykF22} is command line interface for the generation of unit tests that applies various algorithms for input generation, such as DynaMOSA~\cite{DBLP:journals/tse/PanichellaKT18}, MIO~\cite{DBLP:conf/ssbse/Arcuri17}, MOSA~\cite{DBLP:conf/icst/PanichellaKT15}, Whole Test Suite~\cite{DBLP:journals/tse/FraserA13}, among others.
 
-At the time of its original release (25th of July 2020), Pynguin was a state-of-the-art open source tool that has been the first step for subsequent researches about how to improve the performance and functionalities of Pynguin itself, including CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, PyLC~\cite{DBLP:conf/sac/SalariEAS23} and many other tools that will be briefly explained in the State of the Art section.
+At the time of its original release (25th of July 2020), Pynguin was a state-of-the-art open source tool that has been the first step for subsequent researches about how to improve the performance and functionalities of Pynguin itself, including CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, PyLC~\cite{DBLP:conf/sac/SalariEAS23} and many other tools that will be briefly explained in the Section~\ref{chap:related_work}.
 These recent new extensions of Pynguin and the latter aforementioned problem at the time of generating complex object inputs are the principal motivations of this thesis and the related and future work to it.
 
 The original Pynguin research paper~\cite{DBLP:conf/icse/LukasczykF22} stated that after the test generation of 118 Python modules, the average branch coverage over all algorithms was $66.8\%$, which leads to think that improvement is possible.
 
-The current Master's thesis proposes an addition to the original structure of Pynguin~(see~Figure~\ref{fig:pyn}), specifically to the \textit{GenerationAlgorithm} abstract class, by developing a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} (GBOS) for the static analysis of Python at bytecode level in order to generate suitable object inputs, diminish the branch coverage gap, and empirically study the effect of the presence of type information in this same generation heuristic.
+The current Master's thesis proposes an addition to the original structure of Pynguin~(see~Figure~\ref{fig:pyn}), specifically to the \classname{GenerationAlgorithm} abstract class, by developing a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} (GBOS) for the static analysis of Python at bytecode level in order to generate suitable object inputs, diminish the branch coverage gap, and empirically study the effect of the presence of type information in this same generation heuristic.
 
 \begin{figure}
     \inputminted[linenos]{python}{Figures/example.py}
@@ -125,7 +131,7 @@ At this point, the idea of using a graph for the synthesis of objects is to get 
 The Graph-Based heuristic proposed by Lin et al.~\cite{DBLP:conf/sigsoft/0001O00D21} generates an Object Construction Graph (OCG) from a previous code slicing, performed from the program dependency graph and a specific target branch as criteria.
 This branch must be selected from those who have not reached their full coverage, or are ``non-trivial'', and the depth of the intra procedural dependency should be set as an arbitrary level $t_{\text{dep}}$.
 Then, this OCG is used to generate a code template that should be directly into the test code representation of Pynguin, for it to be then evolved or modified by one of the available Search-Based algorithms.
-Pynguin, similarly to other Search-Based test generating tools, represents its test cases as a sequence of implementations of a super class \textit{Statement} that can be later transformed into an Abstract Syntax Tree (AST) and an actual block of Python code.
+Pynguin, similarly to other Search-Based test generating tools, represents its test cases as a sequence of implementations of a super class \classname{Statement} that can be later transformed into an Abstract Syntax Tree (AST) and an actual block of Python code.
 This previous idea was completely implemented in and for Java, which means that part of the work to be done is to ideate a new Python representations of the OCG.\@
 Listing~\ref{lst:4} shows the code of a statement sequence template for the testing of the example module that still gets a run time error in line 18.
 However, this template allows Pynguin to get out of the local optima, if right values are modified in the correct variables.
@@ -174,20 +180,20 @@ Its way of generating these Unit tests, is by using a different selection of sea
 % TODO - Mention the assertion generation
 Throughout the years after its release, Pynguin has had many updates\footnote{https://www.pynguin.eu/blog/} that have improved its test generation performance and outputs, from which are notable: the addition of line and checked coverage~\cite{DBLP:conf/icst/SchulerZ11}, to the default branch coverage; the implementation of a native type system and the integration with Type4Py~\cite{DBLP:conf/icse/MirLPG22} for their usage in the correct type setting while generating variable statements; and the extended analysis of mutation's effects on tests for the correct generation of assertions.
 
-As mentioned before, the main core of Pynguin's test representation is the abstract class \textit{Statement}, and its subsequent wrapper classes \textit{TestCase}, containing a list of \textit{Statements}, and \textit{TestCaseChromosome}, containing a \textit{TestCase}.
-In the prior one, the next child classes available are \textit{AssignmentStatement}, a direct assignment of any kind of reference to a variable (e.g.~foo.bar = var\_1); and \textit{VariableCreatingStatement}, representing anything that can be assigned to a variable such as primitive types, collection types, fields, or any type of call (e.g.~int\_1~=~1, list\_1~=~list(), foo~=~Foo(int\_1,~list\_1)).
+As mentioned before, the main core of Pynguin's test representation is the abstract class \classname{Statement}, and its subsequent wrapper classes \classname{TestCase}, containing a list of \classname{Statement} instances, and \classname{TestCaseChromosome}, containing a \classname{TestCase}.
+In the prior one, the next child classes available are \classname{AssignmentStatement}, a direct assignment of any kind of reference to a variable (e.g.~foo.bar = var\_1); and \classname{VariableCreatingStatement}, representing anything that can be assigned to a variable such as primitive types, collection types, fields, or any type of call (e.g.~int\_1~=~1, list\_1~=~list\(()\), foo~=~Foo\((\text{int\_1,~list\_1})\)).
 The following hierarchy of these two can be represented by Figure~\ref{fig:hierarchy}.
 
 \begin{figure}[h]\label{fig:hierarchy}
   \centering
   \includegraphics[width=1\textwidth]{Figures/statement_hierarchy2.png}
   \vspace*{0.5cm}
-  \caption{Hierarchy of the \textit{Statement} class.}
+  \caption{Hierarchy of the \classname{Statement} class.}
 \end{figure}
 
-One class that assures Pynguin's easiness at the time of expanding it, is the abstract class \textit{GenerationAlgorithm}, which works as a layout for the insertion of any new heuristic of algorithm into the tool's current options, for the generation of \textit{TestSuiteChromosome}, another class wrapper for a list of \textit{TestCaseChromosome}.
+One class that assures Pynguin's easiness at the time of expanding it, is the abstract class \classname{GenerationAlgorithm}, which works as a layout for the insertion of any new heuristic of algorithm into the tool's current options, for the generation of \classname{TestSuiteChromosome}, another class wrapper for a list of \classname{TestCaseChromosome}.
 
-In the context of evolutionary and genetic algorithms, the \textit{Statement} class has an abstract method called \textit{mutate}, which depending on the instance's final class, mutates either the primitive value, or the references that are encapsulated in it.
+In the context of evolutionary and genetic algorithms, the \classname{Statement} class has an abstract method called \(\text{\callable{mutate}}()\), which depending on the instance's final class, mutates either the primitive value, or the references that are encapsulated in it.
 
 About the available algorithms, Pynguin has a total of 7 available: Random, Random Test Case Search, Random Test Suite Search, Whole Suite, MIO, MOSA and DynaMOSA.\@
 From these, the experimental phase will be done mostly considering the last 4, because those implement either an archive or a dynamic chromosome population, which is necessary for the extension.
@@ -204,12 +210,12 @@ Pynguin's workflow structure is presented in Figure~\ref{fig:pyn} and consists o
   \item The module is then analysed in order to obtain primordial information, such as all the functions, classes and their respective attributes and methods, together with their respective parameters.
   \item In the Test Cluster, all relevant information is gathered from the analysis of the module under test (MUT) and its dependencies.
   \item As mentioned in the previous item, the Context step performs an inter procedural analysis of all the libraries and modules used by the actual MUT, and joins any new obtained information with the data in the Test Cluster.
-  \item The Test Case Generation step, individually picks functions or methods from the Test Cluster in order to generate instances of the \textit{Statement} class, firstly by generating a certain amount of either primitive, collection or instance statement used as parameter arguments, and then by generating the respective callable, owner of the different branches or lines to cover.
+  \item The Test Case Generation step, individually picks functions or methods from the Test Cluster in order to generate instances of the \classname{Statement} class, firstly by generating a certain amount of either primitive, collection or instance statement used as parameter arguments, and then by generating the respective callable, owner of the different branches or lines to cover.
   \item After a Test Case Generation is performed, it is executed to get the desired coverage and analyse if (a) it already reached a full coverage or (b) a new better Test Case should be generated.
   \item Once the stopping conditions are met, the test cases are finished with an optional assertion to check the results of the test.
   \item Alternatively, mutations of the test cases are created using MutPY, so Pynguin can evaluate if the previously created assertion kill or not the mutants.
   If they do not, new assertions are created.
-  \item In the Export step, Pynguin translates the test cases from its \textit{TestCaseChromosome} representation into a Python AST representation and then into a Python test with the correspondent decorators of the library PyTest.
+  \item In the Export step, Pynguin transforms the test cases from their chromosome representation into a Python AST representation and then into a Python test with the correspondent decorators of the library PyTest.
   \item Finally, these tests are written into a final module.
   
 \end{enumerate}
@@ -260,10 +266,10 @@ About the MOSA implementation in Pynguin, it follows the same structure as the o
   \end{algorithmic}
 \end{algorithm}
 
-\section{DynaMOSA}
+\section{DynaMOSA}\label{sec:dynamosa}
 
 DynaMOSA comes as a further extension of MOSA by Panichella et al.~\cite{DBLP:journals/tse/PanichellaKT18}, with the addition of a dynamic selection of the targets to be included into the first Pareto Frontier when executing the preference sorting.
-The idea of including a dynamic selection of targets starts from the representation of a program into a Control Flow Graph \(\text{CFG} = \langle V_{\text{CFG}}, E_{\text{CFG}} \rangle\) where every node represents an abstraction of statement(s) and every directed edge, a path of execution.
+The idea of including a dynamic selection of targets starts from the representation of a program into a Control Flow Graph \(\text{CFG} = \langle V_{\text{CFG}}, E_{\text{CFG}} \rangle\) where every node represents an abstraction of statements or basic blocks and every directed edge, a path of execution.
 With the CFG, it is possible to realize how those uncovered targets that have one or more already reached target predecessor are redundant to try to cover because they will always have objective score of \(f_r = \text{BranchDistance}(b) + 1\), where (\(+1\)) represents the approach level or the distance in the CFG to reach the successive target.
 This means that every target can be prioritized into a hierarchy according to the definition of a Control Dependency Graph (CDG).
 
@@ -277,7 +283,7 @@ Then, a \(\text{CDG} = \langle V_{\text{CDG}}, E_{\text{CDG}} \rangle\) is a gra
 This edge represents a control dependency between both statement blocks.
 
 The pseudocode of DynaMOSA is shown in Algorithm~\ref{alg:DynaMOSApseudo}, with the only differences to MOSA being found in the lines 1, 5 and 9 when calling the set of an initial set of non-dependant targets and the dynamic update of these.
-The UpdateTarget() procedure, is applied inside Pynguin by implementing a class for, a Control Flow Graph (named \textit{CFG}), as a wrapper of the \textit{ControlFlowGraph} class from the Python \textit{bytecode} module; and a Control Dependency Graph (called \textit{ControlDependenceGraph}).
+The \(\text{UpdateTarget}()\) procedure, is applied inside Pynguin by implementing a class for, a Control Flow Graph (named \classname{CFG}), as a wrapper of the \classname{ControlFlowGraph} class from the Python \classname{bytecode} module; and a Control Dependency Graph (called \classname{ControlDependenceGraph}).
 Both of these classes are a fundamental part for the proposed heuristic implementation.
 
 % TODO - anything else to fill?
@@ -331,7 +337,7 @@ Concurrently for test cases, three mutations can be applied with probability \(\
 \end{itemize}
 The final novelty from this algorithm between lines 12 and 27, is the mechanism of generational forwarding already mentioned, which basically intends to bring the offspring to the next iteration's population only if either it has better fitness value, or if the fitness is equal to the one from the parents and the size of the offspring is much smaller.
 
-In terms of the Whole Test Suite generation algorithm's implementation in Pynguin, it was done by setting a field in the \textit{WholeSuiteAlgorithm} class called \textit{\_population}, containing a list of \textit{TestSuiteChromosome} objects.
+In terms of the Whole Test Suite generation algorithm's implementation in Pynguin, it was done by setting a field in the \classname{WholeSuiteAlgorithm} class called \field{\_population}, containing a list of \classname{TestSuiteChromosome} objects.
 
 
 \begin{algorithm}[htb]
@@ -423,7 +429,7 @@ With respect to this approach, Pynguin only differs from the original algorithm'
     \State~\(T \gets \text{SetOfEmptyPopulations}()\) 
     \State~\(A \gets \{\}\)
     \While{\(\neg C\)}
-      \If{\(P_r > \text{RandomFloat}() \text{or IsEmpty(T)}\)}
+      \If{\(P_r > \text{RandomFloat}() \text{or IsEmpty}(T)\)}
         \State~\(p \gets \text{RandomIndividual}()\)
       \Else\@
         \State~\(p \gets \text{SampleIndividual}(T)\)
@@ -445,17 +451,51 @@ With respect to this approach, Pynguin only differs from the original algorithm'
   \end{algorithmic}
   \end{algorithm}
 
-%\begin{algorithm}
-%  
-%  \begin{algorithmic}
-%  
-%  \end{algorithmic}
-%\end{algorithm}
-
 
 \section{GBOS Heuristic}
 
 % TODO
+The Graph Based Object Synthesis heuristic is the name given to the methodology presented by Yun et al.~\cite{DBLP:conf/sigsoft/0001O00D21} for the generation of complex object instances to be used as arguments in methods to be tested in a test case of the Java programming language.
+One of the motivations for this research study was the possible non-continuity of test cases' search space with respect to coverage, when some related targets have the need to evaluate multiple conditions on an object instances before even getting an actual distance to them.
+% TODO - maybe reference the example in the introduction?
+The procedure done by this heuristic, consists of two main phases; the creation of an Object Construction Graph (OCG), that represents all relevant dependency flows of a method from its inputs to the actual target to be reached; and the translation of the OCG into an actual test case template, that serves as an initial search point for the test generation algorithm.
+
+\subsection{OCG generation}
+
+For the generation of the OCG, one must start with the generation of the Program Dependency Graph (PDG), a complete representation of all control and data dependencies of a program.
+As stated in Section~\ref{sec:dynamosa}, the control dependencies of a program are represented with the aforementioned CDG.\@
+Similarly, the data dependencies of a program can be represented with a Data Dependency Graph \(\text{DDG} = \langle V_{\text{DDG}}, E_{\text{DDG}} \rangle\), where \(V_{\text{DDG}} = V_{\text{CFG}}\) and for every pair \(v_1, v_2 \in V_{\text{DDG}}\), there is a directed edge \((v_1, v_2)\) if and only if there is a variable \(X_{v_1}\) defined in \(v_1\) and used in \(v_2\), that is part of the reaching definitions of \(v_2\).
+
+Reaching definitions~\cite{DBLP:books/aw/AhoSU86} is a data-flow schema in the form of a fixed point algorithm for the recognition of any variable definitions that always reach in or out of a basic block in a program.
+For a node \(n \in V_{\text{CFG}}\), representing a basic block in the CFG, \callable{Defines}\((n)\) being the set of variables \(x_n\) defined in \(n\) and \callable{Pre}\((n)\) the predecessor nodes, the following equations set the reaching definitions of node \(n\)
+
+\begin{align*}
+  \text{\textbf{gen}}(n) &:= \text{\callable{Defines}}(n) \\
+  \text{\textbf{kill}}(n) &:= \bigcup_{v \in V_{\text{CFG}}} x_v, \forall x \in \text{\callable{Defines}}(n) \\
+  \text{\textbf{ReachIN}}(n) &:= \bigcup_{p \in \text{\callable{Pre}}(n)} \text{\textbf{ReachOUT}}(p) \\
+  \text{\textbf{ReachOUT}}(n) &:= \text{\textbf{gen}}(n) \cup (\text{\textbf{ReachIN}}(n) \setminus \text{\textbf{kill}}(n))\\
+\end{align*}
+
+Having the two necessary representations of both a CDG and a DDG, a formal outline of a PDG is the tuple \(\langle V_{\text{PDG}}, E_{\text{PDG}} \rangle\), with \(\langle V_{\text{PDG}} = \langle V_{\text{CFG}}\) and \(E_{\text{PDG}} = E_{\text{CDG}} \cup E_{\text{DDG}}\).
+
+The necessary PDG for the OCG's building process must also be inter-procedural until a certain level of deepness, considering that one or many of the target method's input objects may be modified by a subsequent call.
+This new requirement is met by just adding to the main PDG new edges from the correspondent callee's basic block to the entry node of the other method or function PDG, which also needs to be generated beforehand.
+
+After having the full inter-procedural PDG, a node containing a branch \(b\) (chosen target for the heuristic) must be used as entry criteria to apply a backward slice and either
+
+\begin{itemize}
+  \item a node with an instruction reading a method input
+  \item a node with an instruction reading a global variable
+  \item an entry node 
+\end{itemize}
+
+as stopping criteria.
+
+The following step, is to analyse the sliced graph and link directly every instance of a node loading the complex method parameter objects with any node from the inter-procedural methods' PDGs that retrieve a field or access an array, so the relevant variable state of these objects can be recorded flawlessly throughout the graph.
+
+Finally, the sliced PDG is sliced further in a forward manner, using the object method inputs as slicing criteria and any field or array access as stopping condition, in order to leave only relevant paths for the heuristic's second phase.
+
+\subsection{OCG translation}
 
 \chapter{Experimental Setup}
 
@@ -485,7 +525,7 @@ With respect to this approach, Pynguin only differs from the original algorithm'
 
 \section{Threats to Validity}
 
-\chapter{Related Work}
+\chapter{Related Work}\label{chap:related_work}
 
 % TODO - change structure by approach (check Gordon's email)
 
@@ -500,9 +540,9 @@ Before commenting on the different tools, techniques and methods that have a pla
 \section{EvoSuite}
 
 With respect to Unit Test Generation, EvoSuite~\cite{DBLP:conf/qsic/FraserA11} was (and still is) a state-of-the-art test generation tool for Java, pioneer of the usage of a genetic algorithm, so the branch coverage can be optimized as a whole.
-The internal representation of EvoSuite for a test suite is a set of \textit{chromosomes} \(T\) as a sequence of statements \(t_i\) of length \(l_i\) and either type primitive statement, constructor statement, field statement, or method statement.
+The internal representation of EvoSuite for a test suite is a set of chromosomes \(T\) as a sequence of statements \(t_i\) of length \(l_i\) and either type primitive statement, constructor statement, field statement, or method statement.
 During the chromosome synthesis process, all the information regarding classes, methods and variables of the SUT are gathered via the Java Bytecode and Java Reflection\footnote{https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html}.
-These sequences can be crossovered as a random sequential combination of the two \textit{chromosomes}, or mutated with the insertion, remotion or change of single statements.
+These sequences can be crossovered as a random sequential combination of the two chromosomes, or mutated with the insertion, remotion or change of single statements.
 In terms of the optimization, the fitness function of a test suite $T$ is given by the equation
 \[ \text{fitness}(T) = |M| - |M_T| + \sum_{b_k \in B} d(b_k, T) \]
 where $M$ is the total of methods to test, \(M_T\) is the number of methods that were actually executed, \(b_k\) is a branch in the branch set \(B\), and \(d(b, T)\) is the branch distance of branch \(b\) over the set \(T\).
@@ -566,7 +606,7 @@ The results showed that CodaMOSA performs significantly better, reaching a highe
 
 Property-based testing (PBT) is a kind of fuzz testing whose idea is to generate a large amount of random inputs to statistically test a program by checking if the outputs are close to a desired property.
 Within this scope, PBT-GPT~\cite{DBLP:journals/corr/abs-2307-04346} is presented by Vikram et al.\ as an implementation of automatic property-based test generation for Python by means of Large Language Model prompting, through Chat-GPT4.
-The general idea of this testing approach, is to operate with three different prompting approaches to generate Python tests of specific module methods while using \textit{Hypothesis}\footnote{https://hypothesis.readthedocs.io/en/latest/}, a PBT library specialized in input generators, and the API documentation of the so-called method.
+The general idea of this testing approach, is to operate with three different prompting approaches to generate Python tests of specific module methods while using Hypothesis\footnote{https://hypothesis.readthedocs.io/en/latest/}, a PBT library specialized in input generators, and the API documentation of the so-called method.
 These three strategies for prompt calling are named and described as the following:
 
 \begin{itemize}
@@ -593,7 +633,7 @@ Regardless of this not being in the same direction of the previous software exam
 \end{figure}
 
 A general structure of CodeT is shown in Figure~\ref{fig:codet}, which also depicts the functioning of it by first, prompting the generation of a set of tests (right on the figure) based on the natural language context of the programming problem, that will later be at the same time the context for the prompting of a set of code snippets (left on the figure).
-After the execution of the LLM model is finished and all the outputs are gathered, a \textit{Dual execution agreement} criterion, based on the RANSAC~\cite{DBLP:journals/cacm/FischlerB81} algorithm, is used to select the best code solution.
+After the execution of the LLM model is finished and all the outputs are gathered, a Dual execution agreement criterion, based on the RANSAC~\cite{DBLP:journals/cacm/FischlerB81} algorithm, is used to select the best code solution.
 The selection in this criterion, is done by forming consensus sets of both code solutions and test cases, by selection a valid pair \((x_\text{code}, y_\text{test})\) as a hypothetical inlier, and grouping it with all tests that are also passed by \(x_\text{code}\) in set \(S_y\) and all other code snippets that pass the same tests as \(x_\text{code}\) in set \(S_x\).
 Finally, when all consensus sets \(S_x\) and \(S_y\) are formed from the different valid pairs \((x_\text{code}, y_\text{test})\), those with the highest cardinality \(f(S) = |S_x||S_y|\) will have the best score for selection.
 
@@ -617,7 +657,7 @@ The first step (1), employs one of the two following learning methods; zero-shot
 After the initial test is synthesized, the second step (2) consists of re-prompting it, so possible syntax errors can be corrected and unintended behaviour can be repaired.
 Then, the third step (3) introduces mutations into the PUT using MutPy\footnote{https://pypi.org/project/MutPy/0.3.0/} so that the quality and effectiveness of the tests can be assessed.
 At this point, the algorithm of MutAP has a conditional path depending on the number of surviving mutants; if there are none, the test cases are considered finished and generated; and in the contrary case, the prompt augmentation step is followed.
-This post conditional step (4), adds information to a new prompt of the LLM, such as the already refined initial test, the statement ``The test function, test(), cannot detect the fault in the
+This post conditional step (4), adds information to a new prompt of the LLM, such as the already refined initial test, the statement ``The test function, \(\text{test}()\), cannot detect the fault in the
 following code'', one of the mutant survivors, and a final statement ``Provide a new test case to detect the fault in prior code''.
 
 In the experimental trial of this tool's paper, two LLM models were used, OpenAI's Codex and llama2-chat, to be run together with MutAP over the benchmarks; HumanEval, which consists of 164 human written programming problems; and Refactory, consisting of 1710 buggy submissions from students for 5 assignments of a Python programming course.
