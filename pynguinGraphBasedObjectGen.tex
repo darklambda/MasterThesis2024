@@ -170,8 +170,9 @@ Finally, the percentage of object-like inputs in methods will be obtained by ana
 \[ \frac{1}{n}\sum_{m_i \in M} \frac{o_i}{p_i}\]
 where \(M\) is a MUT, \(m_i\) a method, \(p_i\) the amount of parameters in \(m_i\), \(o_i\) the amount of object-like parameters in \(m_i\), and \(n\) the amount of methods in \(M\). 
 
+The rest of the document will be structured in the following way: Chapter~\ref{chap:background}gives a brief explanation of Pynguin and its current state, the different available search algorithms that will take part in the experimental phase and the used GBOS heuristic; Chapter~\ref{chap:experimental_setup} contains any relevant information regarding the Pynguin implementation of the GBOS heuristic and the data set used as a benchmark for its testing; Chapter~\ref{chap:results} presents the obtained results, answers to the formulated research questions and states the threats to validity of this thesis; Chapter~\ref{chap:related_work} summarizes the current alternatives for GBOS regarding the generation of complex object inputs in different languages; and Chapter~\ref{chap:conclusions} gathers the main ideas from the analysis of the results and proposes further ones as future work.
 
-\chapter{Background}
+\chapter{Background}\label{chap:background}
 
 \section{Pynguin}
 
@@ -460,7 +461,7 @@ One of the motivations for this research study was the possible non-continuity o
 % TODO - maybe reference the example in the introduction?
 The procedure done by this heuristic, consists of two main phases; the creation of an Object Construction Graph (OCG), that represents all relevant dependency flows of a method from its inputs to the actual target to be reached; and the translation of the OCG into an actual test case template, that serves as an initial search point for the test generation algorithm.
 
-\subsection{OCG generation}
+\subsection{OCG generation}\label{subsec:ocg_gen}
 
 For the generation of the OCG, one must start with the generation of the Program Dependency Graph (PDG), a complete representation of all control and data dependencies of a program.
 As stated in Section~\ref{sec:dynamosa}, the control dependencies of a program are represented with the aforementioned CDG.\@
@@ -478,7 +479,7 @@ For a node \(n \in V_{\text{CFG}}\), representing a basic block in the CFG, \cal
 
 Having the two necessary representations of both a CDG and a DDG, a formal outline of a PDG is the tuple \(\langle V_{\text{PDG}}, E_{\text{PDG}} \rangle\), with \(\langle V_{\text{PDG}} = \langle V_{\text{CFG}}\) and \(E_{\text{PDG}} = E_{\text{CDG}} \cup E_{\text{DDG}}\).
 
-The necessary PDG for the OCG's building process must also be inter-procedural until a certain level of deepness, considering that one or many of the target method's input objects may be modified by a subsequent call.
+The necessary PDG for the OCG's building process must also be inter-procedural until a certain threshold level \(t_{\text{dep}}\), considering that one or many of the target method's input objects may be modified by a subsequent call.
 This new requirement is met by just adding to the main PDG new edges from the correspondent callee's basic block to the entry node of the other method or function PDG, which also needs to be generated beforehand.
 
 After having the full inter-procedural PDG, a node containing a branch \(b\) (chosen target for the heuristic) must be used as entry criteria to apply a backward slice and either
@@ -497,11 +498,75 @@ Finally, the sliced PDG is sliced further in a forward manner, using the object 
 
 \subsection{OCG translation}
 
-\chapter{Experimental Setup}
+Once the OCG generation process is complete, its translation into actual code is done by including extra operations to a generic Breadth-first graph traversing algorithm.
+The first step, is to initialize a test case \(t\) with a call to the target branch's method (and its respective object in case it is not static) together with an empty node-statement map.
+Then, every time a relevant node is reached, such as the ones containing instructions of parameter loading, or attribute/array accessing, a corresponding object creating statement or attribute setting mechanism is added into the test and saved in the node-statement map.
+The only case in which a field is called with a getter instead of a setter, is when the correspondent node is not a leaf, because this means that there might be a successor node either containing an array access or getting an object type field.
+The purpose of the previously mentioned map, is to have direct reference of any object input at the time of setting its fields.
 
-% TODO
+Considering the static typing of Java, one last matter to take in mind is the setting of non-public and non-static fields, which have to be managed through appropriate getter or setter methods.
+This procedure is done by analysing all possible methods \(M = {m_1, m_2, \dots, m_k} \) in the correspondent class and building a directed call graph between them with paths \(P = \langle m_s, \dots, m_e\rangle\), where \(p_s\) represents the starting method, \(p_e\) the exit method that finally sets the field and the rest, the methods in between.
+Using these two definitions, it is possible to approximate the likelihood of every method to set the field correctly with a metric composed of the number of parameters \(N_v\) and the complexity of the path \(P\).
+For computing the path complexity, it is also necessary to check for every node in the path, what the ration between branches \(B'\) that access the next node in the path versus the total branches \(B\) is.
+The path score is given by the equation
+\begin{equation*}
+  \text{score}(P) = (N_v + 1)\left(\frac{\sum_{s}^{e} \frac{|B'|}{|B|}}{|P|}\right)
+\end{equation*}
+and the sampling probability of a method \(m_i\) can be calculated by normalizing the maximum path score of every path that contains \(m_i\).
+
+% TODO add the algorithm?
+
+\chapter{Experimental Setup}\label{chap:experimental_setup}
 
 \section{Implementation}
+
+Part of the preparations for the experimental phase and contributions of this thesis, is the creation of a functional extension of Pynguin inspired in the so called GBOS heuristic that had to be worked around only using the information available information from its respective paper and some hints given by the authors of it.
+
+The development process started with the creation of \classname{DataDependenceGraph}, a new subclass of the already implemented \classname{ProgramGraph}, which serves as a superclass for both \classname{CFG} and \classname{ControlDependenceGraph}.
+As its name hints, this new graph class will encapsulate all necessary methods and further elements that will help to collect all relevant data usages and definitions for the later generation of the reaching definitions sets.
+Another crucial information obtained with the generation of the DDG through this class, are all the realized methods and function calls along the program's control flow.  
+
+In a first instance, one of the prerequisites for the coding of a DDG in Pynguin, was to split every node's basic block in the CFG class, into nodes with singular instruction.
+If this had not been done, the final DDG would have set many variable uses and definitions in the same node, simplifying the final graph to a trivial level that would have not worked in the further steps of the heuristic.
+% TODO - Add an example of python code, and either basicblock/statement DDG, or with CFG
+Then, the program's stack frame evolution is statically analysed to check which nodes have an instruction that defines or uses any variable names, or what functions or methods are called.
+This functionality was put into practice thanks to the classes \classname{DefUseAnalyzer} and \classname{Frame}, that traverse the CFG in a breadth-first manner and execute the corresponding single instruction respectively.
+
+The way this works in the method \callable{DefUseAnalyzer.analyse}(), is that every entry node starts with an empty \classname{Frame} with no variables in its stack.
+Then, each non-entry node will copy the frame of one of its successors, execute the current instruction (with the method \callable{Frame.execute}()) and set this modified copy as its own.
+As a design decision, the GBOS heuristic works with Python version 3.10, because it is one of Pynguin's supported versions, it restricts the amount Python Bytecode instructions needed to be implemented in the stack modifying match-case statement found in the \callable{Frame.execute}() method, and it is stated in the GBOS paper~\cite{DBLP:conf/sigsoft/0001O00D21} that the approach is ``applicable in more general cases'', which implies the heuristic to work in any level of abstraction.
+% TODO - Add an example of how frame works. method is called execute()
+
+Once the \classname{DefUseAnalyzer} finishes generating two dictionaries (node, [variables]) for the uses and definition, the DDG generation procedure copies every node in the given CFG, and proceeds to traverse once again the CFG in a breadth-first manner to apply the reaching definitions equations presented in Section~\ref{subsec:ocg_gen} and obtain the edges of the new graph.
+
+With a program's DDG already generated, the CDG is obtained with the already implemented methods to do so, and the previously modified single-instruction CFG.\@
+Both of these graphs are the base of the computation of an instance of the class \classname{ProgramDependenceGraph}, another subclass of \classname{ProgramGraph}, that initially just combines the edges of both CDG and DDG.\@
+A second procedure realized as part of the PDG's computation, is the use of Pynguin test cluster and the (node, callable) dictionary obtained while getting the stack frame information, for the computation of subsequent called methods' PDGs.
+This is done in a recursive manner and complying to a certain recursion level \(t_{\text{dep}}\), that works as a newly introduced Pynguin CLI argument. 
+
+At this point, the inter-procedural PDG is ready to be backward sliced with the necessary stopping conditions, contextualized to Python's bytecode instructions.
+The slicing begins with the single instruction node in the PDG that contains the target branch, and it stops when either
+
+\begin{itemize}
+  \item the node loads one of the target method's parameters (e.g.\@it is the first LOAD\_FAST that has one of the target method's parameters as argument) or it has a LOAD\_ATTR instruction
+  \item the node has a LOAD\_GLOBAL instruction
+  \item the node has no predecessors (it is an entry node).
+\end{itemize}
+
+The inter-procedural analysis is the next step to follow, and it starts by iterating over the list of know calls and selecting only the methods (details in Section~\ref{sec:assumptions}) to check for the presence of an instruction chain 
+\[\text{LOAD\_FAST} \rightarrow \text{LOAD\_METHOD} \rightarrow \text{CALL\_METHOD}\]
+that represents the load of the object instance, the load of its method and the call of it.
+Then, from the first LOAD\_FAST instruction node (that should have one of the target method's parameters as argument), it is needed to look in the sub-PDG of the called method for the first ``LOAD\_FAST self'', which represents the same object instance and might have a successor node LOAD\_ATTR that needs to be linked to the first node in the initial chain.
+
+% TODO - add a little diagram of this last part
+
+The last part of the heuristic's first phase, is done in the same way as in its original Java version.
+A forward slicing is performed into the PDG, starting from the parameter loading nodes and stopping at any LOAD\_ATTR or BINARY\_SUBSRC.\@
+This last one, only in case it is positioned directly as a successor of a LOAD\_ATTR instruction node.
+
+% TODO - explain why is this binary subsrc important?
+
+
 
 % TODO
 
@@ -509,7 +574,9 @@ Finally, the sliced PDG is sliced further in a forward manner, using the object 
 
 % TODO
 
-\chapter{Results}
+\section{Assumptions}\label{sec:assumptions}
+
+\chapter{Results}~\label{chap:results}
 
 % TODO
 
@@ -717,7 +784,7 @@ A first example is Neatest~\cite{DBLP:conf/kbse/Feldmeier022}, the test generato
 
 Also, PyLC~\cite{DBLP:conf/sac/SalariEAS23} was presented in 2023 by Ebrahimi et al.\@ as a way of translating Programmable Logic Controller (PLC) representation languages (in graphical or textual form) into Python, to then generate automatic test cases using Pynguin and check the validity of the original systems.
 
-\chapter{Conclusions and Future Work}
+\chapter{Conclusions}~\label{chap:conclusions}
 
 \backmatter{}
 
