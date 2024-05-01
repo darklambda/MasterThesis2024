@@ -169,7 +169,7 @@ As mentioned before, the main core of Pynguin's test representation is the abstr
 In the prior one, the next child classes available are \classname{AssignmentStatement}, a direct assignment of any kind of reference to a variable (e.g.~foo.bar = var\_1); and \classname{VariableCreatingStatement}, representing anything that can be assigned to a variable such as primitive types, collection types, fields, or any type of call (e.g.~int\_1~=~1, list\_1~=~\callable{list}, foo~=~Foo\((\text{int\_1,~list\_1})\)).
 The following hierarchy of these two can be represented by Figure~\ref{fig:hierarchy}.
 
-\begin{figure}[h]\label{fig:hierarchy}
+\begin{figure}[htb]\label{fig:hierarchy}
   \centering
   \includegraphics[width=1\textwidth]{Figures/statement_hierarchy2.png}
   \vspace*{0.5cm}
@@ -705,7 +705,7 @@ For more precise data, when calculating the percentage difference between Pyngui
 
 Figure~\ref{fig:iterations} reveals the distribution of algorithm iterations through the different configurations.
 Similar to the previous graph, the results' comparison between Pynguin and the GBOS extension show almost no difference while observing the probability density, median position and interquartile position (except for the notorious presence of higher values in WHOLE\_SUITE).
-The values for percentage difference between both approaches over the average value of plotted distributions, the different algorithms get \(-7.20\%\), \(-3.65\%\), \(-6.48\%\) and \(0.92\%\), in the same order from left to right as they are presented in Figure~\ref{fig:iterations}.
+The values for percentage difference between both approaches over the average value of plotted distributions, the different algorithms get \(-7.20\%\), \(-3.65\%\), \(-6.48\%\) and \(0.92\%\), in the same order from left to right as they are presented in the referenced Figure.
 
 \begin{figure}[th]
   \centering
@@ -724,33 +724,33 @@ Considering a comparison between the Search Time and the Decision Time, MIO obta
 With respect to the Generation Time, the comparison using percentage difference of MIO gives a value of \(346.54\%\), while the other algorithms have values ranging between \(53.69\%\) and \(74.75\%\).
 
 
-\begin{figure}[th]
+\begin{figure}[th]\label{fig:times}
 \minipage{0.5\textwidth}
   \includegraphics[width=\linewidth]{Figures/Results/SearchTime.jpg}
 \endminipage\hfill
 \minipage{0.5\textwidth}
   \includegraphics[width=\linewidth]{Figures/Results/timeDist.jpg}
 \endminipage\@
-\caption{Search time distribution between the 8 parameter configurations and average values for new output variables of the GBOS extension.}\label{fig:times}
+\caption{Search time distribution between the 8 parameter configurations and average values for new output variables of the GBOS extension.}
 \end{figure}
 
 \newpage
 
 \section{Research Question 1}
 
-The data reported in Table~\ref{tab:performance} show the mean coverage of all tested modules per approach, the p-Values obtained through statistical Mann-Whitney U tests and Cohen's D effect size measures, in any pair of algorithm and runtime budget.
+The data reported in Table~\ref{tab:performance} shows the mean coverage of all tested modules per approach, the p-Values obtained through statistical Mann-Whitney U tests and Cohen's D effect size measures, in any pair of algorithm and runtime budget.
 Generally, all p-Values are greater than \(0.05\) with respect to the sets of obtained branch coverage values in each module, accepting the null hypothesis that assumes no effect or statistical difference between the distributions.
 Similarly, it is noticeable that all values of Cohen's D effect size are negative, meaning that the best distributions of coverage values are found while using Pynguin without the GBOS extension.
-This strongly implies that in a general Python developing scenario the usage of the GBOS extension is not advised, as the mean effect size found in the last time step budget of the runs gets a value of \(-0.97\) over all algorithms, contrary to the value of \(0.21\) (in favour of EvoObj) obtained by Yun Lin et al.\ over all the algorithms used in their experimental phase for the maximum budget of 300 seconds. 
+This strongly implies that in a general Python developing scenario the usage of the GBOS extension is not advised nor makes any considerable improvement in coverage results, as the mean effect size found in the last time step budget of the runs gets a value of \(-0.32\) over all algorithms, contrary to the value of \(0.21\) (in favour of EvoObj) obtained by Yun Lin et al.\ over all the algorithms used in their experimental phase for the maximum budget of 300 seconds. 
 
-\begin{table}[bth]\label{tab:performance}
+\begin{table}[bth]
   \centering
   \input{Figures/Results/300-table.tex}
   \centering
   \input{Figures/Results/450-table.tex}
   \centering
   \input{Figures/Results/600-table.tex}
-  \caption{Coverage Performance of Pynguin and GBOS with different time budgets.}
+  \caption{Coverage Performance of Pynguin and GBOS with different time budgets.}\label{tab:performance}
 \end{table}
 
 \begin{summary}{RQ1: Performance of GBOS over Pynguin}
@@ -759,11 +759,32 @@ This strongly implies that in a general Python developing scenario the usage of 
 
 \subsection*{Discussion}
 
-The results in Table~\ref{tab:performance}, it is shown once more how the extra computational effort needed while using the GBOS extension influences the obtained coverage results.
-This, presented once more distinctly in the results that used the MIO algorithm.
-For the time step of 300 seconds, presents an effect size with magnitude of \(10^{12}\), which can be argued by the general amount of computed iterations presented in Figure~\ref{fig:iterations}.
+With the results in Table~\ref{tab:performance}, it is shown once more how the extra computational effort needed while using the GBOS extension does not influence the obtained coverage results, at least as a rule of thumb.
+Another possible factor that explains the lack of improvement in the coverage results, is the absence of a need for complex object inputs by the modules under test in order to reach all target branches.
+This latter argument can be backed up partially with the results in Figure~\ref{fig:times}, which tell that even after the applied filtering, some modules still could reach a full branch coverage with the tests provided by an initial population of test chromosomes.
+In addition, the data per time budget step mostly says that during the coverage evolution of Pynguin, there is persistent difference in performance while using the extension, which can be attributed to the random nature of the Search Based algorithms, or to the inter-iteration time difference in the Search Time variable when using the extension, in the case of the final time step of 600 seconds.
+
+Figures~\ref{fig:worst} and~\ref{fig:best} show the branch coverage evolution along the 600 seconds budget for those modules that obtained the best and worst effect size values on each algorithm.
+In the first plot, during the whole search time budget it can be remarked how the GBOS extension has poorly evolves compared to Pynguin by itself, following the behaviour already found in Table~\ref{tab:performance}.
+Contrarily, rather than showing a better performance, the second graph implies that when the best effect sizes where found, both approaches had an almost equal evolution in branch coverage over time, except for a few segments, as it can be seen in the lines for DynaMOSA, MOSA and Whole Test Suite.
+
+In terms of number of runs successfully executed, the nature behind the obtained effect size values could have been influenced by the difference in available runs, which ranged between \(2\) and \(28\).
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Figures/Results/worstES.jpg}
+  \caption{Branch coverage evolution for those modules that obtained the worst Cohen's D effect size value in each algorithm.}\label{fig:worst}
+\end{figure}
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Figures/Results/bestES.jpg}
+  \caption{Branch coverage evolution for those modules that obtained the best Cohen's D effect size value in each algorithm.}\label{fig:best}
+\end{figure}
 
 \section{Research Question 2}
+
+Figure~\ref{fig:scatter} shows a scatter plot of the different modules that presented an OLR measure greater than \(50\%\) and their Vargha-Delaney \(\hat{A}_{12}\) effect size with respect with the two distributions available for each approach and algorithm.
 
 \begin{figure}[bth]
   \centering
@@ -771,7 +792,27 @@ For the time step of 300 seconds, presents an effect size with magnitude of \(10
   \caption{Scatter plot of the \(\hat{A}_{12}\) effect size values versus the OLR value, for every module that reported a OLR value greater than \(0.5\)}\label{fig:scatter}
 \end{figure}
 
-\subsection*{Discussion} 
+To answer this research question, two types of correlations metrics were calculated; Pearson's correlation coefficient, for linear dependency; and Spearman's rank correlation coefficient, for monotonic relationship between the variables.
+Both of these metrics are categorized depending on the magnitude and sign of their values, ranging from \(-1\) to \(1\) and stating a strong correlation for magnitudes closer to \(1\), a direct relation for positive values and an inverse relation for negative values.
+
+The values obtained for each metric follow a repetitive behaviour for each algorithm:
+\begin{itemize}
+  \item the Pearson's correlation coefficient values ranged between \(0.09\) and \(0.19\), meaning no linear correlation between the variables OLR and \(\hat{A}_{12}\) effect size
+  \item the Spearman's rank correlation coefficient values ranged between \(0.01\) and \(0.19\), meaning no monotonic correlation between the variables OLR and \(\hat{A}_{12}\) effect size
+\end{itemize}
+
+implying, that there is no correlation between the aforementioned variables, when using the GBOS extension in a general Python module scenario.
+
+\begin{summary}{RQ2: Correlation of coverage improvement and OLR}
+  The usage of the presented GBOS extension \textbf{does not} induce a correlated improvement in branch coverage results, when applied to Python modules that have a higher OLR metric.
+\end{summary}
+
+\subsection*{Discussion}
+
+The obtained answer for the second research question develops in the same direction as the discussion of the first research question, implying that the majority of Python modules in the testing set do not include type information and the necessity for complex object inputs.
+
+
+\section{Further Analysis}\label{sec:further}
 
 
 \chapter{Related Work}\label{chap:related_work}
