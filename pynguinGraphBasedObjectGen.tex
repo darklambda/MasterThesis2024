@@ -769,18 +769,23 @@ In the first plot, during the whole search time budget it can be remarked how th
 Contrarily, rather than showing a better performance, the second graph implies that when the best effect sizes where found, both approaches had an almost equal evolution in branch coverage over time, except for a few segments, as it can be seen in the lines for DynaMOSA, MOSA and Whole Test Suite.
 
 In terms of number of runs successfully executed, the nature behind the obtained effect size values could have been influenced by the difference in available runs, which ranged between \(2\) and \(28\).
+%The lower number of runs was mostly obtained when running Pynguin with the extension, existing cases in which this only obtained as few as a single possible run.
+
+% TODO - Probably in MIO
 
 \begin{figure}[htb]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/worstES.jpg}
-  \caption{Branch coverage evolution for those modules that obtained the worst Cohen's D effect size value in each algorithm.}\label{fig:worst}
+  \caption{Branch coverage evolution for the modules that obtained the worst Cohen's D effect size value in each algorithm.}\label{fig:worst}
 \end{figure}
 
 \begin{figure}[htb]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/bestES.jpg}
-  \caption{Branch coverage evolution for those modules that obtained the best Cohen's D effect size value in each algorithm.}\label{fig:best}
+  \caption{Branch coverage evolution for the modules that obtained the best Cohen's D effect size value in each algorithm.}\label{fig:best}
 \end{figure}
+
+\newpage
 
 \section{Research Question 2}
 
@@ -809,11 +814,55 @@ implying, that there is no correlation between the aforementioned variables, whe
 
 \subsection*{Discussion}
 
-The obtained answer for the second research question develops in the same direction as the discussion of the first research question, implying that the majority of Python modules in the testing set do not include type information and the necessity for complex object inputs.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Figures/Results/worstA12.jpg}
+  \caption{Branch coverage evolution for the modules that obtained the worst Vargha-Delaney \(\hat{A}_{12}\) effect size value in each algorithm.}\label{fig:worsta12}
+\end{figure}
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Figures/Results/bestA12.jpg}
+  \caption{Branch coverage evolution for the modules that obtained the best Vargha-Delaney \(\hat{A}_{12}\) effect size value in each algorithm.}\label{fig:besta12}
+\end{figure}
+
+The obtained answer for the second research question develops in the same direction as the discussion of the first research question, stating that the majority of Python modules in the testing set either, do not include type information or the necessity for complex object inputs.
+Following the same procedure as before, Figures~\ref{fig:worsta12}~and~\ref{fig:besta12} show the evolution in coverage results over the time budget, for those modules that obtained the worst \(\hat{A}_{12}\) effect size measure in the second research question.
+Once more, and supported by all the data gathered so far, the results in coverage for this effect size measure prove that both approaches of Pynguin shows in each chosen algorithm, either no statistical difference or a gap so big in the amount of runs between distributions, that the results in effect size bring no conclusive information.
+Examples of this are the plots for DYNAMOSA and MOSA in Figure~\ref{fig:worsta12}, which are instances were the \(\hat{A}_{12}\) is lower than \(0.5\) (meaning better results when using Pynguin without the extension) but the mean final coverage show two scenarios, one where the GBOS extension has a better final result and one where it does not.
+Finally, this could have been influenced once more by the fact that in most of the extreme cases of effect size results (best and worst), Pynguin without GBOS could finish most of its 30 proposed iterations and with the extension it only could finish one or two. 
+
+\newpage
 
 \section{Further Analysis}\label{sec:further}
 
+For a deeper understanding of the modules that reached the endmost effect size results in Figures~\ref{fig:worst},~\ref{fig:best},~\ref{fig:worsta12}~and~\ref{fig:besta12}, a final new developer output variable was added into the code of the GBOS extension, called ``GBOSFlags''.
+This variable is a collection of three boolean values, which start with False as default, and change to True if any of the following conditions are met at any point during the test suite generation,
+\begin{itemize}
+  \item a PDG, or a non-sliced OCG is created without errors
+  \item a test template is generated without exceptions raised
+  \item a test template is added into the algorithm's population.
+\end{itemize}
+With this information, it was possible to understand that in the great majority of aforementioned modules, none of these three values was set to True, fact that further explains the coverage results and base the answers given to the proposed research questions.
+
+The only different case of value for the output variable, was the module ``pkg\_resources.\_vendor.packaging.tags'', whose test template generation process managed to create a valid PDG, but not a valid test template.
+Considering this case, questions arise about the element of the GBOS extension that made the second step fail, which is most likely due to a lack of information in terms of Data Dependency within the built inter procedural PDG.\@
+One example of this information loss can be found in the presented implementation of the Frame execution when generating the DDG, specifically when the MUT has a ``try-except'' or ``with'' clauses inside any of its basic blocks.
+The problem with these logic rules comes, because their implementation is given sometimes (on the 3.10 Python version) with Python instruction that conditionalize the stack frame state on the presence of an Exception, e.g.~\textbf{SETUP\_WITH} and \textbf{SETUP\_FINALLY}.
+With this case present in the OCG generation, it is non-trivial to obtain the use and definition places, and consequently it is not possible to correctly define the reaching definition equations.
+Sometimes, this problem is represented even by a runtime error, when any instruction of the extended OCG that is being executed, tries to do a POP operation on an empty stack frame.  
+
+Regarding once more the example module presented in Figure~\ref{lst:1}, the line plots presented in Figure~\ref{fig:example_cov} show the evolution in branch coverage results over a Search Budget of 600 seconds for four cases of two characteristics each, either using or not the GBOS extension, and either using MIO and MOSA as examples of evolutionary and genetic algorithms.
+In them, it is remarkable how none of the baseline Pynguin approaches could escape the search landscape local optima, which is attributed to the random nature prevalent in both algorithms, together with the limited search time.
+Contrastingly, both GBOS approaches reached the full coverage before spending the whole search time budget, when using ``no\_change\_iteration'' arguments of 100 and 500 for MOSA and MIO respectively.
+These latter experimental instances show a better performance in terms of sooner convergence when using the MIO algorithm, which is explained by the fact that although MIO was configured to generate test templates less often compared to MOSA, previous results showed that the amount of iterations that MIO performs is exponentially greater to other algorithms.
+Moreover, the way MIO is implemented into Pynguin makes the execution of it prioritize the mutation of each iteration's single solution, thing that is strictly necessary in order to reach branch targets after generating a test code template. 
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Figures/Results/exampleCov.jpg}
+  \caption{Coverage evolution while running Pynguin for the example module introduced in Chapter~\ref{chap:introduction}.}\label{fig:example_cov}
+\end{figure}
 
 \chapter{Related Work}\label{chap:related_work}
 
@@ -827,60 +876,11 @@ Before commenting on the different tools, techniques and methods that have a pla
   \item Fuzz testing: a kind of security testing that consists of providing random, unexpected or large amounts of data to a system, to review its way of behaving to it.
 \end{enumerate}
 
-\section{EvoSuite}
+The various approaches that are part of the current state-of-the-art for Automatic Test Generation can be categorized in two main types depending on what are they based on: Large Language Models (LLMs) and Search-Based Algorithms or Static Analysis (SB).
 
-With respect to Unit Test Generation, EvoSuite~\cite{DBLP:conf/qsic/FraserA11} was (and still is) a state-of-the-art test generation tool for Java, pioneer of the usage of a genetic algorithm, so the branch coverage can be optimized as a whole.
-The internal representation of EvoSuite for a test suite is a set of chromosomes \(T\) as a sequence of statements \(t_i\) of length \(l_i\) and either type primitive statement, constructor statement, field statement, or method statement.
-During the chromosome synthesis process, all the information regarding classes, methods and variables of the SUT are gathered via the Java Bytecode and Java Reflection\footnote{https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html}.
-These sequences can be crossovered as a random sequential combination of the two chromosomes, or mutated with the insertion, remotion or change of single statements.
-In terms of the optimization, the fitness function of a test suite $T$ is given by the equation
-\[ \text{fitness}(T) = |M| - |M_T| + \sum_{b_k \in B} d(b_k, T) \]
-where \(M\) is the total of methods to test, \(M_T\) is the number of methods that were actually executed, \(b_k\) is a branch in the branch set \(B\), and \(d(b, T)\) is the branch distance of branch \(b\) over the set \(T\).
-Another limitation to the suites \(T\), are \(N\) as the maximum number of chromosomes (\(T = \{t_1, \dots , t_n\}\)) and \(L\) as maximum length of the chromosomes (\(l_i < L\)).
-For the experiment phase, a single branch approach was created by the authors, in which every branch \(b_t\) is seen as a single coverage goal to be met by the test cases.
-Then, the comparison between the single branch method and the whole suite optimization is done with the generation of test cases for five open source projects, accumulating a total of 1308 classes from which 727 were public.
-After the execution of test cases was complete and statistical tests were applied, it could be stated that the results show EvoSuite has a better branch coverage and creates smaller tests suites than the single objective method.
+\section{LLM-Based}
 
-\section{NxtUnit}
-
-\begin{figure}[bt]
-  \centering
-  \includegraphics[width=.99\textwidth]{Figures/nxtunit2.png}
-  \caption{NxtUnit structure}\label{fig:nxt}
-\end{figure}
-
-Having EvoSuite, Randoop and Pynguin as precedents, in 2023 developers from ByteDance (technology Chinese company) presented NxtUnit~\cite{DBLP:conf/ease/WangMCGSP23}, an automatic randomized test generation tool for the programming language Go.
-Similar to other state-of-the-art tools, the structure of NxtUnit (see Figure~\ref{fig:nxt}) is composed by an initial source code as input, that is translated into Static Single Assignment form as a way to get a graph with call dependencies between functions.
-After this preprocessing, NxtUnit proceeds to synthesize from the call graph a code template that is filled with appropriate randomly generated parameters and ran during the tool's execution.
-All the information for the template synthesis and posterior parameter changes are done thanks to the information provided by Go Reflect\footnote{https://pkg.go.dev/reflect}.
-During the code running phase, NxtUnit focuses in three main tasks: mutation of the parameter inputs at runtime, assertion generation for future regression testing, and test case selection based on code coverage.
-Once the tool comes to a halt, the best test cases are exported into a test suite.
-In the experiment proposed by the authors, NxtUnit was executed on 500 private ByteDance repositories and 13 out of the 100 highly-rated public repositories of Go, both sets that already contain tests.
-The main objective of this setup, was to review the code coverage increase while adding NxtUnit tests to the already existing ones, and it produced an average increase of \(5.51\%\) for the public repositories and \(17.26\%\) for the private ones.
-
-\section{JSEFT}
-
-As an example for automatic test generation in dynamic languages others than Python, JSEFT is presented in 2015 by Mirshokraie et al.~\cite{DBLP:conf/icst/Mirshokraie0P15} as a tool for generating not only unit tests, but also event-driven tests for web applications written in JavaScript.
-The general structure of JSEFT is presented in Figure~\ref{fig:jseft} and is composed of three main steps that process the data given by the HTML Document Object Model (DOM):
-\begin{itemize}
-  \item In (1) the web app is dynamically analysed in order to get all the possible states of the program and, in consequence, construct a state flow graph (SFG)
-  \item Then, in step (2), event sequences are extracted from the SFG for the creation of event-driven tests, which are run in the instrumentalized version of the web app.
-  With these executions, JSEFT tries to discover DOM states and entry and exit state points for the creation of function-level unit tests
-  \item Finally, the third step (3) mutates the web app at code and DOM level, so functional oracles can be created from the difference between the two states of the original and mutated tests versions
-\end{itemize}
-
-\begin{figure}[tb]
-  \centering 
-  \includegraphics[width=.99\textwidth]{Figures/jseft2.png}
-  \caption{JSEFT structure}\label{fig:jseft}
-\end{figure}
-
-For the export of event-driven and function-level tests, the frameworks Selenium\footnote{https://www.selenium.dev} and QUnit\footnote{https://qunitjs.com} are used respectively.
-
-The experiment section of the author's paper, shows the study of JSEFT's usage on 13 JavaScript web applications so the line coverage and usefulness of the assertions at the time of finding regression faults.
-For the specified metrics, the tool got a \(68.4\%\) of line coverage and a \(100\%\) precision in fault detection.
-
-\section{CodaMOSA}
+\subsection{CodaMOSA}
 
 One of the many tools presented in papers that have cited Pynguin in their research is CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, software created by Microsoft developers, has Pynguin as a base and extends its functionality calling OpenAI's Codex\footnote{https://openai.com/blog/openai-codex} API to get template suggestions for test cases that are in a coverage stall, similar to what this thesis works over.
 For the development, the authors used only MOSA as the search algorithm because is the only one that allowed the usage of both line and branch coverage as fitness functions, on the version of Pynguin at the time (0.19.0).
@@ -891,8 +891,7 @@ After that, it deserializes the returned test case from Codex into the internal 
 For the benchmark, modules from 35 projects from the Pynguin paper were filtered so just those that do not fail to produce result and those that do not reach \(100\%\) coverage in less than a minute are experimented over.
 The baselines for the experimental phase were Pynguin with MOSA and CodexOnly, which while being compared to CodaMOSA were statistically compared using the Mann-Whitney U-Test.
 The results showed that CodaMOSA performs significantly better, reaching a higher coverage on 173 more modules compared to MOSA and 279 more modules compared to CodexOnly.
-
-\section{PBT-GPT}
+\subsection{PBT-GPT}
 
 Property-based testing (PBT) is a kind of fuzz testing whose idea is to generate a large amount of random inputs to statistically test a program by checking if the outputs are close to a desired property.
 Within this scope, PBT-GPT~\cite{DBLP:journals/corr/abs-2307-04346} is presented by Vikram et al.\ as an implementation of automatic property-based test generation for Python by means of Large Language Model prompting, through Chat-GPT4.
@@ -909,8 +908,7 @@ These have as context for the prompt, the LLM being an expert in Python, the LLM
 
 For the result evaluation quality, the authors were guided by; generator validity and diversity, that measure either the correct behaviour or diversity of inputs; and property validity, soundness and strength, that measure the encounter of runtime errors, the existence of input/output pairs that violates the property but is valid at the same time, or the ability to check core logic of an API method.
 With these guidelines, the modules/methods under test got measurements close to \(100\%\) in generator validity and property validity, and between \(68\%\) and \(88\%\) for the rest of them, which helps conclude that PBT-GPT is a promising starting point to iterate from.
-
-\section{CodeT}
+\subsection{CodeT}
 
 Following the examples of software artefacts presented by Microsoft developers, in 2022 is published a paper regarding CodeT~\cite{DBLP:journals/corr/abs-2207-10397}, a LLM based code generation tool.
 The main purpose of CodeT is the solution of a programming problem by generating a code snippet, based on a context containing natural language.
@@ -930,8 +928,7 @@ Finally, when all consensus sets \(S_x\) and \(S_y\) are formed from the differe
 As stated before, CodeT centres around code generation rather than test case generations, which makes the research of this paper focus mainly on metrics such as pass1 or pass100 (correct rate of single solutions, or at least one for every hundred).
 Nonetheless, to check the quality of the generated solutions, the authors also covered in their result analysis the code and branch coverage of the snippets generated from the different LLM models.
 Almost all the models obtained an overall average coverage of \(95\%\).
-
-\section{MutAP}
+\subsection{MutAP}
 
 Mutation testing is one software testing technique, that aims to measure the ability of a test to reveal bugs.
 Taking this approach in mind, Dakhel et al.\@ presented in 2023 MutAP~\cite{DBLP:journals/corr/abs-2308-16557}, another LLM based code generation tool that also introduces prompt augmentation for killing mutants in an iterative process before the actual synthesis of test cases.
@@ -952,8 +949,7 @@ following code'', one of the mutant survivors, and a final statement ``Provide a
 
 In the experimental trial of this tool's paper, two LLM models were used, OpenAI's Codex and llama2-chat, to be run together with MutAP over the benchmarks; HumanEval, which consists of 164 human written programming problems; and Refactory, consisting of 1710 buggy submissions from students for 5 assignments of a Python programming course.
 The overall results mainly cover the mutation score obtained by all the possibles methods of MutAP, obtaining numbers between \(89.13\%\) and \(93.57\%\) on the average over both models and both datasets.
-
-\section{MUTester}
+\subsection{MUTester}
 
 MUTester~\cite{DBLP:journals/corr/abs-2307-00404} is an automatic test generation research software focused on the synthesis of test cases for APIs of the many already existing Deep Learning libraries, i.e. Numpy, Scikit-learn, TensorFlow.
 Its structure is presented in Figure~\ref{fig:mutester}, which describes a methodology that solely relies on heuristics regarding the mining of the documentation and knowledge repositories of the APIs in question. 
@@ -980,8 +976,7 @@ Throughout the analysis of MUTester, the API documentation and methods of the fr
 Regarding test coverage, the baselines for the experimentation were Pynguin and a Python implementation of Randoop, which achieved \(34.16\%\) and \(30.87\%\) line coverage in average, versus the results obtained by MUTester, that showed improvements ranging from \(15.72\%\) to \(27\%\).
 A Wilcoxon signed-rank
 statistical test~\cite{Rey2011} was also applied to the results, obtaining a p-value of less than \(0.05\) suggesting that MUTester outperformed both baselines in the stated datasets.
-
-\section{Differential Prompting}
+\subsection{Differential Prompting}
 
 Detection of software failures can be acknowledged as a benefit that comes from practising software testing.
 Following this direction, Li et al.~\cite{li2023nuances} studied the implications of calling ChatGPT with prompts that bypass the insensibility of it to code nuances, so that fail inducing test cases can be generated.
@@ -999,15 +994,78 @@ Differential Prompting is the name of the proposed technique, and it divides the
 With these steps, Differential Prompting was put to the test against Pynguin and an out-of-the-shelf ChatGPT usage to evaluate the benchmarks QuixBugs\footnote{https://github.com/jkoppel/QuixBugs} and Codeforces\footnote{https://codeforces.com} in terms of bug presence.
 In these, the success rate of Differential Prompting was \(75\%\) and \(66.7\%\) respectively, in some cases 10 times better than the baselines.
 
-\section{Other applications of automatic test generation}
+\section{SB-Based}
 
-Rather than only focusing on the application of software testing as a way to get either a good coverage metric or to find defects throughout the development of software, it is possible to make good usage of test case synthesis for other objectives.
+\subsection{EvoSuite}
 
-A first example is Neatest~\cite{DBLP:conf/kbse/Feldmeier022}, the test generator presented by Feldemeier et al.\@ which is based in neuroevolution and the NEAT algorithm~\cite{stanley2002evolving} for the testing of non-trivial games made on Scratch\footnote{https://scratch.mit.edu}, the educational programming language.
+With respect to Unit Test Generation, EvoSuite~\cite{DBLP:conf/qsic/FraserA11} was (and still is) a state-of-the-art test generation tool for Java, pioneer of the usage of a genetic algorithm, so the branch coverage can be optimized as a whole.
+The internal representation of EvoSuite for a test suite is a set of chromosomes \(T\) as a sequence of statements \(t_i\) of length \(l_i\) and either type primitive statement, constructor statement, field statement, or method statement.
+During the chromosome synthesis process, all the information regarding classes, methods and variables of the SUT are gathered via the Java Bytecode and Java Reflection\footnote{https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html}.
+These sequences can be crossovered as a random sequential combination of the two chromosomes, or mutated with the insertion, remotion or change of single statements.
+In terms of the optimization, the fitness function of a test suite $T$ is given by the equation
+\[ \text{fitness}(T) = |M| - |M_T| + \sum_{b_k \in B} d(b_k, T) \]
+where \(M\) is the total of methods to test, \(M_T\) is the number of methods that were actually executed, \(b_k\) is a branch in the branch set \(B\), and \(d(b, T)\) is the branch distance of branch \(b\) over the set \(T\).
+Another limitation to the suites \(T\), are \(N\) as the maximum number of chromosomes (\(T = \{t_1, \dots , t_n\}\)) and \(L\) as maximum length of the chromosomes (\(l_i < L\)).
+For the experiment phase, a single branch approach was created by the authors, in which every branch \(b_t\) is seen as a single coverage goal to be met by the test cases.
+Then, the comparison between the single branch method and the whole suite optimization is done with the generation of test cases for five open source projects, accumulating a total of 1308 classes from which 727 were public.
+After the execution of test cases was complete and statistical tests were applied, it could be stated that the results show EvoSuite has a better branch coverage and creates smaller tests suites than the single objective method.
+\subsection{NxtUnit}
 
-Also, PyLC~\cite{DBLP:conf/sac/SalariEAS23} was presented in 2023 by Ebrahimi et al.\@ as a way of translating Programmable Logic Controller (PLC) representation languages (in graphical or textual form) into Python, to then generate automatic test cases using Pynguin and check the validity of the original systems.
+\begin{figure}[bt]
+  \centering
+  \includegraphics[width=.99\textwidth]{Figures/nxtunit2.png}
+  \caption{NxtUnit structure}\label{fig:nxt}
+\end{figure}
+
+Having EvoSuite, Randoop and Pynguin as precedents, in 2023 developers from ByteDance (technology Chinese company) presented NxtUnit~\cite{DBLP:conf/ease/WangMCGSP23}, an automatic randomized test generation tool for the programming language Go.
+Similar to other state-of-the-art tools, the structure of NxtUnit (see Figure~\ref{fig:nxt}) is composed by an initial source code as input, that is translated into Static Single Assignment form as a way to get a graph with call dependencies between functions.
+After this preprocessing, NxtUnit proceeds to synthesize from the call graph a code template that is filled with appropriate randomly generated parameters and ran during the tool's execution.
+All the information for the template synthesis and posterior parameter changes are done thanks to the information provided by Go Reflect\footnote{https://pkg.go.dev/reflect}.
+During the code running phase, NxtUnit focuses in three main tasks: mutation of the parameter inputs at runtime, assertion generation for future regression testing, and test case selection based on code coverage.
+Once the tool comes to a halt, the best test cases are exported into a test suite.
+In the experiment proposed by the authors, NxtUnit was executed on 500 private ByteDance repositories and 13 out of the 100 highly-rated public repositories of Go, both sets that already contain tests.
+The main objective of this setup, was to review the code coverage increase while adding NxtUnit tests to the already existing ones, and it produced an average increase of \(5.51\%\) for the public repositories and \(17.26\%\) for the private ones.
+\subsection{JSEFT}
+
+As an example for automatic test generation in dynamic languages others than Python, JSEFT is presented in 2015 by Mirshokraie et al.~\cite{DBLP:conf/icst/Mirshokraie0P15} as a tool for generating not only unit tests, but also event-driven tests for web applications written in JavaScript.
+The general structure of JSEFT is presented in Figure~\ref{fig:jseft} and is composed of three main steps that process the data given by the HTML Document Object Model (DOM):
+\begin{itemize}
+  \item In (1) the web app is dynamically analysed in order to get all the possible states of the program and, in consequence, construct a state flow graph (SFG)
+  \item Then, in step (2), event sequences are extracted from the SFG for the creation of event-driven tests, which are run in the instrumentalized version of the web app.
+  With these executions, JSEFT tries to discover DOM states and entry and exit state points for the creation of function-level unit tests
+  \item Finally, the third step (3) mutates the web app at code and DOM level, so functional oracles can be created from the difference between the two states of the original and mutated tests versions
+\end{itemize}
+
+\begin{figure}[tb]
+  \centering 
+  \includegraphics[width=.99\textwidth]{Figures/jseft2.png}
+  \caption{JSEFT structure}\label{fig:jseft}
+\end{figure}
+
+For the export of event-driven and function-level tests, the frameworks Selenium\footnote{https://www.selenium.dev} and QUnit\footnote{https://qunitjs.com} are used respectively.
+
+The experiment section of the author's paper, shows the study of JSEFT's usage on 13 JavaScript web applications so the line coverage and usefulness of the assertions at the time of finding regression faults.
+For the specified metrics, the tool got a \(68.4\%\) of line coverage and a \(100\%\) precision in fault detection.
 
 \chapter{Conclusions}~\label{chap:conclusions}
+
+Comments on
+\begin{itemize}
+  \item Current state of Python as how its developers use it.
+  \item Effectiveness of the GBOS extension in this current state.
+  \item Summary of the research questions.
+  \item Other questions? (ask Stephan).
+  \item Comments on the future of Pynguin and Python, considering the state of the art and the study's results.
+\end{itemize}
+
+\section{Future Work}
+
+Comments on
+\begin{itemize}
+  \item Improvement of the static analysis of the Data Dependencies, for an improved OCG construction.
+  \item Improvements in terms of optimization over the whole GBOS process.
+  \item Link some comment about the state of the art and the usage of LLMs.
+\end{itemize}
 
 \backmatter{}
 
