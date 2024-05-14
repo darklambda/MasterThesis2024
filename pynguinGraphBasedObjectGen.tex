@@ -38,7 +38,7 @@
 \newcommand{\field}[1]{\texttt{#1}}
 
 \author{Gonzalo A. Oberreuter Álvarez}
-\title{Effects of the Implementation of a Graph-Based Object Synthesis Heuristic on Pynguin}
+\title{Effects of the Implementation of a Graph-Based Object Synthesis Heuristic \\ on Pynguin}
 \degreeprogramme{Computer Science}
 \matrnumber{110082}
 \supervisor{Prof.\,Dr.~Gordon Fraser}
@@ -209,7 +209,7 @@ Pynguin also offers post generation processes, such as the deletion of redundant
 \section{MOSA}
 
 The Many-Objective Sorting Algorithm~\cite{DBLP:conf/icst/PanichellaKT15} (MOSA), is an improvement to the classic Multi-objective Optimization algorithms (MOA) such as the Non-dominated Sorting Genetic Algorithm II (NSGA-II) or the Strength Pareto Evolutionary Algorithm (SPEA2), and applied taking into account some specific draw backs of the branch coverage problem in test generation, such as the great computational effort needed by these classic algorithms when working with a number of objectives bigger than an order of magnitude of 10.
-In the same direction, another challenge that MOSA was able to overcome, is the selection and persistence over a non-dominated sort of those tests that have the best branch distance regarding non-covered goals.
+Another challenge that MOSA was able to overcome, is the selection and persistence over a non-dominated sort of those tests that have the best branch distance regarding non-covered goals.
 
 Algorithm~\ref{alg:MOSApseudo} shows an overview of MOSA's pseudocode, which follows a similar structure compared to NSGA-II's behaviour.
 Both start with the generation of an initial random population, but the presence of a test archive to store the current best solutions per target is the first difference (lines 1 and 3).
@@ -622,7 +622,7 @@ About the new parameters introduced to Pynguin from the GBOS heuristic, there is
 \chapter{Evaluation}~\label{chap:evaluation}
 
 The previous work on the implemented GBOS extension has shown that in a general case, using this heuristic improved significantly the coverage results of automatically generated tests of Java classes.
-In the same direction, it is relevant to study the behaviour of Pynguin's GBOS implementation in terms of coverage, while analysing the programming style of the Python modules of the testing set.
+In the same way, it is relevant to study the behaviour of Pynguin's GBOS implementation in terms of coverage, while analysing the programming style of the Python modules of the testing set.
 Therefore, the following research questions are formulated:
 
 \begin{resq}
@@ -659,7 +659,7 @@ Here, only those modules that have a final coverage that is different to their I
 Regarding the execution parameters of Pynguin, 8 main configurations are used to cover the 4 extended algorithms, and ether the usage or not usage of the GBOS extension itself.
 The configurations that use the WHOLE\_SUITE argument, also needed to set the parameter ``--use\_archive'' to true, as the extension uses the archive of each \classname{GenerationAlgorithm} to obtain the branch goals.
 From the newly introduced parameters, only ``--no\_change\_iterations'' was tuned in a hand-made manner while having the first test runs as reference.
-In these (and similar to the results finally used for the analysis), the runs using the MIO algorithm reached mean algorithm iteration values close to an order of magnitude between \(10^6\) and \(10^5\), contrary to the rest of algorithms, which reached values closer to an order of magnitude of \(10^4\).
+In these (and similar to the results finally used for the analysis), the runs using the MIO algorithm reached mean algorithm iteration values close to an order of magnitude between \(10^5\) and \(10^6\), contrary to the rest of algorithms, which reached values closer to an order of magnitude of \(10^4\).
 Because of this, the mentioned parameter was left at the default value of \(1000\) for MIO, and lowered to \(300\) for the other algorithms.
 The maximum execution time was set to 600 seconds, and the remaining parameters were set to Pynguin's default values, as no further Parameter Tuning was applied.
 
@@ -677,7 +677,7 @@ An example of this is a variation of the method \callable[]{checkRules} from Fig
 The plausible presence of bugs in the multiple stages of the GBOS phase also threatens the internal validity, which is partially mitigated by the if-clauses that stop the whole process if one of the steps returns a None value (e.g.\ while constructing the PDG, OCG or the test template).
 
 With respect to the generalization of the benefits obtained from the presented extension, the \textbf{external validity} is threatened by the necessity of both complex object inputs and full knowledge of the variables' type information in order to obtain any improvement in terms of branch coverage.
-This conditions cannot be extended to the great majority of Python modules, and in the same direction, the usage of the extension cannot be decided through Parameter Tuning, but only via the interpretation of each developer of what the presence of a complex object input in a method or function means.
+This conditions cannot be extended to the great majority of Python modules, and similarly, the usage of the extension cannot be decided through Parameter Tuning, but only via the interpretation of each developer of what the presence of a complex object input in a method or function means.
 
 \newpage
 
@@ -826,7 +826,7 @@ implying, that there is no correlation between the aforementioned variables, whe
   \caption{Branch coverage evolution for the modules that obtained the best Vargha-Delaney \(\hat{A}_{12}\) effect size value in each algorithm.}\label{fig:besta12}
 \end{figure}
 
-The obtained answer for the second research question develops in the same direction as the discussion of the first research question, stating that the majority of Python modules in the testing set either, do not include type information or the necessity for complex object inputs.
+The obtained answer for the second research question develops the same ideas as the discussion of the first research question, stating that the majority of Python modules in the testing set either, do not include type information or the necessity for complex object inputs.
 Following the same procedure as before, Figures~\ref{fig:worsta12}~and~\ref{fig:besta12} show the evolution in coverage results over the time budget, for those modules that obtained the worst \(\hat{A}_{12}\) effect size measure in the second research question.
 Once more, and supported by all the data gathered so far, the results in coverage for this effect size measure prove that both approaches of Pynguin shows in each chosen algorithm, either no statistical difference or a gap so big in the amount of runs between distributions, that the results in effect size bring no conclusive information.
 Examples of this are the plots for DYNAMOSA and MOSA in Figure~\ref{fig:worsta12}, which are instances were the \(\hat{A}_{12}\) is lower than \(0.5\) (meaning better results when using Pynguin without the extension) but the mean final coverage show two scenarios, one where the GBOS extension has a better final result and one where it does not.
@@ -912,7 +912,7 @@ With these guidelines, the modules/methods under test got measurements close to 
 
 Following the examples of software artefacts presented by Microsoft developers, in 2022 is published a paper regarding CodeT~\cite{DBLP:journals/corr/abs-2207-10397}, a LLM based code generation tool.
 The main purpose of CodeT is the solution of a programming problem by generating a code snippet, based on a context containing natural language.
-Regardless of this not being in the same direction of the previous software examples, test generation using the same LLM is part of the whole process, although all of these just have the form of a single assertion, together with a set of inputs and the desired output.
+Regardless of this not following the same pattern as previous software examples, test generation using the same LLM is part of the whole process, although all of these just have the form of a single assertion, together with a set of inputs and the desired output.
 
 \begin{figure}[tb]
   \centering 
@@ -978,8 +978,7 @@ A Wilcoxon signed-rank
 statistical test~\cite{Rey2011} was also applied to the results, obtaining a p-value of less than \(0.05\) suggesting that MUTester outperformed both baselines in the stated datasets.
 \subsection{Differential Prompting}
 
-Detection of software failures can be acknowledged as a benefit that comes from practising software testing.
-Following this direction, Li et al.~\cite{li2023nuances} studied the implications of calling ChatGPT with prompts that bypass the insensibility of it to code nuances, so that fail inducing test cases can be generated.
+Detection of software failures can be acknowledged as a benefit that comes from practising software testing, and seeking this idea, Li et al.~\cite{li2023nuances} studied the implications of calling ChatGPT with prompts that bypass the insensibility of it to code nuances, so that fail inducing test cases can be generated.
 Differential Prompting is the name of the proposed technique, and it divides the failure-inducing generation task in three steps:
 
 \begin{itemize}
