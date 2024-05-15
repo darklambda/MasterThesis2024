@@ -72,32 +72,23 @@
   Some acknowledgements. 
   TBD.\@
 \end{acknowledgements}
+\fi
 
 \tableofcontents
 
-\fi
+
 
 \mainmatter{}
 
 \chapter{Introduction}\label{chap:introduction}
 
-Software Testing is one of the key aspects of Software Developing while trying to ensure quality over a final product, regardless of the context in which the developing process is made.
+Software testing is one of the key aspects of software development while trying to ensure quality over a final product, regardless of the context in which the developing process is made.
 This quality can be achieved by the insight provided by the result of the tests, and even because of the defects that can be encountered during the testing phase.
-Nonetheless, even though coding different kinds of tests is a good practice, it is often ignored by new or inexpert developers, who also make this mistake halfway by not getting a complete introspection of their own code or, in other words, not getting a complete kind of test coverage.
+Nonetheless, even though coding different kinds of tests is a good practice, it is often ignored by new or inexperienced developers, who also make this mistake halfway by not getting a complete introspection of their own code or, in other words, not getting a complete kind of test coverage.
 As of 2017, a study by Trauch and Grabowski~\cite{DBLP:conf/icst/TrautschG17} presented that, over more than 4 million tests, most of them were not correctly categorized (as unit test or not) and approximately half of them use mocking as a testing technique, which tells some aspects about the developing community of the projects in review. 
 With this general idea into mind, is that researchers in the last decade   have put effort into autonomous test generation, the concept that implies the usage of different methods or techniques in order to identify patterns and generate test sets with little to zero external intervention.
-In 2015, empirical proof was found who showed the following statements about the usage of automated Java unit test generation:
-\begin{itemize}
-  \item It increases the general structural coverage
-  \item It does not lead to the detection of more faults
-  \item It affects negatively the ability to capture intended class behaviour
-\end{itemize}
-according to Fraser et al.~\cite{DBLP:journals/tosem/FraserSMAP15}
+In 2015, empirical proof was found by Fraser et al.~\cite{DBLP:journals/tosem/FraserSMAP15}, who showed that the usage of automated Java unit test generation increases the general structural coverage, does not lead to the detection of more faults and affects negatively the ability to capture intended class behaviour.
 The results of this study state fundamentally that this behaviour  comes from the early stages of the tool in question, and proposes to put more work into the readability of generated tests and  the process of test making itself.
-
-Although automatic test generation is achievable with no major problem for statically typed languages like Java~\cite{DBLP:journals/tse/FraserA13} or C, dynamically typed languages such as Python, JavaScript or Lua enforce problems at the time of generating correct arguments for the execution of methods or functions under test.
-The major concerns about the argument generation, is that the lack of type information produces ambiguity for the heuristics of the tool at hand at the moment of synthesizing non-primitive types.
-Also, the complexity of these class instances in terms of their internal field values might produce runtime errors, which imply a local optima in the search landscape of the test representation~\cite{DBLP:conf/sigsoft/0001O00D21} and therefore an upper bound for coverage.
 
 Within the scope of Python testing, Pynguin~\cite{DBLP:conf/icse/LukasczykF22} is command line interface for the generation of unit tests that applies various algorithms for input generation, such as DynaMOSA~\cite{DBLP:journals/tse/PanichellaKT18}, MIO~\cite{DBLP:conf/ssbse/Arcuri17}, MOSA~\cite{DBLP:conf/icst/PanichellaKT15}, Whole Test Suite~\cite{DBLP:journals/tse/FraserA13}, among others.
 
@@ -106,66 +97,122 @@ These recent new extensions of Pynguin and the latter aforementioned problem at 
 
 The original Pynguin research paper~\cite{DBLP:conf/icse/LukasczykF22} stated that after the test generation of 118 Python modules, the average branch coverage over all algorithms was $66.8\%$, which leads to think that improvement is possible.
 
-The current Master's thesis proposes an addition to the original structure of Pynguin~(see~Figure~\ref{fig:pyn}), specifically to the \classname{GenerationAlgorithm} abstract class, by developing a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} (GBOS from now on) for the static analysis of Python at bytecode level in order to generate suitable object inputs, diminish the branch coverage gap, and empirically study the effect of the presence of type information in this same generation heuristic.
+Although automatic test generation is achievable while having type information available for statically typed languages like Java~\cite{DBLP:journals/tse/FraserA13} or C, dynamically typed languages such as Python, JavaScript or Lua enforce further problems at the time of generating correct arguments for the execution of methods or functions under test.
+The major concerns about the argument generation, is that the lack of type information produces ambiguity for the heuristics of the tool at hand at the moment of synthesizing non-primitive types.
+Also, the complexity of these class instances in terms of their internal field values might produce runtime errors, which imply a local optima in the search landscape of the test representation~\cite{DBLP:conf/sigsoft/0001O00D21} and therefore an upper bound for coverage.
+This latter idea, brings a recurrent problem in the automatic test generation for languages that include any kind of Object-Oriented Programming, which is the reaching of branches that need an object instance as input in a specific variable-state.
 
 \begin{figure}
-    \inputminted[linenos]{python}{Figures/example.py}
-    \caption{Module example.py\label{lst:1}}
+  \inputminted[linenos]{python}{Figures/example.py}
+  \caption{Module example.py\label{lst:1}}
 \end{figure}
 
 \begin{figure}
-  \inputminted[linenos]{python}{Figures/dependencies.py}
-  \caption{Dependency module of example.py\label{lst:2}}
+\inputminted[linenos]{python}{Figures/dependencies.py}
+\caption{Dependency module of example.py\label{lst:2}}
 \end{figure}
 
-As an example, Listings~\ref{lst:1}~and~\ref{lst:2} represent a MUT and its dependency module, respectively, in which lines 8, 10 and 12 of the MUT are the targets of the branch coverage problem.
+\begin{figure}
+  \inputminted[linenos]{python}{Figures/test1.py}
+  \caption{Test suite generated by Pynguin for module example.py\label{lst:3}}
+\end{figure}
+
+As an example, Listings~\ref{lst:1}~and~\ref{lst:2} represent a Module Under Test (MUT) and its dependency module, respectively, in which lines 8, 10 and 12 of the MUT are the targets of the branch coverage problem.
 Even though the test suite generated by Pynguin (see Listing~\ref{lst:3}) gets to a branch coverage of \(37.5\%\) (using DynaMOSA, the seed 1998 and 100 seconds as stopping condition), it can be inferred that this result comes from \verb|test_case_1()|, that executes one of the first two branches in the MUT and checks if the variables \verb|actor| and \verb|target| are actual \verb|Player| objects.
 This behaviour prevents Pynguin from escaping a local optima for the branch coverage of line 12.
-At this point, the idea of using a graph for the synthesis of objects is to get Pynguin to generate a \verb|GameState| object with the necessary \verb|Players| in the \verb|players| list, and an \verb|Action| object with correct attributes, so a hypothetical test could reach the third branch in the MUT, even if it is with a false guard.
-  
-\begin{figure}
-    \inputminted[linenos]{python}{Figures/test1.py}
-    \caption{Test suite generated by Pynguin for module example.py\label{lst:3}}
-\end{figure}
 
-The Graph-Based heuristic proposed by Lin et al.~\cite{DBLP:conf/sigsoft/0001O00D21} generates an Object Construction Graph (OCG) from a previous code slicing, performed from the program dependency graph and a specific target branch as criteria.
-This branch must be selected from those who have not reached their full coverage, or are ``non-trivial'', and the depth of the interprocedural dependency should be set as an arbitrary level $t_{\text{dep}}$.
-Then, this OCG is used to generate a code template that should be directly into the test code representation of Pynguin, for it to be then evolved or modified by one of the available Search-Based algorithms.
+The current Master's thesis proposes an addition to the original structure of Pynguin, specifically to the \classname{GenerationAlgorithm} abstract class, by developing a Graph-Based Object Synthesis approach~\cite{DBLP:conf/sigsoft/0001O00D21} (GBOS from now on) for the static analysis of Python at bytecode level in order to generate suitable object inputs, diminish the branch coverage gap, and empirically study the effect of the presence of type information in this same generation heuristic.
+
+Coming back at Listing~\ref{lst:1}, the idea of using a graph for the synthesis of objects is to get Pynguin to generate a \verb|GameState| object with the necessary \verb|Players| in the \verb|players| list, and an \verb|Action| object with correct attributes, so a hypothetical test could reach the third branch in the MUT, even if it is with a false guard.
+
+The Graph Based heuristic proposed by Lin et al.~\cite{DBLP:conf/sigsoft/0001O00D21} firstly generates an Object Construction Graph (OCG), which is a sub-graph of a previously generated Program Dependency Graph (PDG).
+Then, this OCG is used to generate a code template that should be translated directly into the test code representation of Pynguin, for it to be then evolved or modified by one of the available Search-Based algorithms.
 Pynguin, similarly to other Search-Based test generating tools, represents its test cases as a sequence of implementations of a super class \classname{Statement} that can be later transformed into an Abstract Syntax Tree (AST) and an actual block of Python code.
-This previous idea was completely implemented in and for Java, which means that part of the work to be done is to ideate a new Python representations of the OCG.\@
-Listing~\ref{lst:4} shows the code of a statement sequence template for the testing of the example module that still gets a run time error in line 18.
-However, this template allows Pynguin to get out of the local optima, if right values are modified in the correct variables.
+At its time, the GBOS heuristic was completely implemented in and for Java, which means that part of the work done was to ideate a Python representations of the OCG.\@
+Listing~\ref{lst:4} shows the code of a hypothetical statement sequence template for the testing of the example module, that still gets a run time error in line 18.
+However, this template allows Pynguin to get out of the local optima thought mutations, if right values are modified in the correct variables.
 
 \begin{figure}
   \inputminted[linenos]{python}{Figures/template.py}
   \caption{Potential test template obtained through the use of an OCG\label{lst:4}}
 \end{figure}
 
-A type information gathering mechanism (e.g.~the analysis of every method or function's AST) is applied throughout the study in order to review the modules in the testing set of the experimental setup on how the general type information of a Python module affects the ability of the GBOS approach to generate correct object inputs templates.
+A type information gathering mechanism (e.g.~the analysis of every method or function's AST) is applied throughout the study in order to review the modules in the testing set of the experimental setup on how the general type information of a Python module correlates with the ability of the GBOS approach to generate correct object inputs templates and its results.
 The reason for this is, as stated before, Python being a dynamically typed language and not requiring the type of variables in the script in order to be executed.
 To illustrate this, if line 4 in Listing~\ref{lst:1} were to be replaced to \mint{python}|def checkRules(self, action, state) -> bool:| it would make Pynguin not have any information about the type of the parameters, and generate a test suite similar to the one in Listing\ref{lst:5}.
 The behaviour that allows Pynguin to generate the previous suite imply that the current type system implemented as part of it does not work completely well when trying to infer object types.
+Therefore, this idea tries to measure the coverage result effect of the variable amount of type information available.
 
 \begin{figure}
   \inputminted[linenos]{python}{Figures/test2.py}
   \caption{Test suite generated by Pynguin for a variation of module example.py\label{lst:5}}
 \end{figure}
 
-After the implementation part was done, a study of the extension was made through the selection of arbitrary sets of Python modules, being these a combination of the ones used for various studies done to Pynguin's updates over time, which have a certain overall ratio of explicit type annotations for the object inputs of callables.
-The final purpose of the thesis is to analyse the coverage results between Pynguin and the proposed extension over a generalization of Python modules, and compare it to the ones obtained between EvoSuite and EvoObj over the SF100 benchmark.
+After the implementation part was done, a study of the extension was made through the selection of arbitrary sets of Python modules, being these a combination of the ones used for various studies done to Pynguin's updates over time.
 
-The rest of the document is structured in the following way: Chapter~\ref{chap:background} gives a brief explanation of Pynguin and its current state, the different available search algorithms that take part in the experimental phase and the used GBOS heuristic; Chapter~\ref{chap:implementation} contains all relevant information regarding the Pynguin implementation of the GBOS heuristic; Chapter~\ref{chap:evaluation} presents the research questions, the experimental setup and the obtained results, while answering to the formulated research questions and stating the threats to validity of this thesis; Chapter~\ref{chap:related_work} summarizes the current alternatives for GBOS regarding the generation of complex object inputs in different languages; and Chapter~\ref{chap:conclusions} gathers the main ideas from the analysis of the results and proposes further ones as future work.
+As a summary, the main contributions of this study are
+
+\begin{itemize}
+  \item An implementation of the GBOS heuristic described by Lin et al.~\cite{DBLP:conf/sigsoft/0001O00D21} as an extension to the automatic test generation tool for Python, Pynguin.
+  \item An empirical analysis over the effects of the usage of the GBOS heuristic, when run on a set of Python modules that aim to generalize the current state of publicly available modules.
+  \item The discussion about the different implications that come when using the GBOS extension, and the possible future improvements to it.
+\end{itemize}
+
+The Pynguin extension can be found, together with the example module presented in the current section, in the same GitLab repository of Pynguin, under the branch named ``GBOS''.
 
 \chapter{Background}\label{chap:background}
 
+\section{Automatic Test Generation}
+
+\newpage
+
+\section{Program Slicing}\label{sec:slicing}
+
+While being part of the studied heuristic, program slicing is the technique of obtaining a subset of program statements according to a point of interest inside the program at hand.
+Within the scope of the GBOS heuristic, the type of slicing that bring the most interest is static slicing, which is done merely with the information that can be obtained statically from a program.
+Although slicing is a quite versatile tool, it is mostly used and related to the Program Dependence Graph (PDG), structure that represents all dependencies between statements or blocks in a program.
+
+A Control Flow Graph (CFG), is the first step to the gathering of data flow inside a program, as it defines the explicit jumps between statements.
+It can be defined as \(\text{CFG} = \langle V_{\text{CFG}}, E_{\text{CFG}} \rangle\) where every node represents an abstraction of statements or basic blocks and every directed edge, a path of execution.
+
+The Control Dependence Graph (CDG) is the second relevant structure working as a requisite for slicing.
+Before defining the elements of a CDG, it is necessary to define the concepts
+\begin{itemize}
+  \item \textbf{Dominator}: a statement \(v_1\) dominates another statement \(v_2\), if every execution path to \(v_2\) in the CFG goes through \(v_1\).
+  \item \textbf{Post-Dominator}: a statement \(v_1\) post-dominates another statement \(v_2\), if every execution path from \(v_2\) to an exit node in the CFG goes through \(v_1\).
+\end{itemize}
+Then, a \(\text{CDG} = \langle V_{\text{CDG}}, E_{\text{CDG}} \rangle\) is a graph where \(V_{\text{CDG}} = V_{\text{CFG}}\), and for every pair \(v_1, v_2 \in V_{\text{CDG}}\), there is a directed edge \((v_1, v_2)\) if and only if \(v_2\) is not a post-dominator of \(v_1\) and there is a path in the \(CFG\) between \(v_1\) and \(v_2\) whose nodes are not post-dominated by \(v_2\).
+This edge represents a control dependency between both statement blocks.
+
+Similarly, the data dependencies of a program can be represented with a Data Dependence Graph \(\text{DDG} = \langle V_{\text{DDG}}, E_{\text{DDG}} \rangle\), where \(V_{\text{DDG}} = V_{\text{CFG}}\) and for every pair \(v_1, v_2 \in V_{\text{DDG}}\), there is a directed edge \((v_1, v_2)\) if and only if there is a variable \(X_{v_1}\) defined in \(v_1\) and used in \(v_2\), that is part of the reaching definitions of \(v_2\).
+
+Reaching definitions~\cite{DBLP:books/aw/AhoSU86} is a data-flow schema in the form of a fixed point algorithm for the recognition of any variable definitions that always reach in or out of a basic block in a program.
+For a node \(n \in V_{\text{CFG}}\), representing a basic block in the CFG, \callable[n]{Defines} being the set of variables \(x_n\) defined in \(n\) and \callable[n]{Pre} the predecessor nodes, the following equations set the reaching definitions of node \(n\)
+
+\begin{align*}
+  \text{\textbf{gen}}(n) &:= \text{\callable[n]{Defines}} \\
+  \text{\textbf{kill}}(n) &:= \bigcup_{v \in V_{\text{CFG}}} x_v, \forall x \in \text{\callable[n]{Defines}} \\
+  \text{\textbf{ReachIN}}(n) &:= \bigcup_{p \in \text{\callable[n]{Pre}}} \text{\textbf{ReachOUT}}(p) \\
+  \text{\textbf{ReachOUT}}(n) &:= \text{\textbf{gen}}(n) \cup (\text{\textbf{ReachIN}}(n) \setminus \text{\textbf{kill}}(n))\\
+\end{align*}
+
+Having the two necessary representations of both a CDG and a DDG, a formal outline of a PDG is the tuple \(\langle V_{\text{PDG}}, E_{\text{PDG}} \rangle\), with \(\langle V_{\text{PDG}} = \langle V_{\text{CFG}}\) and \(E_{\text{PDG}} = E_{\text{CDG}} \cup E_{\text{DDG}}\).
+
+There are many types of program slicing~\cite{DBLP:journals/csur/Silva12}, but the most significant ones are backward slicing and forward slicing.
+As any other kind, these techniques are done using one statement as slicing criterion and may represent the statement that influence or are influenced inside the sliced program, respectively.
+To do them, in both cases one must start a graph traversal from the slicing criterion, and look for either predecessor nodes (in backward slice) or successor nodes (in forward slice).
+A program slicing is usually bounded by the entry and exit nodes of a PDG, but custom stopping conditions can always be applied.
+The final slicing is obtained by removing any node that was not visited throughout the program slicing.
+
+% TODO - add example figure of forward and backward slicing
+
+\newpage
 \section{Pynguin}
 
 The \textbf{PY}tho\textbf{N} \textbf{G}eneral \textbf{U}n\textbf{I}t test ge\textbf{N}erator (Pynguin) is a Command Line Interface software intended for the automatic generation of unit tests for Python modules.
 Its way of generating these Unit tests, is by using a different selection of search-based algorithms oriented to the test generation task, taken straightforward from the literature and implemented according to the internal representation in an Object-Oriented paradigm.
-% TODO - Mention the assertion generation
-Throughout the years after its release, Pynguin has had many updates\footnote{https://www.pynguin.eu/blog/} that have improved its test generation performance and outputs, from which are notable: the addition of line and checked coverage~\cite{DBLP:conf/icst/SchulerZ11}, to the default branch coverage; the implementation of a native type system and the integration with Type4Py~\cite{DBLP:conf/icse/MirLPG22} for their usage in the correct type setting while generating variable statements; and the extended analysis of mutation's effects on tests for the correct generation of assertions.
 
-As mentioned before, the main core of Pynguin's test representation is the abstract class \classname{Statement}, and its subsequent wrapper classes \classname{TestCase}, containing a list of \classname{Statement} instances, and \classname{TestCaseChromosome}, containing a \classname{TestCase}.
+As mentioned previously, the main core of Pynguin's test representation is the abstract class \classname{Statement}, and its subsequent wrapper classes \classname{TestCase}, containing a list of \classname{Statement} instances, and \classname{TestCaseChromosome}, containing a \classname{TestCase}.
 In the prior one, the next child classes available are \classname{AssignmentStatement}, a direct assignment of any kind of reference to a variable (e.g.~foo.bar = var\_1); and \classname{VariableCreatingStatement}, representing anything that can be assigned to a variable such as primitive types, collection types, fields, or any type of call (e.g.~int\_1~=~1, list\_1~=~\callable{list}, foo~=~Foo\((\text{int\_1,~list\_1})\)).
 The following hierarchy of these two can be represented by Figure~\ref{fig:hierarchy}.
 
@@ -180,59 +227,45 @@ One class that assures Pynguin's easiness at the time of expanding it, is the ab
 
 In the context of evolutionary and genetic algorithms, the \classname{Statement} class has an abstract method called \callable{mutate}, which depending on the instance's final class, mutates either the primitive value, or the references that are encapsulated in it.
 
-About the available algorithms, Pynguin has a total of 7 available: Random, Random Test Case Search, Random Test Suite Search, Whole Suite, MIO, MOSA and DynaMOSA.\@
-From these, the experimental phase is done considering the last 4, because those implement either an archive or a dynamic chromosome population, which is necessary for the extension.
+About the available algorithms\footnote{The work by Campos et al.~\cite{DBLP:journals/infsof/CamposGAFEA18} offers a further review and analysis of the different algorithms available in Pynguin.}, Pynguin has a total of 7: Random, Random Test Case Search, Random Test Suite Search, Whole Suite, MIO, MOSA and DynaMOSA.\@
+From these, the experimental phase considered the last 4, because those implement either an archive or a dynamic chromosome population, which is necessary for the extension.
 
 \begin{figure}[tb]
   \centering
   \includegraphics[width=.99\textwidth]{Figures/pynguin.png}
-  \caption{Pynguin structure}\label{fig:pyn}
+  \caption{Pynguin structure~\cite{DBLP:conf/icse/LukasczykF22}}\label{fig:pyn}
 \end{figure}
 
-Pynguin's workflow structure is presented in Figure~\ref{fig:pyn} and consists of 10 steps that work in the following manner
-\begin{enumerate}
-  \item The unit test generation process starts with the input of a user defined python module that needs to be tested.
-  \item The module is then analysed in order to obtain primordial information, such as all the functions, classes and their respective attributes and methods, together with their respective parameters.
-  \item In the Test Cluster, all relevant information is gathered from the analysis of the module under test (MUT) and its dependencies.
-  \item As mentioned in the previous item, the Context step performs an interprocedural analysis of all the libraries and modules used by the actual MUT, and joins any new obtained information with the data in the Test Cluster.
-  \item The Test Case Generation step, individually picks functions or methods from the Test Cluster in order to generate instances of the \classname{Statement} class, firstly by generating a certain amount of either primitive, collection or instance statement used as parameter arguments, and then by generating the respective callable, owner of the different branches or lines to cover.
-  \item After a Test Case Generation is performed, it is executed to get the desired coverage and analyse if (a) it already reached a full coverage or (b) a new better Test Case should be generated.
-  \item Once the stopping conditions are met, the test cases are finished with an optional assertion to check the results of the test.
-  \item Alternatively, mutations of the test cases are created using MutPY, so Pynguin can evaluate if the previously created assertion kill or not the mutants.
-  If they do not, new assertions are created.
-  \item In the Export step, Pynguin transforms the test cases from their chromosome representation into a Python AST representation and then into a Python test with the correspondent decorators of the library PyTest.
-  \item Finally, these tests are written into an output test module.
-\end{enumerate}
+Pynguin's workflow structure is presented in Figure~\ref{fig:pyn} and consists of a sequence of processes, starting with a Python Module as input, and getting a Python Test Module as output.
+A general Pynguin execution begins by statically analysing the MUT in order to fill a ``Test Cluster'' with all relevant information for the posterior test generation, such as regarding types and methods.
+Then, Pynguin individually picks functions or methods from the Test Cluster in order to generate a population (depending on the algorithm) of the \classname{TestCaseChromosome} class, firstly by generating a certain amount of either primitive, collection or instance statement used as parameter arguments, and then by generating the respective callable, owner of the different branches or lines to cover.
+Once the final test suite is set, Pynguin tries to generate assertions for its test cases while creating mutations for themselves with MuyPY, to then export the final tests into new modules.
 
-Pynguin also offers post generation processes, such as the deletion of redundant references (non-used variables) at the Chromosome level, or the generation of coverages reports  for the output test files and spreadsheets with relevant information about the test generation, in HTML and CSV format respectively.
+Pynguin also offers post generation processes, such as the deletion of redundant references (non-used variables) at the Chromosome level, or the generation of coverages reports for the output test files and spreadsheets with relevant information about the test generation, in HTML and CSV format respectively.
 
-\section{MOSA}
+\newpage
+\subsection{MOSA}
 
 The Many-Objective Sorting Algorithm~\cite{DBLP:conf/icst/PanichellaKT15} (MOSA), is an improvement to the classic Multi-objective Optimization algorithms (MOA) such as the Non-dominated Sorting Genetic Algorithm II (NSGA-II) or the Strength Pareto Evolutionary Algorithm (SPEA2), and applied taking into account some specific draw backs of the branch coverage problem in test generation, such as the great computational effort needed by these classic algorithms when working with a number of objectives bigger than an order of magnitude of 10.
-Another challenge that MOSA was able to overcome, is the selection and persistence over a non-dominated sort of those tests that have the best branch distance regarding non-covered goals.
+Another challenge that MOSA can overcome, is the selection and persistence over a non-dominated sort of those tests that have the best branch distance regarding non-covered goals.
 
-Algorithm~\ref{alg:MOSApseudo} shows an overview of MOSA's pseudocode, which follows a similar structure compared to NSGA-II's behaviour.
-Both start with the generation of an initial random population, but the presence of a test archive to store the current best solutions per target is the first difference (lines 1 and 3).
-Then, in every iteration an offspring is computed by means of arbitrary selection, crossover and mutation methods, which later is sorted into Pareto frontiers using the Preference Sorting (line 13).
-This procedure is the one mentioned before, which at the beginning sets into the first frontier the best tests according to a preference criterion (usually the desired coverage), and then realizes a common Fast Non-dominated Sort over the rest of tests.
-Finally, MOSA finishes every iteration of itself filling the next population with the right amount of tests from all the available Pareto frontiers, with the slight difference from NSGA-II that MOSA uses a sub-vector dominance assignment~\cite{DBLP:conf/issta/KifetewPLOT13} for the Crowding Distance Assignment (line 12).
-
+Algorithm~\ref{alg:MOSApseudo} shows an overview of MOSA's pseudocode, which start with the generation of an initial random population.
+Then, in every iteration an offspring is computed by means of arbitrary selection, crossover and mutation methods, which later is sorted into Pareto frontiers using Preference Sorting.
+This procedure sets into the first frontier the best tests according to a preference criterion (usually the desired coverage), and then realizes a common Fast Non-dominated Sort over the rest of tests.
+Finally, MOSA finishes every iteration of itself filling the next population with the right amount of tests from all the available Pareto frontiers.
 About the MOSA implementation in Pynguin, it follows the same structure as the one in Algorithm~\ref{alg:MOSApseudo}.
-
 
 \algrenewcommand\algorithmicrequire{\textbf{Input}}
 \algrenewcommand\algorithmicensure{\textbf{Output}}
 
 
-\begin{algorithm}[htb]
+\begin{algorithm}[h!]
   \centering
   \caption{MOSA Pseudocode}\label{alg:MOSApseudo}
   \begin{algorithmic}[1]
     \Require~Stopping condition \(C\), Set of program targets \(B\), Population size \(M\)
     \Ensure~A test suite \(T\)
-    \State~\(A \gets \{\}\)
-    \State~\(P_t \gets \text{GenerateRandomPopulation}()\)
-    \State~\(\text{UpdateArchive}(A, P_t)\)
+    \State~\(A, P_t \gets \{\}, \text{GenerateRandomPopulation}()\) 
     \While{\(\neg C\)}
       \State~\(Q_t \gets \text{GenerateOffspring}(P_t)\)
       \State~\(\text{UpdateArchive}(A, P_{t+1})\)
@@ -251,38 +284,27 @@ About the MOSA implementation in Pynguin, it follows the same structure as the o
   \end{algorithmic}
 \end{algorithm}
 
-\section{DynaMOSA}\label{sec:dynamosa}
+\newpage
+
+\subsection{DynaMOSA}\label{sec:dynamosa}
 
 DynaMOSA comes as a further extension of MOSA by Panichella et al.~\cite{DBLP:journals/tse/PanichellaKT18}, with the addition of a dynamic selection of the targets to be included into the first Pareto Frontier when executing the preference sorting.
-The idea of including a dynamic selection of targets starts from the representation of a program into a Control Flow Graph \(\text{CFG} = \langle V_{\text{CFG}}, E_{\text{CFG}} \rangle\) where every node represents an abstraction of statements or basic blocks and every directed edge, a path of execution.
-With the CFG, it is possible to realize how those uncovered targets that have one or more already reached target predecessor are redundant to try to cover because they always have objective score of \(f_r = \text{BranchDistance}(b) + 1\), where (\(+1\)) represents the approach level or the distance in the CFG to reach the successive target.
-This means that every target can be prioritized into a hierarchy according to the definition of a Control Dependency Graph (CDG).
-
-Before defining the elements of a CDG, it is necessary to define the concepts
-%plagio?
-\begin{itemize}
-  \item \textbf{Dominator}: a statement \(v_1\) dominates another statement \(v_2\), if every execution path to \(v_2\) in the CFG goes through \(v_1\).
-  \item \textbf{Post-Dominator}: a statement \(v_1\) post-dominates another statement \(v_2\), if every execution path from \(v_2\) to an exit node in the CFG goes through \(v_1\).
-\end{itemize}
-Then, a \(\text{CDG} = \langle V_{\text{CDG}}, E_{\text{CDG}} \rangle\) is a graph where \(V_{\text{CDG}} = V_{\text{CFG}}\), and for every pair \(v_1, v_2 \in V_{\text{CDG}}\), there is a directed edge \((v_1, v_2)\) if and only if \(v_2\) is not a post-dominator of \(v_1\) and there is a path in the \(CFG\) between \(v_1\) and \(v_2\) whose nodes are not post-dominated by \(v_2\).
-This edge represents a control dependency between both statement blocks.
+The idea of including a dynamic selection of targets starts from the representation of a program into a CFG.
+With it, is possible to note how those uncovered targets that have one or more already reached target predecessor are redundant to try to cover, because they always have objective score of \(f_r = \text{BranchDistance}(b) + 1\), where (\(+1\)) represents the approach level or the distance in the CFG to reach the successive target.
+This means that every target can be prioritized into a hierarchy according to the definition of a CDG.
 
 The pseudocode of DynaMOSA is shown in Algorithm~\ref{alg:DynaMOSApseudo}, with the only differences to MOSA being found in the lines 1, 5 and 9 when calling the set of an initial set of non-dependant targets and the dynamic update of these.
-The \(\text{UpdateTarget}()\) procedure, is applied inside Pynguin by implementing a class for, a Control Flow Graph (named \classname{CFG}), as a wrapper of the \classname{ControlFlowGraph} class from the Python \classname{bytecode} module; and a Control Dependency Graph (called \classname{ControlDependenceGraph}).
+The \(\text{UpdateTarget}()\) procedure, is applied inside Pynguin by implementing a class for, a Control Flow Graph (named \classname{CFG}), as a wrapper of the \classname{ControlFlowGraph} class from the Python \classname{bytecode} module; and a Control Dependence Graph (called \classname{ControlDependenceGraph}).
 Both of these classes are a fundamental part for the proposed heuristic implementation.
 
-% TODO - anything else to fill?
-
-\begin{algorithm}[htb]
+\begin{algorithm}[h!]
   \centering
   \caption{DynaMOSA Pseudocode}\label{alg:DynaMOSApseudo}
   \begin{algorithmic}[1]
-    \Require~Stopping condition \(C\), Set of program targets \(B\), Population size \(M\), Control dependency graph \(G\), \(\phi\)~Map between edges of \(G\) and targets
+    \Require~Stopping condition \(C\), Set of program targets \(B\), Population size \(M\), Control dependence graph \(G\), \(\phi\)~Map between edges of \(G\) and targets
     \Ensure~A test suite \(T\)
     \State~\(U^* \gets \text{NonDependentTargets}(B)\)
-    \State~\(A \gets \{\}\)
-    \State~\(P_t \gets \text{GenerateRandomPopulation}()\)
-    \State~\(\text{UpdateArchive}(A, P_t)\)
+    \State~\(A, P_t \gets \{\}, \text{GenerateRandomPopulation}()\)
     \State~\(\text{UpdateTargets}(U^*, G, \phi)\)
     \While{\(\neg C\)}
       \State~\(Q_t \gets \text{GenerateOffspring}(P_t)\)
@@ -290,12 +312,10 @@ Both of these classes are a fundamental part for the proposed heuristic implemen
       \State~\(\text{UpdateTargets}(U^*, G, \phi)\)
       \State~\(R_t \gets P_t \cup Q_t\)
       \State~\(F_x \gets \text{PreferenceSorting}(R_t)\)
-      \State~\(P_{t+1} \gets \emptyset \)
-      \State~\(d \gets 0\)
+      \State~\(P_{t+1}, d \gets \emptyset, 0\)
       \While{\(|P_{t+1}| + |F_d| \leq M\)}
         \State~\(\text{CrowdingDistanceAssignment}(F_d)\)
-        \State~\(P_{t+1} \gets P_{t+1} \cup F_d\)
-        \State~\(d \gets d + 1\)
+        \State~\(P_{t+1} \gets P_{t+1} \cup F_d; d++\)
       \EndWhile\@
       \State~\(\text{CrowdingDistanceSort}(F_d)\)
       \State~\(P_{t+1} \gets P_{t+1} \cup F_d[1\: (M - |P_{t+1}|)]\)
@@ -303,29 +323,25 @@ Both of these classes are a fundamental part for the proposed heuristic implemen
   \end{algorithmic}
 \end{algorithm}
 
-\section{Whole Test Suite}
+\newpage
+
+\subsection{Whole Test Suite}
 
 The Whole Test Suite generation algorithm is an instance of a genetic algorithm that, as a result of custom operators, tries to optimize the computational effort of target coverage by evolving a population of test suites in a higher level of abstraction, compared to the other reviewed algorithms so far.
 One of the main problems at the time of approaching test generation as a set of individual goals, is the case of encountering unreachable guards due to their recognition being an undecidable problem, and therefore it is not possible for the algorithm at hand to filter these elements in a trivial way.
-Following the same though, this algorithm introduces extra upper bounds to the maximum size of a population, for both the amount of test cases that are encapsulated in a test suite (\(N\)) and the amount of statements that a test case can contain (\(L\)), in order to avoid the size of these abstractions to tend to infinite.
 
 Besides the preferred code coverage as fitness function, which is evaluated by running all test cases in a test suite and adding up all covered targets and distances, a secondary fitness function used is the size of the test suite, specifically for the forwarding of offspring chromosomes to further generations.
-Algorithm~\ref{alg:WTSpseudo} shows Whole Test Suite's pseudocode, having particular variations from a default genetic algorithm in lines 7, 11, and 12 to 27.
-Line 7 holds the crossover operator, that chooses a random value \(\alpha \in [0.0, 1.0]\) and generates 2 test suite offspring from the selected parents by splitting them both at position \(\alpha \times \text{Length}(p)\) and interchanging the segments.
+Algorithm~\ref{alg:WTSpseudo} shows Whole Test Suite's pseudocode, whose first relevant place is line 7 holding the crossover operator, that chooses a random value \(\alpha \in [0.0, 1.0]\) and generates 2 test suite offspring from the selected parents by splitting them both at position \(\alpha \times \text{Length}(p)\) and interchanging the segments.
 Line 11 locates the mutation operator, where the algorithm mutates both test suites and test cases with a probability inverse to their own size, meaning that statistically only one of each are mutated in every iteration.
 For test suites, with probability \(\sigma\) a new test case is added iteratively until the mutation fails.
-Concurrently for test cases, three mutations can be applied with probability \(\frac{1}{3}\) each
-\begin{itemize}
-  \item Remove: every statement of the test case of length \(l\) has a probability \(\frac{1}{l}\) of being deleted from it. For any removed statement, future references to any linked variable are either replaced with another variable with the same data type or deleted recursively.
-  \item Change: every statement of the test case of length \(l\) has a probability \(\frac{1}{l}\) of being changed, meaning that it either generates a new primitive value, adds new array elements or calls another method/function accordingly.
-  \item Insert: a new statement is added into the test case with probability \(\sigma~'\) sequentially until failed, similar to the test suite mutation.
-\end{itemize}
+Concurrently for test cases, three mutations can be applied with probability \(\frac{1}{3}\) each; remove, change or insert a statement.
 The final novelty from this algorithm between lines 12 and 27, is the mechanism of generational forwarding already mentioned, which basically intends to bring the offspring to the next iteration's population only if either it has better fitness value, or if the fitness is equal to the one from the parents and the size of the offspring is much smaller.
 
 In terms of the Whole Test Suite generation algorithm's implementation in Pynguin, it was done by setting a field in the \classname{WholeSuiteAlgorithm} class called \field{\_population}, containing a list of \classname{TestSuiteChromosome} objects.
 
+\newpage
 
-\begin{algorithm}[htb]
+\begin{algorithm}[h!]
   \centering
   \caption{Whole Test Suite Pseudocode}\label{alg:WTSpseudo}
   \begin{algorithmic}[1]
@@ -364,61 +380,33 @@ In terms of the Whole Test Suite generation algorithm's implementation in Pyngui
   \end{algorithmic}
 \end{algorithm}
 
-\section{MIO}
+\newpage
 
-The Many Independent Objective (MIO) algorithm~\cite{DBLP:journals/infsof/Arcuri18} consists of a modification of the default (1 + 1) evolutionary algorithm, whose author came up with by either taking the most notable characteristics of both MOSA and Whole Test Suite or trying to avoid their limitations, in terms of exploration and exploitation of the search landscape.
+\subsection{MIO}
+
+The Many Independent Objective (MIO) algorithm~\cite{DBLP:journals/infsof/Arcuri18} consists of a modification of the default (1 + 1) evolutionary algorithm, whose author came up with by taking the most notable characteristics of both MOSA and Whole Test Suite, in terms of exploration and exploitation of the search landscape.
 
 One of these limitations, is the presence of a fixed size population that may not be big enough depending on the size of the System Under Test (SUT), the number of objectives to cover, or would not work optimally if too many redundant test have been introduced into it.
 To fix this, MIO maintains an archive of test populations per target and sets a maximum amount of tests to be introduced to it.
 
 MIO's core behaviour is represented by the existence of 3 main parameters; \(n\), being the number of tests per target to be stored in the archive; \(P_r\), the probability of introducing a randomly generated test into the population; and \(m\), the maximum amount of mutations to be applied.
 To these, the algorithm also adds a fourth parameter \(F\), whose main purpose is to split the stopping conditions' budget in order to have two main phases with different sets of \(n\), \(P_r\) and \(m\).
-Within the three parameters, it is stated that the first two are the more relatives ones at the time of controlling the exploration/exploitation.
-A summary of all parameters, their respective domain range and their default value implemented in Pynguin is shown in Table~\ref{tab:MIOparams}
+Within the three parameters, it is stated that the first two are the more relatives ones at the time of controlling the exploration/exploitation.\@
 
-A pseudocode of MIO is presented in Algorithm~\ref{alg:MIOpseudo}, which starts by initializing the archive with empty populations.
-The following evolution of this population, is firstly made with the selection of either a new random test or one sample from the archive, that is obtained from one of the uncovered goals' populations.
-If this sample is from the archive, it is mutated.
-Then, for each one of this test's relevant targets \(k\), the test is either added to the archive as a solution in case the goal was covered, or added to its respective population \(T_k\).
-Finally, the parameters are updated at the end of the iteration.
+A pseudocode of MIO is presented in Algorithm~\ref{alg:MIOpseudo}, which compared to Pynguin's implementation, only differs from the original algorithm's idea in the integrations of both \(T\) and \(A\) into a single data structure.
 
-With respect to this approach, Pynguin only differs from the original algorithm's idea in the integrations of both \(T\) and \(A\) into a single data structure.
-
-\begin{table}[htb]
-  \caption{Search space of MIO's parameters.\label{tab:MIOparams}}
-  \centering
-  \begin{tabular}{llllc}
-  \toprule
-  \multicolumn{2}{l}{\textbf{Parameter}}                                                                                        & \textbf{ID} & \textbf{Range}       & \textbf{Default Value} \\ \midrule
-  \multicolumn{2}{l}{F-parameter}                                                                                               & \(F\)       & \([0.0,1.0]\)        & \(0.5\)                \\ \cmidrule(lr){1-5}
-  \multicolumn{1}{l}{\multirow{3}{*}{Initial Phase}} & Tests per target                                                          & \(n_i\)    & \([1,\infty ]\)      &  \(10\)                \\ \cmidrule(lr){2-5} 
-  \multicolumn{1}{l}{}                               & \begin{tabular}[c]{@{}l@{}}Probability to select a \\ random test\end{tabular} & \(P_{ri}\)    & \([0.0,1.0]\)& \(0.5\)                \\ \cmidrule(lr){2-5} 
-  \multicolumn{1}{l}{}                               & Number of mutations                                                      & \(m_i\)     & \([1,\infty ]\)      & \(1\)                  \\ \cmidrule(lr){1-5}
-  \multicolumn{1}{l}{\multirow{3}{*}{Focused Phase}} & Tests per target                                                          & \(n_f\)    & \([1,\infty ]\)      & \(1\)                  \\ \cmidrule(lr){2-5} 
-  \multicolumn{1}{l}{}                               & \begin{tabular}[c]{@{}l@{}}Probability to select a \\ random test\end{tabular} & \(P_{rf}\)    & \([0.0,1.0]\)& \(0.0\)                \\ \cmidrule(lr){2-5} 
-  \multicolumn{1}{l}{}                               & Number of mutations                                                      & \(m_f\)     & \([1,\infty ]\)      & \(10\)                 \\ \bottomrule
-  \end{tabular}
-  \end{table}
-
-
-\algrenewcommand\algorithmicrequire{\textbf{Input}}
-\algrenewcommand\algorithmicensure{\textbf{Output}}
-
-
-\begin{algorithm}[htb]
+\begin{algorithm}[h!]
   \centering
   \caption{MIO Pseudocode}\label{alg:MIOpseudo}
   \begin{algorithmic}[1]
-    \Require~Stopping condition \(C\), Fitness function \(\delta\), Population size limit \(n\), Start~of~focused search \(F\)
+    \Require~Stopping condition \(C\), Population size limit \(n\), Start~of~focused search \(F\)
     \Ensure~Archive of optimized individuals A
-    \State~\(T \gets \text{SetOfEmptyPopulations}()\) 
-    \State~\(A \gets \{\}\)
+    \State~\(T, A \gets \text{SetOfEmptyPopulations}(), \{\}\)
     \While{\(\neg C\)}
       \If{\(P_r > \text{RandomFloat}() \text{or IsEmpty}(T)\)}
         \State~\(p \gets \text{RandomIndividual}()\)
       \Else\@
-        \State~\(p \gets \text{SampleIndividual}(T)\)
-        \State~\(p \gets \text{Mutate}(p)\)
+        \State~\(p \gets \text{Mutate}(\text{SampleIndividual}(T))\)
       \EndIf\@
       \ForAll{\(k \in \text{ReachedTargets}(p)\)}
         \If{\(\text{IsTargetCovered}(k)\)}
@@ -427,60 +415,39 @@ With respect to this approach, Pynguin only differs from the original algorithm'
         \Else\@
           \State~\(T_k \gets T_k \cup \{p\}\)
           \If{\(|T_k| > n\)}
-          \State~\(\text{RemoveWorstTest}(T_k, \delta)\)
+          \State~\(\text{RemoveWorstTest}(T_k)\)
           \EndIf\@
         \EndIf\@
       \EndFor\@
       \State~\(\text{UpdateParameters}(F, P_r, n, m)\)
     \EndWhile\@
   \end{algorithmic}
-  \end{algorithm}
+  \end{algorithm} 
 
+\newpage
 
 \section{GBOS Heuristic}
 
-% TODO
 The Graph Based Object Synthesis heuristic is the name given to the methodology presented by Yun et al.~\cite{DBLP:conf/sigsoft/0001O00D21} for the generation of complex object instances to be used as arguments in methods to be tested in a test case of the Java programming language.
 One of the motivations for this research study was the possible non-continuity of test cases' search space with respect to coverage, when some related targets have the need to evaluate multiple conditions on an object instances before even getting an actual distance to them.
 % TODO - maybe reference the example in the introduction?
 The procedure done by this heuristic, consists of two main phases; the creation of an Object Construction Graph (OCG), that represents all relevant dependency flows of a method from its inputs to the actual target to be reached; and the translation of the OCG into an actual test case template, that serves as an initial search point for the test generation algorithm.
 
-\subsection{OCG generation}\label{subsec:ocg_gen}
+\subsection{OCG Generation}\label{subsec:ocg_gen}
 
 For the generation of the OCG, one must start with the generation of the Program Dependency Graph (PDG), a complete representation of all control and data dependencies of a program.
-As stated in Section~\ref{sec:dynamosa}, the control dependencies of a program are represented with the aforementioned CDG.\@
-Similarly, the data dependencies of a program can be represented with a Data Dependency Graph \(\text{DDG} = \langle V_{\text{DDG}}, E_{\text{DDG}} \rangle\), where \(V_{\text{DDG}} = V_{\text{CFG}}\) and for every pair \(v_1, v_2 \in V_{\text{DDG}}\), there is a directed edge \((v_1, v_2)\) if and only if there is a variable \(X_{v_1}\) defined in \(v_1\) and used in \(v_2\), that is part of the reaching definitions of \(v_2\).
-
-Reaching definitions~\cite{DBLP:books/aw/AhoSU86} is a data-flow schema in the form of a fixed point algorithm for the recognition of any variable definitions that always reach in or out of a basic block in a program.
-For a node \(n \in V_{\text{CFG}}\), representing a basic block in the CFG, \callable[n]{Defines} being the set of variables \(x_n\) defined in \(n\) and \callable[n]{Pre} the predecessor nodes, the following equations set the reaching definitions of node \(n\)
-
-\begin{align*}
-  \text{\textbf{gen}}(n) &:= \text{\callable[n]{Defines}} \\
-  \text{\textbf{kill}}(n) &:= \bigcup_{v \in V_{\text{CFG}}} x_v, \forall x \in \text{\callable[n]{Defines}} \\
-  \text{\textbf{ReachIN}}(n) &:= \bigcup_{p \in \text{\callable[n]{Pre}}} \text{\textbf{ReachOUT}}(p) \\
-  \text{\textbf{ReachOUT}}(n) &:= \text{\textbf{gen}}(n) \cup (\text{\textbf{ReachIN}}(n) \setminus \text{\textbf{kill}}(n))\\
-\end{align*}
-
-Having the two necessary representations of both a CDG and a DDG, a formal outline of a PDG is the tuple \(\langle V_{\text{PDG}}, E_{\text{PDG}} \rangle\), with \(\langle V_{\text{PDG}} = \langle V_{\text{CFG}}\) and \(E_{\text{PDG}} = E_{\text{CDG}} \cup E_{\text{DDG}}\).
+As stated in Section~\ref{sec:slicing}, all dependencies of a program are represented with the aforementioned CDG and DDG.\@
 
 The necessary PDG for the OCG's building process must also be interprocedural until a certain threshold level \(t_{\text{dep}}\), considering that one or many of the target method's input objects may be modified by a subsequent call.
 This new requirement is met by just adding to the main PDG new edges from the correspondent callee's basic block to the entry node of the other method or function PDG, which also needs to be generated beforehand.
 
-After having the full interprocedural PDG, a node containing a branch \(b\) (chosen target for the heuristic) must be used as entry criteria to apply a backward slice and either
-
-\begin{itemize}
-  \item a node with an instruction reading a method input
-  \item a node with an instruction reading a global variable
-  \item an entry node 
-\end{itemize}
-
-as stopping criteria.
+After having the full interprocedural PDG, a node containing a branch \(b\) (chosen target for the heuristic) must be used as entry criteria to apply a backward slice and either a node with an instruction reading a method input, a node with an instruction reading a global variable or an entry node, as stopping criteria.
 
 The following step, is to analyse the sliced graph and link directly every instance of a node loading the complex method parameter objects with any node from the interprocedural methods' PDGs that retrieve a field or access an array, so the relevant variable state of these objects can be recorded flawlessly throughout the graph.
 
 Finally, the sliced PDG is sliced further in a forward manner, using the object method inputs as slicing criteria and any field or array access as stopping condition, in order to leave only relevant paths for the heuristic's second phase.
 
-\subsection{OCG translation}
+\subsection{OCG Translation}
 
 Once the OCG generation process is complete, its translation into actual code is done by including extra operations to a generic Breadth-first graph traversing algorithm.
 The first step, is to initialize a test case \(t\) with a call to the target branch's method (and its respective object in case it is not static) together with an empty node-statement map.
@@ -500,14 +467,17 @@ and the sampling probability of a method \(m_i\) can be calculated by normalizin
 
 \chapter{GBOS Pynguin Extension}\label{chap:implementation}
 
-Part of the preparations for the experimental phase and contributions of this thesis, is the creation of a functional extension of Pynguin inspired in the so called GBOS heuristic, that had to be developed using only the information available in its respective paper and some hints given by the authors of it.
+Part of the preparations for the experimental phase and contributions of this thesis, is the creation of a functional extension of Pynguin inspired in the GBOS heuristic, that had to be developed using only the information available in its respective paper~\cite{DBLP:conf/sigsoft/0001O00D21} and some hints given by the authors of it.
+The presented Python implementation followed a three-step scheme at Python Bytecode level, which aimed to be as loyal as possible to the original Java version while taking into account the differences between both languages.
 
-The development process started with the creation of \classname{DataDependenceGraph}, a new subclass of the already implemented \classname{ProgramGraph}, which serves as a superclass for both \classname{CFG} and \classname{ControlFlowGraph}.
+\section{PDG Generation}
+
+The development process started with the creation of \classname{DataDependenceGraph}, a new subclass of the already implemented \classname{ProgramGraph}, which serves as a superclass for both (also already available) \classname{CFG} and \classname{ControlFlowGraph}.
 As its name hints, this new graph class encapsulates all necessary methods and further elements that help to collect all relevant data usages and definitions for the later generation of the reaching definitions sets.
-Another crucial information obtained with the generation of the DDG through this class, are all the methods and functions called along the program's control flow.  
+Another crucial information obtained with the generation of the DDG through this class, are the methods and functions called along the program's control flow.  
 
 In a first instance, one of the prerequisites for the coding of a DDG in Pynguin, was to split every node's basic block in the CFG class, into nodes with singular instruction.
-If this had not been done, the final DDG would have set many variable uses and definitions in the same node, simplifying the final graph to a trivial level that would have not worked in the further steps of the heuristic.
+If this had not been done, the final DDG would have set many variable uses and definitions in the same basic block node, simplifying the final graph to a trivial level that would have not worked in the further steps of the heuristic.
 An example of this is shown in Figure~\ref{fig:ddg_example}.
 
 \begin{figure}[htb]
@@ -525,16 +495,18 @@ An example of this is shown in Figure~\ref{fig:ddg_example}.
 \end{figure}
 
 
-Then, the program's stack frame evolution is statically analysed to check which nodes have an instruction that defines or uses any variable names, or what functions or methods are called. % Mention the CALL METHOD/CALL FUNCTION instructions?
+Then, the program's stack frame evolution is statically simulated and analysed to check which nodes have an instruction that defines or uses any variable names, or what functions or methods are called.
+Opposite to off-the-shelf implementations of a stack frame analyser for Java (e.g. Java ASM\footnote{https://asm.ow2.io}), the used and defined data variables were collected every time they were either popped and served as operand for an instruction (e.g. BINARY\_ADD), and stored in the named stack or loaded back again in the stack frame (e.g. STORE\_FAST or LOAD\_FAST). 
 This functionality was put into practice thanks to the classes \classname{DefUseAnalyzer} and \classname{Frame}, that traverse the CFG in a breadth-first manner and execute the corresponding single instruction respectively.
 
 The way this works in the method \callable{DefUseAnalyzer.analyse}, is that every entry node starts with an empty \classname{Frame} with no variables in its stack.
-Then, each non-entry node copies the frame of one of its successors, execute the current instruction (with the method \callable{Frame.execute}) and set this modified copy as its own.
+Then, each non-entry node copies the frame from the first of its successors, execute the current instruction (with the method \callable{Frame.execute}) and set this modified copy as its own.
+All the instructions' stack effects can be found in Python's developer documentation\footnote{https://docs.python.org/3.10/library/dis.html}.
 As a design decision, the GBOS heuristic works with the bytecode instructions of Python version 3.10, because: it is one of Pynguin's supported versions; it restricts the amount Python Bytecode instructions needed to be implemented in the stack modifying match-case statement found in the \callable{Frame.execute} method; and it is stated in the GBOS paper~\cite{DBLP:conf/sigsoft/0001O00D21} that the approach is ``applicable in more general cases'', which implies the heuristic to work in any level of abstraction.
 
 % TODO - Add an example of how frame works. method is called execute()
 
-Once the \classname{DefUseAnalyzer} finishes generating two dictionaries (node, [variables]) for the uses and definition, the DDG generation procedure copies every node in the given CFG, and proceeds to traverse once again the CFG in a breadth-first manner to apply the reaching definitions equations presented in Section~\ref{subsec:ocg_gen} to obtain the edges of the new graph.
+Once the \classname{DefUseAnalyzer} finishes generating two dictionaries (node, [variables]) for the uses and definitions, the DDG generation procedure copies every node in the given CFG, and proceeds to traverse once again the CFG in a breadth-first manner to apply the reaching definitions equations presented in Section~\ref{sec:slicing} to obtain the edges of the new graph.
 
 With a program's DDG already generated, the CDG is obtained with the already implemented methods to do so, and the previously modified single-instruction CFG.\@
 Both of these graphs are the base of the computation of an instance of the class \classname{ProgramDependenceGraph}, another subclass of \classname{ProgramGraph}, that initially just combines the edges of both CDG and DDG.\@
@@ -542,18 +514,14 @@ A second procedure realized as part of the PDG's computation, is the use of Pyng
 This is done in a recursive manner and complying to a certain recursion level \(t_{\text{dep}}\), that works as a newly introduced Pynguin CLI argument. 
 
 At this point, the interprocedural PDG is ready to be backward sliced with the necessary stopping conditions, contextualized to Python's bytecode instructions.
-The slicing begins with the single instruction node in the PDG that contains the target branch, and it stops when either
+The slicing begins with the single instruction node in the PDG that contains the target branch, and it stops when either the node loads one of the target method's parameters (e.g.\@it is the first LOAD\_FAST that has one of the target method's parameters as argument) or it has a LOAD\_ATTR instruction; the node has a LOAD\_GLOBAL instruction; or the node has no predecessors (it is an entry node).
 
-\begin{itemize}
-  \item the node loads one of the target method's parameters (e.g.\@it is the first LOAD\_FAST that has one of the target method's parameters as argument) or it has a LOAD\_ATTR instruction
-  \item the node has a LOAD\_GLOBAL instruction
-  \item the node has no predecessors (it is an entry node).
-\end{itemize}
+\section{PDG Interprocedural Analysis}
 
 The interprocedural analysis is the next step to follow, and it starts by iterating over the list of know calls and selecting only the methods to check for the presence of an instruction chain 
 \[\begin{pmatrix} \text{LOAD\_FAST} \\ \text{or} \\ \text{LOAD\_ATTR} \\ \text{or} \\ \text{BINARY\_SUBSCR} \end{pmatrix} \rightarrow \text{LOAD\_METHOD} \rightarrow \text{CALL\_METHOD}\]
 that represents the load of the object instance, the load of its method and the call of it.
-Within the scope of the current study, the analysis of function type callables (not belonging to any object or class definition) is left as a recommended future work subject, considering that working with a dynamically typed language is already challenging when applying a heuristic designed for a statically typed language (such as Java) and that there is not a reliable way of knowing how to link the arguments of a called function (probably loaded before a LOAD\_FUNCTION instruction) to their respective local variables inside the sub graph of the interprocedural PDG.
+Within the scope of the current study, the analysis of function type callables (not belonging to any object or class definition) is left as a recommended future work subject, considering that working with a dynamically typed language is already challenging when applying a heuristic designed for a statically typed language (such as Java) and that there is not a reliable way of knowing how to link the arguments of a called function (probably loaded before a LOAD\_FUNCTION instruction) to their respective local variables inside the sub graph of the interprocedural PDG.\@
 
 Then, from the first instruction node of the chain (that represents the callee of the method), it is needed to look into the sub-PDG of the called method for the first ``LOAD\_FAST self'', which represents the same object instance and might have a successor node LOAD\_ATTR that needs to be linked to the first node in the initial chain.
 
@@ -571,9 +539,10 @@ What the analysis does here, is replacing the method call edge into a direct dat
 \caption{An example of OCG before and after the interprocedural analysis}\label{fig:inter_analysis}
 \end{figure}
 
-The last part of the heuristic's first phase, is done in the same way as in its original Java version.
-A forward slicing is performed into the PDG, starting from the parameter loading nodes and stopping at relevant nodes (those with LOAD\_ATTR or BINARY\_SUBSRC instructions) fulfilling certain conditions.
-The conditions are, that the relevant nodes stop the slicing, if and only if they do not have any more child nodes that are also relevant.
+A forward slicing is then performed into the PDG, starting from the parameter loading nodes and stopping at relevant nodes (those with LOAD\_ATTR or BINARY\_SUBSRC instructions) fulfilling certain conditions.
+The conditions for this operation are, that the relevant nodes stop the slicing, if and only if they do not have any more child nodes that are also relevant.
+
+\section{OCG Translation}
 
 When the OCG generation phase is ready, the last step of the GBOS heuristic is to translate it, in this case, into a \classname{TestCaseChromosome} instance.
 The creation of it begins with a default empty chromosome, to which two possible main statements are added: a call statement of the target method or function, and positioned before that, a variable creating statement with the class containing that method.
@@ -586,38 +555,42 @@ An example of this, is the possible appearance of a node with the instruction ``
 This implies, that only a variable reference is stored in the map for the key ``state'' at the first appearance of ``LOAD\_FAST state'', or for the key ``state.\_players'' at the first appearance of the chain ``LOAD\_FAST state \(\rightarrow\) LOAD\_ATTR \_player''.
 
 Although the OCG was sliced thoroughly during its generation, most  of the nodes in it are still irrelevant for statement creation.
-This, because at this point the only instructions that are interesting for the test case template are
+This, because at this point the only instructions that are interesting for the test case template are those that load object instances such as the ones from method's inputs, load attributes of the aforementioned object inputs, and access possible collection-like data types from Python, which might have further complex objects as elements.
 
-\begin{itemize}
-  \item \textbf{LOAD\_FAST}, where an object instance is created in case the node's argument is one of the target method's parameters, and it is the first appearance of it.
-  \item \textbf{LOAD\_ATTR}, where first it is checked if there is any existent key in the variable reference map regarding one of the current node's predecessors. If there is an already created object instance, an assignment statement is added into the test case, with a field access of the object as the left-hand side of the assignment, and a new primitive or object variable reference as the right-hand side.
-  
-  With respect to the path score, used to select the adequate setter method in the heuristic's paper Java implementation, there was no need to apply it in this Python version, as Python does not have an applied concept of private fields.
-  At most, there is the developer community standard of using an underscore (``\_'') character before a field variable name to simulate it as private, but this does not have any real run-time implications.
-  One argument for implementing a non-arbitrary way to select a certain method to set fields, is that there is not a concrete way in the actual Python's literature, to know if a method modifies a certain field, other than the presence of the instructions LOAD\_ATTR, STORE\_ATTR or DELETE\_ATTR.\@
-  The usage of getters in the original Java version was replaced in this case with the variable reference map, which provides information regarding the position of the object instance inside the test case, the type information and the annotations, if available.
+For nodes that encapsulate a \textbf{LOAD\_FAST} instruction, an object instance is created in case the node's argument is one of the target method's parameters, and it is the first appearance of it.
 
-  \item \textbf{BINARY\_SUBSRC}, where the OCG is checked, to look for a predecessor node with an already generated collection variable that contains object elements. In both ``LOAD\_FAST'' and ``LOAD\_ATTR'', the list variables are initialized with a few references of the same variable as elements (1 to 10, as arbitrary values), and when these are object types, the used instance is the one stored into the map of references.
-  In this context, this node only takes any available reference of the parent nodes, but as it needs to save it every time to start the chain of references, the index of this node is the string version of its index.
-\end{itemize}
+With \textbf{LOAD\_ATTR} nodes, first it is checked if there is any existent key in the variable reference map regarding one of the current node's predecessors. 
+If there is an already created object instance, an assignment statement is added into the test case, with a field access of the object as the left-hand side of the assignment, and a new primitive or object variable reference as the right-hand side.
+Regarding the path score, used to select the adequate setter method in the heuristic's paper Java implementation, there was no need to apply it in this Python version, as Python does not have an applied concept of private fields.
+At most, there is the developer community standard of using an underscore (``\_'') character before a field variable name to simulate it as private, but this does not have any real run-time implications.
+One argument for implementing a non-arbitrary way to select a certain method to set fields, is that there is not a concrete way in the actual Python's literature, to know if a method modifies a certain field, other than the presence of the instructions LOAD\_ATTR, STORE\_ATTR or DELETE\_ATTR.\@
+The usage of getters in the original Java version was replaced in this case with the variable reference map, which provides information regarding the position of the object instance inside the test case, the type information and the annotations, if available.
+Overall, this is the main and only difference between this thesis' work and the original heuristic proposed by Lin et al.~\cite{DBLP:conf/sigsoft/0001O00D21}.
 
-When the test case template generation process is finished, the test case is executed with the available \classname{TestExecutor} instance, and the results are stored into the same \classname{TestCaseChromosome}.
+When encountering a \textbf{BINARY\_SUBSRC} instruction, the OCG is checked to look for a predecessor node with an already generated collection variable that contains object elements.
+In both ``LOAD\_FAST'' and ``LOAD\_ATTR'', the list variables are initialized with a few references of the same variable as elements (1 to 10, as arbitrary values), and when these are object types, the used instance is the one stored into the map of references.
+In this context, this node only takes any available reference of the parent nodes, but as it needs to save it every time to start the chain of references, the index of this node in the reference map is the string version of its own index.
+
+Once the test case template generation process is finished, the test case is executed with the available \classname{TestExecutor} instance, and the results are stored into the same \classname{TestCaseChromosome}.
+Listing~\ref{lst:6} presents one of the cases generated when using the GBOS extension, showing particular similarity with the hypothetical test template proposed in Listing~\ref{lst:4}.
+
+\begin{figure}
+  \inputminted[linenos]{python}{Figures/template-result.py}
+  \caption{Mutated test template obtained through the execution of Pynguin with the GBOS extension for the test of the example module in Listing~\ref{lst:1}\label{lst:6}}
+\end{figure}
+
 For every extended algorithm, the following steps are done
 
 \begin{itemize}
-  \item MIO:\@ the archive is updated with the implemented method of the archive instance \callable[test\_template]{MIOAlgorithm.\_archive.update}.
+  \item MIO:\@ the archive is updated with the implemented method of the archive instance \callable[\text{test\_template}]{MIOAlgorithm.\_archive.update}.
+
   \item MOSA and DynaMOSA:\@ the test template is first checked for any execution exception and then introduced into the '\_population' field of the \classname{AbstractMOSAAlgorithm} class, which is a list of \classname{TestCaseChromosome} elements.
   \item Whole Test Suite: same as for MOSA and DynaMOSA, the test template is checked for exceptions and then is introduced in one of the \classname{TestSuiteChromosome} available in the '\_population' field of the algorithm instance, \classname{WholeSuiteAlgorithm}.
 \end{itemize}
 
-About the new parameters introduced to Pynguin from the GBOS heuristic, there is
-% TODO could be a ; paragraph
-\begin{itemize}
-  \item the binary argument ``gbos'', meaning the usage of the extension and having False as default value
-  \item the numerical argument ``no\_change\_iteration'', stating the amount of iteration in which there may be no change in a certain goal in order to consider it eligible to create a new test template for, and having 1000 as arbitrarily chosen default value
-  \item the float argument ``p\_app'', describing the probability of creating a test template for an eligible target and setting \(0.5\) as default value (comparable to the \(0.3\) used in the experimental setup of the GBOS' paper)
-  \item and the numerical argument ``max\_recursion\_level'', defining the maximum amount of recursion calls that can be made while generating the OCG, and having a default value of 5 (same as the one used in the experimental setup of the GBOS' paper).
-\end{itemize}
+About the new parameters introduced to Pynguin for the GBOS heuristic, there is the binary argument ``gbos'', meaning the usage of the extension; the numerical argument ``no\_change\_iteration'', stating the amount of iteration in which there may be no change in a certain goal in order to consider it eligible to create a new test template for; the float argument ``p\_app'', describing the probability of creating a test template for an eligible target; and the numerical argument ``max\_recursion\_level'', defining the maximum amount of recursion calls that can be made while generating the OCG.\@
+
+One remark that must be taking into account with respect to the implementation, is that the GBOS extension relies completely on the assumption that the any time a complex object input is needed for the reaching of a branch target, all required type information about the parameters and relevant object fields will be available. 
 
 \chapter{Evaluation}~\label{chap:evaluation}
 
@@ -643,12 +616,14 @@ From the test set, the percentage of object-like inputs in methods and functions
 \text{OLR} = \frac{1}{n}\sum_{m_i \in M} \frac{o_i}{p_i}
 \end{equation}
 where \(M\) is the set of callables in a MUT with at least one object-like parameter, \(p_i\) the amount of parameters in \(m_i\), \(o_i\) the amount of object-like parameters in \(m_i\), and \(n\) the amount of methods in \(M\) (from now on, the metric is called the object-like ratio or OLR).
+An object-like parameter references any method argument that has type information, and it is not either one of Python's primitive types or built-in collections.
+One exception to this rationale, is when one argument is identified as a collection type that has object-like types as elements which, although it could be considered a recursive rule, it was limited to a first class wrapper.
 Here, the OLR serves as a way to imply the presence of complex object inputs and see if the metric presents a correlation with the development of branch coverage when using or not the extension.
 For those modules that stay in the test set for this research question after a filtering process, the \(\hat{A}_{12}\) Vargha-Delaney effect size metric is going to be computed in order to calculate the Pearson's and Spearman's correlation, and answer the research question. 
 
 \section{Experimental Setup}\label{sec:experimental_setup}
 
-For the experimental executions of Pynguin with the new GBOS extension, the data set of Python projects initially used as a benchmark for Pynguin's type tracing update, joined with a subset of [the seminar test set] test modules, was taken as a base for the answer of both research questions.
+For the experimental executions of Pynguin with the new GBOS extension, the data set of Python projects initially used as a benchmark for Pynguin's type tracing update, joined with a subset of Pynguin's EMSE submission test modules~\cite{DBLP:journals/corr/abs-2111-05003}, was taken as a base for the answer of both research questions.
 This initial testing set is formed by 1047 modules over 44 projects.
 
 In a first instance, are going to be filtered all modules that reach full branch coverage using the MIO algorithm without the GBOS extension, before 100 iterations or 600 seconds of execution time.
@@ -669,39 +644,21 @@ In that sense, the time measure stored in the new variables is not counted as pa
 
 \section{Threats to Validity}
 
-The threats to validity present in the study can be generalized into two main categories: threats to \textbf{internal validity} and threats to \textbf{external validity}.
+The threats to validity present in the study can be generalized into two main categories: threats to \textbf{internal validity}, to \textbf{external validity} and to \textbf{construct validity}.
 
 The GBOS extension's \textbf{internal validity} is threatened by the uncertainty of how many possible cases of what is considered a complex callable input are covered, including the amount of recursions in wrapper classes that are taking into account while computing the type annotations, or the consideration of all wrapper classes available for Python in its 3.10 version.
 The definition of the Object-like ratio also makes an internal threat, as it was used as an intermediary step into identifying the possible complex object inputs, stating that primitive types axiomatically are not objects nor complex, but at the same time it is not a determinant measurement.
 An example of this is a variation of the method \callable[]{checkRules} from Figure~\ref{lst:1}, but taken from line 1 until before line 10, where the method would have an OLR of \(100\%\) but the unique target (branch of line 8) would not need any complex object in order to be reached.
 The plausible presence of bugs in the multiple stages of the GBOS phase also threatens the internal validity, which is partially mitigated by the if-clauses that stop the whole process if one of the steps returns a None value (e.g.\ while constructing the PDG, OCG or the test template).
+The necessity of both complex object inputs and full knowledge of the variables' type information in order to obtain any improvement in terms of branch coverage threatens the internal validity too.
 
-With respect to the generalization of the benefits obtained from the presented extension, the \textbf{external validity} is threatened by the necessity of both complex object inputs and full knowledge of the variables' type information in order to obtain any improvement in terms of branch coverage.
-This conditions cannot be extended to the great majority of Python modules, and similarly, the usage of the extension cannot be decided through Parameter Tuning, but only via the interpretation of each developer of what the presence of a complex object input in a method or function means.
+With respect to the generalization of the benefits obtained from the presented extension, the \textbf{external validity} is threatened by the usage of Python modules that were already studied in previous studies of Pynguin, and might not represent the great majority of Python modules. 
 
-\newpage
+About \textbf{construct validity}, the usage of the extension cannot be decided through Parameter Tuning, but only via the knowledge of each developer of the presence of complex object inputs in a method or function, which implies that no automatic tuning was made into the experimental phase, threatening the study's operationalization.
+
+\iffalse
 
 \section{General Results}
-
-To give a brief description of the different modules that make up the test set previous to the answer of the research questions, Figure~\ref{fig:olr-hist} shows a ranged histogram (with bins of length \(0.1\)) of Object-like ratios over the 588 executed modules with the continuous line representing the kernel density estimate.
-From these, \(91.33\%\) of the modules, or 537 out of 588 have a ratio below \(50\%\).
-This distribution of OLR does not mean that for the great majority of modules there are not any needed complex object input, but that only for those that have an OLR greater than \(0.0\%\) (and by chance include a target reachable by generating a test with a complex object input) the presented GBOS may be of help in the improvement of coverage results.
-
-\begin{figure}[bth]
-  \centering
-  \includegraphics[width=0.9\textwidth]{Figures/Results/olr-hist.jpg}
-  \caption{Histogram of Object-like ratio over the modules in the test set.}\label{fig:olr-hist}
-\end{figure}
-
-Figure~\ref{fig:coverage} shows the first dimension to be analysed in the following sections of the study, branch coverage results and their distribution through the runs of the 8 different parameter configurations.
-The presented violin plots, imply that in a general both approaches to the test generation for the set of Python modules got similar results, based on the form of the plots' probability density, the position of the median and the position of the interquartile range.
-For more precise data, when calculating the percentage difference between Pynguin and the GBOS extension over the average value of the plotted distributions; DYNAMOSA, MOSA, WHOLE\_SUITE and MIO get values of \(-0.27\%\), \(-0.14\%\), \(-0.28\%\) and \(-0.68\%\) respectively. 
-
-\begin{figure}[tbh]
-  \centering
-  \includegraphics[width=0.9\textwidth]{Figures/Results/Coverage.jpg}
-  \caption{Mean coverage between all 8 parameter configurations over the modules in the test set.}\label{fig:coverage}
-\end{figure}
 
 Figure~\ref{fig:iterations} reveals the distribution of algorithm iterations through the different configurations.
 Similar to the previous graph, the results' comparison between Pynguin and the GBOS extension show almost no difference while observing the probability density, median position and interquartile position (except for the notorious presence of higher values in WHOLE\_SUITE).
@@ -713,37 +670,46 @@ The values for percentage difference between both approaches over the average va
   \caption{Computed iterations between all 8 parameter configurations over the modules in the test set.}\label{fig:iterations}
 \end{figure}
 
-Figure~\ref{fig:times} describes through two plots the final dimension to be analysed, time in terms of execution and its phases.
-The violin plot on the left, shows the Search Time distribution of the runs, having similar behaviour to the other two dimensions reviewed this far, meaning that both Pynguin and the extension use the full budget of 600 seconds for any computation that is not related to the GBOS extension.
-Following the same procedure as before, the percentage difference for the average values of the distributions presented in this plot, are \(9.35\%\), \(6.92\%\), \(7.52\%\) and \(1.74\%\) respectively, from left to right.
+\fi
+
+\section{Research Question 1}
+
+\begin{figure}[b]
+  \minipage{0.5\textwidth}
+    \includegraphics[width=\linewidth]{Figures/Results/SearchTime.jpg}
+  \endminipage\hfill
+  \minipage{0.5\textwidth}
+    \includegraphics[width=\linewidth]{Figures/Results/timeDist.jpg}
+  \endminipage\@
+  \caption{Search time distribution between the 8 parameter configurations and average values for new output variables of the GBOS extension.}\label{fig:times}
+\end{figure}
+
+Figure~\ref{fig:times} describes through two plots the overall search time and the time needed by the extension per phase.
+The violin plot on the left, shows the Search Time distribution of the runs, revealing that both Pynguin and the extension use the full budget of 600 seconds for any computation that is not related to the GBOS extension.
+The percentage change (e.g.~\(\frac{\text{GBOSValue} - \text{PynguinValue}}{\text{PynguinValue}}\times 100\)) for the average values of the distributions presented in this plot, are \(9.35\), \(6.92\), \(7.52\) and \(1.74\) respectively, from left to right.
 
 Regarding the times that are considered while doing any GBOS-related operation, the bar plot on the right shows a comparison of the average values per module, per algorithm, of the time spent in deciding if the current iteration generates a test template or not (Decision Time), time spent generating the test templates (Generation Time), and the Search Time as baseline.
 By looking at the sizes of the different sections of each algorithms' bars, it is safe to state that compared to the other options, MIO is the algorithm that is affected the most with the extra computational effort that the GBOS extension generates.
 This can be explained by the lightweight nature of the evolution steps implemented in Pynguin, which are reduced to only selecting a new test case if necessary and mutating it the maximum amount of times possible depending on the algorithm's parameters.
-Considering a comparison between the Search Time and the Decision Time, MIO obtains a percentage difference of \(279.86\%\), while the other algorithms have values ranging between \(-87.48\%\) and \(-83.68\%\).
-With respect to the Generation Time, the comparison using percentage difference of MIO gives a value of \(346.54\%\), while the other algorithms have values ranging between \(53.69\%\) and \(74.75\%\).
-
-
-\begin{figure}[th]\label{fig:times}
-\minipage{0.5\textwidth}
-  \includegraphics[width=\linewidth]{Figures/Results/SearchTime.jpg}
-\endminipage\hfill
-\minipage{0.5\textwidth}
-  \includegraphics[width=\linewidth]{Figures/Results/timeDist.jpg}
-\endminipage\@
-\caption{Search time distribution between the 8 parameter configurations and average values for new output variables of the GBOS extension.}
-\end{figure}
-
-\newpage
-
-\section{Research Question 1}
+Considering a comparison between the Search Time and the Decision Time, MIO obtains a percentage change of \(279.86\), while the other algorithms have values ranging between \(-87.48\) and \(-83.68\).
+With respect to the Generation Time, the comparison using percentage change of MIO gives a value of \(346.54\), while the other algorithms have values ranging between \(53.69\) and \(74.75\).
 
 The data reported in Table~\ref{tab:performance} shows the mean coverage of all tested modules per approach, the p-Values obtained through statistical Mann-Whitney U tests and Cohen's D effect size measures, in any pair of algorithm and runtime budget.
 Generally, all p-Values are greater than \(0.05\) with respect to the sets of obtained branch coverage values in each module, accepting the null hypothesis that assumes no effect or statistical difference between the distributions.
-Similarly, it is noticeable that all values of Cohen's D effect size are negative, meaning that the best distributions of coverage values are found while using Pynguin without the GBOS extension.
+Complementary, Figure~\ref{fig:coverage} shows the branch coverage results and their distribution through the runs of the 8 different parameter configurations.
+The presented violin plots imply that in general, both approaches to the test generation for the set of Python modules got similar results, based on the form of the plots' probability density, the position of the median and the position of the interquartile range.
+%For more precise data, when calculating the percentage difference between Pynguin and the GBOS extension over the average value of the plotted distributions; DYNAMOSA, MOSA, WHOLE\_SUITE and MIO get values of \(-0.27\%\), \(-0.14\%\), \(-0.28\%\) and \(-0.68\%\) respectively. 
+
+\begin{figure}[tbh]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Figures/Results/Coverage.jpg}
+  \caption{Mean coverage between all 8 parameter configurations over the modules in the test set.}\label{fig:coverage}
+\end{figure}
+
+Nonetheless, it is noticeable that all values of Cohen's D effect size in Table~\ref{tab:performance} are negative, meaning that the best distributions of coverage values are found while using Pynguin without the GBOS extension.
 This strongly implies that in a general Python developing scenario the usage of the GBOS extension is not advised nor makes any considerable improvement in coverage results, as the mean effect size found in the last time step budget of the runs gets a value of \(-0.32\) over all algorithms, contrary to the value of \(0.21\) (in favour of EvoObj) obtained by Yun Lin et al.\ over all the algorithms used in their experimental phase for the maximum budget of 300 seconds. 
 
-\begin{table}[bth]
+\begin{table}[h!]
   \centering
   \input{Figures/Results/300-table.tex}
   \centering
@@ -757,11 +723,13 @@ This strongly implies that in a general Python developing scenario the usage of 
   The presented GBOS extension for Pynguin \textbf{does not} outperform Pynguin itself while being evaluated over previously studied modules, similarly as EvoObj outperformed EvoSuite. 
 \end{summary}
 
+\newpage
+
 \subsection*{Discussion}
 
 With the results in Table~\ref{tab:performance}, it is shown once more how the extra computational effort needed while using the GBOS extension does not influence the obtained coverage results, at least as a rule of thumb.
 Another possible factor that explains the lack of improvement in the coverage results, is the absence of a need for complex object inputs by the modules under test in order to reach all target branches.
-This latter argument can be backed up partially with the results in Figure~\ref{fig:times}, which tell that even after the applied filtering, some modules still could reach a full branch coverage with the tests provided by an initial population of test chromosomes.
+This latter argument can be backed up partially with the results in Figure~\ref{fig:times}, which tell that even after the applied filtering, some modules still could reach a full branch coverage with the tests provided by an initial population of test chromosomes (e.g.~getting a Search Time of 0 [sec]).
 In addition, the data per time budget step mostly says that during the coverage evolution of Pynguin, there is persistent difference in performance while using the extension, which can be attributed to the random nature of the Search Based algorithms, or to the inter-iteration time difference in the Search Time variable when using the extension, in the case of the final time step of 600 seconds.
 
 Figures~\ref{fig:worst} and~\ref{fig:best} show the branch coverage evolution along the 600 seconds budget for those modules that obtained the best and worst effect size values on each algorithm.
@@ -770,22 +738,20 @@ Contrarily, rather than showing a better performance, the second graph implies t
 
 In terms of number of runs successfully executed, the nature behind the obtained effect size values could have been influenced by the difference in available runs, which ranged between \(2\) and \(28\).
 %The lower number of runs was mostly obtained when running Pynguin with the extension, existing cases in which this only obtained as few as a single possible run.
-
-% TODO - Probably in MIO
-
-\begin{figure}[htb]
+\begin{figure}[pbth]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/worstES.jpg}
   \caption{Branch coverage evolution for the modules that obtained the worst Cohen's D effect size value in each algorithm.}\label{fig:worst}
 \end{figure}
 
-\begin{figure}[htb]
+\begin{figure}[ptbh]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/bestES.jpg}
   \caption{Branch coverage evolution for the modules that obtained the best Cohen's D effect size value in each algorithm.}\label{fig:best}
 \end{figure}
 
 \newpage
+
 
 \section{Research Question 2}
 
@@ -814,13 +780,13 @@ implying, that there is no correlation between the aforementioned variables, whe
 
 \subsection*{Discussion}
 
-\begin{figure}[ht]
+\begin{figure}[ptbh]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/worstA12.jpg}
   \caption{Branch coverage evolution for the modules that obtained the worst Vargha-Delaney \(\hat{A}_{12}\) effect size value in each algorithm.}\label{fig:worsta12}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[ptbh]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/bestA12.jpg}
   \caption{Branch coverage evolution for the modules that obtained the best Vargha-Delaney \(\hat{A}_{12}\) effect size value in each algorithm.}\label{fig:besta12}
@@ -836,6 +802,17 @@ Finally, this could have been influenced once more by the fact that in most of t
 
 \section{Further Analysis}\label{sec:further}
 
+To give a brief description of the different modules that made up the test set, Figure~\ref{fig:olr-hist} shows a ranged histogram (with bins of length \(0.1\)) of Object-like ratios over the 588 executed modules with the continuous line representing the kernel density estimate.
+From these, \(91.33\%\) of the modules, or 537 out of 588 have a ratio below \(50\%\).
+This values might explain the null improvement when using the GBOS extension, as it was stated before, one of the prerequisites to make the implemented heuristic work, is to have full type information regarding the possible complex object inputs needed to reach the target branches.
+Analogously, the OLR distribution does not mean that for the great majority of modules there are not any needed complex object input, but that only for those that have an OLR greater than \(0.0\%\) (and by chance include a target reachable by generating a test with a complex object input) the presented GBOS may be of help in the improvement of coverage results.
+
+\begin{figure}[bth]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Figures/Results/olr-hist.jpg}
+  \caption{Histogram of Object-like ratio over the modules in the test set.}\label{fig:olr-hist}
+\end{figure}
+
 For a deeper understanding of the modules that reached the endmost effect size results in Figures~\ref{fig:worst},~\ref{fig:best},~\ref{fig:worsta12}~and~\ref{fig:besta12}, a final new developer output variable was added into the code of the GBOS extension, called ``GBOSFlags''.
 This variable is a collection of three boolean values, which start with False as default, and change to True if any of the following conditions are met at any point during the test suite generation,
 \begin{itemize}
@@ -847,10 +824,24 @@ With this information, it was possible to understand that in the great majority 
 
 The only different case of value for the output variable, was the module ``pkg\_resources.\_vendor.packaging.tags'', whose test template generation process managed to create a valid PDG, but not a valid test template.
 Considering this case, questions arise about the element of the GBOS extension that made the second step fail, which is most likely due to a lack of information in terms of Data Dependency within the built inter procedural PDG.\@
-One example of this information loss can be found in the presented implementation of the Frame execution when generating the DDG, specifically when the MUT has a ``try-except'' or ``with'' clauses inside any of its basic blocks.
-The problem with these logic rules comes, because their implementation is given sometimes (on the 3.10 Python version) with Python instruction that conditionalize the stack frame state on the presence of an Exception, e.g.~\textbf{SETUP\_WITH} and \textbf{SETUP\_FINALLY}.
-With this case present in the OCG generation, it is non-trivial to obtain the use and definition places, and consequently it is not possible to correctly define the reaching definition equations.
-Sometimes, this problem is represented even by a runtime error, when any instruction of the extended OCG that is being executed, tries to do a POP operation on an empty stack frame.  
+One example of this information loss can be found in the presented implementation of the Frame execution when generating the DDG, specifically when the MUT has ``try-except'' or ``with'' clauses inside any of its basic blocks.
+The problem with these logic rules comes, because their implementation is given (on the 3.10 Python version) with Python instruction that conditionalize the stack frame state on the presence of an Exception, e.g.~\textbf{SETUP\_WITH} and \textbf{SETUP\_FINALLY}.
+An example of this behaviour is the snippet
+
+\begin{minted}{python}
+try:
+    # A SETUP_FINALLY is emitted here, pointing to the except block
+    pass
+except:
+    pass
+\end{minted}
+
+where the stack frame suffers no relative change in case of no Exception, or is restored to its state before the ``try'' block and pushes different Exception-related variables onto the stack (e.g.~the raised Exception, the address of the exception handler, etc.) before continuing in the ``except'' block on the contrary case.  
+The procedure in this type of instruction for the development stage of the extension was to set the node's stack frame effect to be the one given by the successful execution.
+
+With this case present in the OCG generation, it is non-trivial to obtain the use and definition places, and consequently it is not possible to fully define the reaching definition equations.
+Sometimes, this problem is represented even by a runtime error, when an instruction of the extended OCG that is being executed, tries to do a POP operation on an empty stack frame.  
+Nonetheless, in the experiment runs this error did not raise any Exception, which still allowed the heuristic to generate a non-finished OCG.\@ 
 
 Regarding once more the example module presented in Figure~\ref{lst:1}, the line plots presented in Figure~\ref{fig:example_cov} show the evolution in branch coverage results over a Search Budget of 600 seconds for four cases of two characteristics each, either using or not the GBOS extension, and either using MIO and MOSA as examples of evolutionary and genetic algorithms.
 In them, it is remarkable how none of the baseline Pynguin approaches could escape the search landscape local optima, which is attributed to the random nature prevalent in both algorithms, together with the limited search time.
@@ -891,23 +882,7 @@ After that, it deserializes the returned test case from Codex into the internal 
 For the benchmark, modules from 35 projects from the Pynguin paper were filtered so just those that do not fail to produce result and those that do not reach \(100\%\) coverage in less than a minute are experimented over.
 The baselines for the experimental phase were Pynguin with MOSA and CodexOnly, which while being compared to CodaMOSA were statistically compared using the Mann-Whitney U-Test.
 The results showed that CodaMOSA performs significantly better, reaching a higher coverage on 173 more modules compared to MOSA and 279 more modules compared to CodexOnly.
-\subsection{PBT-GPT}
 
-Property-based testing (PBT) is a kind of fuzz testing whose idea is to generate a large amount of random inputs to statistically test a program by checking if the outputs are close to a desired property.
-Within this scope, PBT-GPT~\cite{DBLP:journals/corr/abs-2307-04346} is presented by Vikram et al.\ as an implementation of automatic property-based test generation for Python by means of Large Language Model prompting, through Chat-GPT4.
-The general idea of this testing approach, is to operate with three different prompting approaches to generate Python tests of specific module methods while using Hypothesis\footnote{https://hypothesis.readthedocs.io/en/latest/}, a PBT library specialized in input generators, and the API documentation of the so-called method.
-These three strategies for prompt calling are named and described as the following:
-
-\begin{itemize}
-  \item Independently, where both the prompts for the input generator and properties assertion are synthesized from independent instances of Chat-GPT, and then combined in a single Python code snippet
-  \item Consecutively, where the prompts are executed sequentially on the same instance of the LLM and combined at the end
-  \item Together, where all necessary prompts are combined, and called singularly in an instance of LLM.\@
-\end{itemize}
-
-These have as context for the prompt, the LLM being an expert in Python, the LLM needing to review the API documentation, instruction to generate a PBT component, and the desired output format.
-
-For the result evaluation quality, the authors were guided by; generator validity and diversity, that measure either the correct behaviour or diversity of inputs; and property validity, soundness and strength, that measure the encounter of runtime errors, the existence of input/output pairs that violates the property but is valid at the same time, or the ability to check core logic of an API method.
-With these guidelines, the modules/methods under test got measurements close to \(100\%\) in generator validity and property validity, and between \(68\%\) and \(88\%\) for the rest of them, which helps conclude that PBT-GPT is a promising starting point to iterate from.
 \subsection{CodeT}
 
 Following the examples of software artefacts presented by Microsoft developers, in 2022 is published a paper regarding CodeT~\cite{DBLP:journals/corr/abs-2207-10397}, a LLM based code generation tool.
