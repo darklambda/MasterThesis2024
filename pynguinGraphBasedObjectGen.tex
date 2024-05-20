@@ -28,6 +28,7 @@
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage[caption=false]{subfig}
+\usepackage{rotating}
 
 \addbibresource{ref.bib}
 
@@ -163,6 +164,18 @@ The Pynguin extension can be found, together with the example module presented i
 \chapter{Background}\label{chap:background}
 
 \section{Automatic Test Generation}
+
+Software testing is widely recognized among developers as a good practice, when developing any kind of software.
+This comes from the benefits, in terms of bug finding and correct functionality, that writing good software tests brings.
+Anyhow, the latter adjective ``good'' is subjective as a concrete measure, and often replaced for a fitness metric, such as coverage.
+
+Code coverage can be represented in many ways, such as the amount of lines that are executed when running a test suite, the amount of branch-decisions that are taken or the amount of lines that are checked when evaluating the validity of a test assertion.
+Although these fitness functions are clearly defined, it is usually difficult and time-consuming for developers to come up with enough or high quality test cases that cover in terms of coverage their respective software completely.
+This drawback appears when a software is updated with dead code, or is not written at the same time as its test cases, which are strong enough reasons to think of automatic test generation as a viable general-case alternative.
+
+Since at least the past two decades, there has been a collective effort to shrink the necessity for handwritten software tests, with the development of tools and techniques related to evolutionary algorithms~\cite{DBLP:conf/sigsoft/FraserA11}, software static analysis~\cite{DBLP:conf/osdi/CadarDE08}, and (in a more current solution) large language models~\cite{DBLP:journals/corr/abs-2207-10397}.
+Usually, automatic test generation is portrayed as an optimization problem, that takes test cases or test suites as solutions to the task of maximizing the fitness coverage of a module under test and minimizing the amount of test cases/statements within a test suite.
+In this scenario, the greatest obstacles are finding a correct representation of a test case for the chosen programming language, and finding a suitable way of going through the domain's search space 
 
 \newpage
 
@@ -516,7 +529,7 @@ This is done in a recursive manner and complying to a certain recursion level \(
 At this point, the interprocedural PDG is ready to be backward sliced with the necessary stopping conditions, contextualized to Python's bytecode instructions.
 The slicing begins with the single instruction node in the PDG that contains the target branch, and it stops when either the node loads one of the target method's parameters (e.g.\@it is the first LOAD\_FAST that has one of the target method's parameters as argument) or it has a LOAD\_ATTR instruction; the node has a LOAD\_GLOBAL instruction; or the node has no predecessors (it is an entry node).
 
-\section{PDG Interprocedural Analysis}
+\section{PDG Interprocedural Analysis}\label{sec:pdgia}
 
 The interprocedural analysis is the next step to follow, and it starts by iterating over the list of know calls and selecting only the methods to check for the presence of an instruction chain 
 \[\begin{pmatrix} \text{LOAD\_FAST} \\ \text{or} \\ \text{LOAD\_ATTR} \\ \text{or} \\ \text{BINARY\_SUBSCR} \end{pmatrix} \rightarrow \text{LOAD\_METHOD} \rightarrow \text{CALL\_METHOD}\]
@@ -541,6 +554,13 @@ What the analysis does here, is replacing the method call edge into a direct dat
 
 A forward slicing is then performed into the PDG, starting from the parameter loading nodes and stopping at relevant nodes (those with LOAD\_ATTR or BINARY\_SUBSRC instructions) fulfilling certain conditions.
 The conditions for this operation are, that the relevant nodes stop the slicing, if and only if they do not have any more child nodes that are also relevant.
+
+To give a comparative of the OCG creation process between Lin et al.'s Java implementation~\cite{DBLP:conf/sigsoft/0001O00D21} and the one from this thesis, Figure~\ref{fig:ocgs} shows both the OCG previous to the forward slicing from the original paper of the heuristic, and the OCG generated with Pynguin and its extension.
+
+\begin{sidewaysfigure}[bhtp]
+  \includegraphics[width=\textwidth]{Figures/ocg_graphs.png}
+  \caption{On the left, a representation of the OCG generated from the work of Lin et al.~\cite{DBLP:conf/sigsoft/0001O00D21}, and on the right, an OCG for the parallel target branch, when executing Pynguin with the GBOS extension.}\label{fig:ocgs}
+\end{sidewaysfigure}
 
 \section{OCG Translation}
 
@@ -756,6 +776,7 @@ In terms of number of runs successfully executed, the nature behind the obtained
 \section{Research Question 2}
 
 Figure~\ref{fig:scatter} shows a scatter plot of the different modules that presented an OLR measure greater than \(50\%\) and their Vargha-Delaney \(\hat{A}_{12}\) effect size with respect with the two distributions available for each approach and algorithm.
+In this figure, the general effect size average over all algorithms is given by the value \(0.50\). 
 
 \begin{figure}[bth]
   \centering
@@ -804,7 +825,7 @@ Finally, this could have been influenced once more by the fact that in most of t
 
 To give a brief description of the different modules that made up the test set, Figure~\ref{fig:olr-hist} shows a ranged histogram (with bins of length \(0.1\)) of Object-like ratios over the 588 executed modules with the continuous line representing the kernel density estimate.
 From these, \(91.33\%\) of the modules, or 537 out of 588 have a ratio below \(50\%\).
-This values might explain the null improvement when using the GBOS extension, as it was stated before, one of the prerequisites to make the implemented heuristic work, is to have full type information regarding the possible complex object inputs needed to reach the target branches.
+This values might explain the null improvement when using the GBOS extension, as one of the prerequisites to make the implemented heuristic work, is to have full type information regarding the possible complex object inputs needed to reach the target branches.
 Analogously, the OLR distribution does not mean that for the great majority of modules there are not any needed complex object input, but that only for those that have an OLR greater than \(0.0\%\) (and by chance include a target reachable by generating a test with a complex object input) the presented GBOS may be of help in the improvement of coverage results.
 
 \begin{figure}[bth]
@@ -924,49 +945,7 @@ following code'', one of the mutant survivors, and a final statement ``Provide a
 
 In the experimental trial of this tool's paper, two LLM models were used, OpenAI's Codex and llama2-chat, to be run together with MutAP over the benchmarks; HumanEval, which consists of 164 human written programming problems; and Refactory, consisting of 1710 buggy submissions from students for 5 assignments of a Python programming course.
 The overall results mainly cover the mutation score obtained by all the possibles methods of MutAP, obtaining numbers between \(89.13\%\) and \(93.57\%\) on the average over both models and both datasets.
-\subsection{MUTester}
 
-MUTester~\cite{DBLP:journals/corr/abs-2307-00404} is an automatic test generation research software focused on the synthesis of test cases for APIs of the many already existing Deep Learning libraries, i.e. Numpy, Scikit-learn, TensorFlow.
-Its structure is presented in Figure~\ref{fig:mutester}, which describes a methodology that solely relies on heuristics regarding the mining of the documentation and knowledge repositories of the APIs in question. 
-
-%TODO: Add numbers
-
-\begin{figure}[tb]
-  \centering 
-  \includegraphics[width=.99\textwidth]{Figures/mutester.png}
-  \caption{MUTester structure }\label{fig:mutester}
-\end{figure}
-
-The first half of the repository mining (1) is done by applying web scrapping to the documentation pages of different methods of the libraries, so that information regarding input type (via signature definition mining) and constraints can be gathered, which as mentioned before, is crucial for a correct test generation.
-Input constraints are collected from the natural language parameter description that is usually presented in Python documentation pages, and rather than extracted using a LLM model, they are identified using by recognizing linguistic patterns.
-A last piece of information that is gathered in this step are any code snippet example, so any useful input can be statically analysed.
-
-Stack Overflow is the source of information for the second half of repository mining (2), from where the authors extracted from any related (question, accepted answer) pair the code snippets that had relevant method sequences in them.
-Then (3), these method call sequences are studied using the Apriori~algorithm~\cite{agrawal1994fast} to look for intrinsic rules between the calls.
-
-Finally, test case generation (4) is managed as a guided synthesis of a call sequence, that ends in the actual method under test, similar to what Pynguin does, but with the help of all the relationship information obtained in the previous steps.
-Similarly, the input generation is conducted.
-
-Throughout the analysis of MUTester, the API documentation and methods of the frameworks,  Scikit-learn, PyTorch, TensorFlow and CNTK were accounted for.
-Regarding test coverage, the baselines for the experimentation were Pynguin and a Python implementation of Randoop, which achieved \(34.16\%\) and \(30.87\%\) line coverage in average, versus the results obtained by MUTester, that showed improvements ranging from \(15.72\%\) to \(27\%\).
-A Wilcoxon signed-rank
-statistical test~\cite{Rey2011} was also applied to the results, obtaining a p-value of less than \(0.05\) suggesting that MUTester outperformed both baselines in the stated datasets.
-\subsection{Differential Prompting}
-
-Detection of software failures can be acknowledged as a benefit that comes from practising software testing, and seeking this idea, Li et al.~\cite{li2023nuances} studied the implications of calling ChatGPT with prompts that bypass the insensibility of it to code nuances, so that fail inducing test cases can be generated.
-Differential Prompting is the name of the proposed technique, and it divides the failure-inducing generation task in three steps:
-
-\begin{itemize}
-  \item Program intention inference, where ChatGPT is asked from a Program Under Test (PUT) to inference and explain the idea of it as a whole
-  \item Program generation, where ChatGPT is again prompted to generate code snippets similar to the actual PUT, but by implicitly using the output of the last step as context
-  \item Differential testing, in which a test pool of diverse inputs for the PUT is generated in order to test the references from the previous and their outputs.
-  In the case that all outputs are consistent with a same set of inputs, this is marked as a ``valid test'' and compared to the output of the PUT.\@
-  If they are actually the same and all the branches were already covered, then the program is marked as non-faulty.
-  On the contrary, the input set is marked as a failure-inducing test case.
-\end{itemize}
-
-With these steps, Differential Prompting was put to the test against Pynguin and an out-of-the-shelf ChatGPT usage to evaluate the benchmarks QuixBugs\footnote{https://github.com/jkoppel/QuixBugs} and Codeforces\footnote{https://codeforces.com} in terms of bug presence.
-In these, the success rate of Differential Prompting was \(75\%\) and \(66.7\%\) respectively, in some cases 10 times better than the baselines.
 
 \section{SB-Based}
 
@@ -1023,23 +1002,33 @@ For the specified metrics, the tool got a \(68.4\%\) of line coverage and a \(10
 
 \chapter{Conclusions}~\label{chap:conclusions}
 
-Comments on
-\begin{itemize}
-  \item Current state of Python as how its developers use it.
-  \item Effectiveness of the GBOS extension in this current state.
-  \item Summary of the research questions.
-  \item Other questions? (ask Stephan).
-  \item Comments on the future of Pynguin and Python, considering the state of the art and the study's results.
-\end{itemize}
+Through the conducted study, a Python implementation for Pynguin of the Graph Based Object Synthesis heuristic was presented for the generation of the previously defined complex object inputs.
+The expectation from the experiments aimed for an improvement in branch coverage results when running the approach into a set of Python modules, that served as generalization of the common publicly available Python module.
+Although, this prediction had the heuristic's original result on its Java implementation of a Cohen's D effect size improvement of \(0.21\) as baseline, the observed effect size in the general results presented a different outcome, with a negative value of \(-0.32\).
+
+At the same time, the introduced metric ``OLR'' helped as an intermediary measure for the presence of a need for complex object inputs within Python modules. 
+Nonetheless, not even by focusing the efforts of the experimental setup on those Python modules that had a greater OLR, any improvement was found at all, getting an \(\hat{A}_{12}\) Vargha-Delaney effect size of \(0.50\).
+This behaviour was analysed further with the idea of a possible correlation between the OLR and the improvement when using the GBOS approach, which was completely refuted by the computation of both Pearson's and Spearman's correlation coefficient.
+
+While the presented approach did not improve Pynguin's results on the set of Python modules beforehand, this might as well describe the current state of the usage of Python as a programming language, implying that even though there are many resources for a correct typing within the dynamically typed language, most developers still do not make full usage of them.
+The latter statement is made based on the results of the OLR histogram, exhibited in Figure~\ref{fig:olr-hist}, explaining a general lack of explicit type information regarding callable parameters.
+
+With this last point, it would be reasonable to propose a repetition of the current study and its experimental setup sometime in the future, whenever there might be a change in Python's developer community over the way explicit type information is handled. 
 
 \section{Future Work}
 
-Comments on
-\begin{itemize}
-  \item Improvement of the static analysis of the Data Dependencies, for an improved OCG construction.
-  \item Improvements in terms of optimization over the whole GBOS process.
-  \item Link some comment about the state of the art and the usage of LLMs.
-\end{itemize}
+Considering the various challenges encountered during the coding of Pynguin's GBOS extension, there are many possible updates and subsequent approached that could be tried and are left as the proposed future work.
+
+One of them, is the improvement of the \classname{DataDependenceGraph}, specifically during its computation and the execution of stack frame effects coming from the different instruction in the CFG.\@
+The idea for this point would be to add into the dictionary of \classname{Frame} instances, a tuple or collection instead of a single frame for those nodes that contain an instruction with different stack frame states depending on the presence of an Exception.
+
+Another idea that might be worth diving into, is the addition of functions into the interprocedural analysis (see Section~\ref{sec:pdgia}) made before the construction of the OCG.\@
+Here, a future update would need to ideate a way to link every argument from the Python Bytecode relevant for a function call, with the corresponding variable names in the function's particular sub PDG.\@
+
+Although it has not been mentioned before so far, considering the GBOS specific times regarding execution, it could be possible that further optimization of the developed code might improve some computation overhead produced by the heuristic e.g.~by saving the interprocedural PDG generated for a branch to be reused in another one that belongs to a same code object.
+
+Finally, one factor that would make the GBOS heuristic much more appliable to a general case, is the ability to not depend on explicit type annotations.
+This could be achieved in many ways, but considering the ongoing discovery of diverse application for LLMs and the good results obtained by the state-of-the-art automatic test generation tools that use this technology, it is safe to say applying one of the models might a first approach.
 
 \backmatter{}
 
