@@ -175,7 +175,7 @@ This drawback appears when a software is updated with dead code, or is not writt
 
 Since at least the past two decades, there has been a collective effort to shrink the necessity for handwritten software tests, with the development of tools and techniques related to evolutionary algorithms~\cite{DBLP:conf/sigsoft/FraserA11}, software static analysis~\cite{DBLP:conf/osdi/CadarDE08}, and (in a more current solution) large language models~\cite{DBLP:journals/corr/abs-2207-10397}.
 Usually, automatic test generation is portrayed as an optimization problem, that takes test cases or test suites as solutions to the task of maximizing the fitness coverage of a module under test and minimizing the amount of test cases/statements within a test suite.
-In this scenario, the greatest obstacles are finding a correct representation of a test case for the chosen programming language, and finding a suitable way of going through the domain's search space 
+In this scenario, the greatest obstacles are finding a correct representation of a test case for the chosen programming language, and finding a suitable way of going through the domain's search space .
 
 \newpage
 
@@ -646,13 +646,14 @@ For those modules that stay in the test set for this research question after a f
 For the experimental executions of Pynguin with the new GBOS extension, the data set of Python projects initially used as a benchmark for Pynguin's type tracing update, joined with a subset of Pynguin's EMSE submission test modules~\cite{DBLP:journals/corr/abs-2111-05003}, was taken as a base for the answer of both research questions.
 This initial testing set is formed by 1047 modules over 44 projects.
 
-In a first instance, are going to be filtered all modules that reach full branch coverage using the MIO algorithm without the GBOS extension, before 100 iterations or 600 seconds of execution time.
+In a first instance, are going to be filtered all modules that reach full branch coverage using the MIO algorithm without the GBOS extension, before 100 iterations or 600 seconds of execution search time.
 The filtering process left at this point 588 modules over the same 44 projects.
 For the answering of the second research question, a final filtering criteria was applied by comparing the  results of the runs to their Import Coverage, and checking the object-like ratio described in Equation~\ref{eq:olr}.
 Here, only those modules that have a final coverage that is different to their Import Coverage value or have a OLR greater than \(0.5\) are kept.
+In the run statistical data set there were some configurations of module and approach that did not reach more than 10 runs, and were also removed from the following analysis.
 
-Regarding the execution parameters of Pynguin, 8 main configurations are used to cover the 4 extended algorithms, and ether the usage or not usage of the GBOS extension itself.
-The configurations that use the WHOLE\_SUITE argument, also needed to set the parameter ``--use\_archive'' to true, as the extension uses the archive of each \classname{GenerationAlgorithm} to obtain the branch goals.
+Regarding the execution parameters of Pynguin, 8 main configurations are used to cover the 4 extended algorithms, and either the usage or not usage of the GBOS extension itself.
+The configurations that used the WHOLE\_SUITE argument, needed additionally to set the parameter ``--use\_archive'' to true, as the extension uses the archive of each \classname{GenerationAlgorithm} to obtain the branch goals.
 From the newly introduced parameters, only ``--no\_change\_iterations'' was tuned in a hand-made manner while having the first test runs as reference.
 In these (and similar to the results finally used for the analysis), the runs using the MIO algorithm reached mean algorithm iteration values close to an order of magnitude between \(10^5\) and \(10^6\), contrary to the rest of algorithms, which reached values closer to an order of magnitude of \(10^4\).
 Because of this, the mentioned parameter was left at the default value of \(1000\) for MIO, and lowered to \(300\) for the other algorithms.
@@ -705,14 +706,15 @@ The values for percentage difference between both approaches over the average va
 \end{figure}
 
 Figure~\ref{fig:times} describes through two plots the overall search time and the time needed by the extension per phase.
+For these plots, only were accounted those modules that had valid results in the 8 configurations at the same time.
 The violin plot on the left, shows the Search Time distribution of the runs, revealing that both Pynguin and the extension use the full budget of 600 seconds for any computation that is not related to the GBOS extension.
-The percentage change (e.g.~\(\frac{\text{GBOSValue} - \text{PynguinValue}}{\text{PynguinValue}}\times 100\)) for the average values of the distributions presented in this plot, are \(9.35\), \(6.92\), \(7.52\) and \(1.74\) respectively, from left to right.
+The percentage change (e.g.~\(\frac{\text{GBOSValue} - \text{PynguinValue}}{\text{PynguinValue}}\times 100\)) for the average values of the distributions presented in this plot, are \(-0.006\), \(-0.002\), \(0.005\) and \(-0.013\) respectively, from left to right.
 
 Regarding the times that are considered while doing any GBOS-related operation, the bar plot on the right shows a comparison of the average values per module, per algorithm, of the time spent in deciding if the current iteration generates a test template or not (Decision Time), time spent generating the test templates (Generation Time), and the Search Time as baseline.
 By looking at the sizes of the different sections of each algorithms' bars, it is safe to state that compared to the other options, MIO is the algorithm that is affected the most with the extra computational effort that the GBOS extension generates.
 This can be explained by the lightweight nature of the evolution steps implemented in Pynguin, which are reduced to only selecting a new test case if necessary and mutating it the maximum amount of times possible depending on the algorithm's parameters.
-Considering a comparison between the Search Time and the Decision Time, MIO obtains a percentage change of \(279.86\), while the other algorithms have values ranging between \(-87.48\) and \(-83.68\).
-With respect to the Generation Time, the comparison using percentage change of MIO gives a value of \(346.54\), while the other algorithms have values ranging between \(53.69\) and \(74.75\).
+Considering a comparison between the Search Time and the Decision Time, MIO obtains a percentage change of \(-31.773\), while the other algorithms have values ranging between \(-99.293\) and \(-98.995\).
+With respect to the Generation Time, the comparison using percentage change of MIO gives a value of \(-71.011\), while the other algorithms have values ranging between \(-99.839\) and \(-98.385\).
 
 The data reported in Table~\ref{tab:performance} shows the mean coverage of all tested modules per approach, the p-Values obtained through statistical Mann-Whitney U tests and Cohen's D effect size measures, in any pair of algorithm and runtime budget.
 Generally, all p-Values are greater than \(0.05\) with respect to the sets of obtained branch coverage values in each module, accepting the null hypothesis that assumes no effect or statistical difference between the distributions.
@@ -727,7 +729,7 @@ The presented violin plots imply that in general, both approaches to the test ge
 \end{figure}
 
 Nonetheless, it is noticeable that all values of Cohen's D effect size in Table~\ref{tab:performance} are negative, meaning that the best distributions of coverage values are found while using Pynguin without the GBOS extension.
-This strongly implies that in a general Python developing scenario the usage of the GBOS extension is not advised nor makes any considerable improvement in coverage results, as the mean effect size found in the last time step budget of the runs gets a value of \(-0.32\) over all algorithms, contrary to the value of \(0.21\) (in favour of EvoObj) obtained by Yun Lin et al.\ over all the algorithms used in their experimental phase for the maximum budget of 300 seconds. 
+This strongly implies that in a general Python developing scenario the usage of the GBOS extension is not advised nor makes any considerable improvement in coverage results, as the mean effect size found in the last time step budget of the runs gets a value of \(-0.04\) over all algorithms, contrary to the value of \(0.21\) (in favour of EvoObj) obtained by Yun Lin et al.\ over all the algorithms used in their experimental phase for the maximum budget of 300 seconds. 
 
 \begin{table}[h!]
   \centering
@@ -738,6 +740,32 @@ This strongly implies that in a general Python developing scenario the usage of 
   \input{Figures/Results/600-table.tex}
   \caption{Coverage Performance of Pynguin and GBOS with different time budgets.}\label{tab:performance}
 \end{table}
+
+A summary of the amount of modules used in every step of this research question is found in Table~\ref{tab:modrq1}, including the initial set before the filtering of those configurations that did not reach 10 runs, and after the intersection of modules between those available for both main approaches (default Pynguin and GBOS).
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{lcccc}\toprule
+    \multicolumn{1}{c}{\multirow{2}{*}{\# Modules}} & \multicolumn{4}{c}{Pynguin}                \\ \cmidrule(lr){2-5}
+    \multicolumn{1}{c}{}                            & DynaMOSA & MOSA    & WHOLE SUITE & MIO     \\ \midrule
+    Initial Set                                     & \(557\)  & \(553\) & \(555\)     & \(551\) \\
+    RQ1 Before Intersection                         & \(541\)  & \(540\) & \(544\)     & \(538\) \\
+    RQ1 After Intersection                          & \(187\)  & \(187\) & \(187\)     & \(187\) \\ 
+    \bottomrule
+  \end{tabular} 
+  \centering 
+  \begin{tabular}{lcccc}\toprule
+    \multicolumn{1}{c}{\multirow{2}{*}{\# Modules}} & \multicolumn{4}{c}{GBOS}                   \\ \cmidrule(lr){2-5}
+    \multicolumn{1}{c}{}                            & DynaMOSA & MOSA    & WHOLE SUITE & MIO     \\ \midrule
+    Initial Set                                     & \(529\)  & \(523\) & \(551\)     & \(289\) \\
+    RQ1 Before Intersection                         & \(389\)  & \(407\) & \(449\)     & \(193\) \\
+    RQ1 After Intersection                          & \(187\)  & \(187\) & \(187\)     & \(187\) \\ 
+    \bottomrule
+  \end{tabular}
+
+\caption{Amount of modules used while analysing each experimental configuration  for the answering of Research Question 1.}\label{tab:modrq1}
+\end{table}
+
 
 \begin{summary}{RQ1: Performance of GBOS over Pynguin}
   The presented GBOS extension for Pynguin \textbf{does not} outperform Pynguin itself while being evaluated over previously studied modules, similarly as EvoObj outperformed EvoSuite. 
@@ -750,14 +778,12 @@ This strongly implies that in a general Python developing scenario the usage of 
 With the results in Table~\ref{tab:performance}, it is shown once more how the extra computational effort needed while using the GBOS extension does not influence the obtained coverage results, at least as a rule of thumb.
 Another possible factor that explains the lack of improvement in the coverage results, is the absence of a need for complex object inputs by the modules under test in order to reach all target branches.
 This latter argument can be backed up partially with the results in Figure~\ref{fig:times}, which tell that even after the applied filtering, some modules still could reach a full branch coverage with the tests provided by an initial population of test chromosomes (e.g.~getting a Search Time of 0 [sec]).
-In addition, the data per time budget step mostly says that during the coverage evolution of Pynguin, there is persistent difference in performance while using the extension, which can be attributed to the random nature of the Search Based algorithms, or to the inter-iteration time difference in the Search Time variable when using the extension, in the case of the final time step of 600 seconds.
+In addition, the data per time budget step mostly says that during the coverage evolution of Pynguin using MIO, there is persistent difference in performance while using the extension, which can be attributed to the random nature of the Search Based algorithms, or to the inter-iteration time difference in the Search Time variable when using the extension, in the case of the final time step of 600 seconds.
 
 Figures~\ref{fig:worst} and~\ref{fig:best} show the branch coverage evolution along the 600 seconds budget for those modules that obtained the best and worst effect size values on each algorithm.
-In the first plot, during the whole search time budget it can be remarked how the GBOS extension has poorly evolves compared to Pynguin by itself, following the behaviour already found in Table~\ref{tab:performance}.
-Contrarily, rather than showing a better performance, the second graph implies that when the best effect sizes where found, both approaches had an almost equal evolution in branch coverage over time, except for a few segments, as it can be seen in the lines for DynaMOSA, MOSA and Whole Test Suite.
+In the first and second graphs together, during the whole search time budget it can be remarked how both curves have the same results, following the behaviour already found in Table~\ref{tab:performance}.
+This can be backed by the number of runs successfully executed, as all of these modules had a small difference between the both main approaches, ranging from \(2\) to \(7\).
 
-In terms of number of runs successfully executed, the nature behind the obtained effect size values could have been influenced by the difference in available runs, which ranged between \(2\) and \(28\).
-%The lower number of runs was mostly obtained when running Pynguin with the extension, existing cases in which this only obtained as few as a single possible run.
 \begin{figure}[pbth]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/worstES.jpg}
@@ -776,7 +802,8 @@ In terms of number of runs successfully executed, the nature behind the obtained
 \section{Research Question 2}
 
 Figure~\ref{fig:scatter} shows a scatter plot of the different modules that presented an OLR measure greater than \(50\%\) and their Vargha-Delaney \(\hat{A}_{12}\) effect size with respect with the two distributions available for each approach and algorithm.
-In this figure, the general effect size average over all algorithms is given by the value \(0.50\). 
+For each graph, modules that had valid runs while using both Pynguin and the extension were taken into account, leaving an amount of modules between \(8\) and \(38\) after the OLR filtering.
+In this figure, the general effect size average over all algorithms is given by the value \(0.516\). 
 
 \begin{figure}[bth]
   \centering
@@ -787,13 +814,33 @@ In this figure, the general effect size average over all algorithms is given by 
 To answer this research question, two types of correlations metrics were calculated; Pearson's correlation coefficient, for linear dependency; and Spearman's rank correlation coefficient, for monotonic relationship between the variables.
 Both of these metrics are categorized depending on the magnitude and sign of their values, ranging from \(-1\) to \(1\) and stating a strong correlation for magnitudes closer to \(1\), a direct relation for positive values and an inverse relation for negative values.
 
-The values obtained for each metric follow a repetitive behaviour for each algorithm:
-\begin{itemize}
-  \item the Pearson's correlation coefficient values ranged between \(0.09\) and \(0.19\), meaning no linear correlation between the variables OLR and \(\hat{A}_{12}\) effect size
-  \item the Spearman's rank correlation coefficient values ranged between \(0.01\) and \(0.19\), meaning no monotonic correlation between the variables OLR and \(\hat{A}_{12}\) effect size
-\end{itemize}
+The values obtained for each metric follow a repetitive behaviour in each algorithm; the Pearson's correlation coefficient values ranged between \(0.13\) and \(0.63\), meaning mostly no linear correlation between the variables OLR and \(\hat{A}_{12}\) effect size; the Spearman's rank correlation coefficient values ranged between \(0.08\) and \(0.49\), meaning no monotonic correlation between the variables OLR and \(\hat{A}_{12}\) effect size; implying, that there is no correlation (or a weak correlation) between the aforementioned variables, when using the GBOS extension in a general Python module scenario.
+One could infer a possible linear correlation when applying MIO, as it got a Pearson correlation greater than 0.5, but considering the gathered data this far from the previous research question, this values is not conclusive.
 
-implying, that there is no correlation between the aforementioned variables, when using the GBOS extension in a general Python module scenario.
+A summary of the amount of modules used in every step of this research question is found in Table~\ref{tab:modrq2}, including once again the initial set before the filtering of those configurations that did not reach 10 runs, the preliminary filter of the modules that reached a coverage result greater than the import coverage, and the posterior intersection of modules for every configuration and filtering of modules that reached an OLR greater than \(50\%\).
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{lcccc}\toprule
+    \multicolumn{1}{c}{\multirow{2}{*}{\# Modules}} & \multicolumn{4}{c}{Pynguin}                \\ \cmidrule(lr){2-5}
+    \multicolumn{1}{c}{}                            & DynaMOSA & MOSA    & WHOLE SUITE & MIO     \\ \midrule
+    Initial Set                                     & \(557\)  & \(553\) & \(555\)     & \(551\) \\
+    RQ2 Before Intersection                         & \(492\)  & \(490\) & \(494\)     & \(487\) \\
+    RQ2 After Intersection                          & \(32\)   & \(31\)  & \(38\)      & \(8\)   \\ 
+    \bottomrule
+  \end{tabular} 
+  \centering 
+  \begin{tabular}{lcccc}\toprule
+    \multicolumn{1}{c}{\multirow{2}{*}{\# Modules}} & \multicolumn{4}{c}{GBOS}                   \\ \cmidrule(lr){2-5}
+    \multicolumn{1}{c}{}                            & DynaMOSA & MOSA    & WHOLE SUITE & MIO     \\ \midrule
+    Initial Set                                     & \(529\)  & \(523\) & \(551\)     & \(289\) \\
+    RQ2 Before Intersection                         & \(343\)  & \(360\) & \(401\)     & \(145\) \\
+    RQ2 After Intersection                          & \(32\)   & \(31\)  & \(38\)      & \(8\)   \\ 
+    \bottomrule
+  \end{tabular}
+
+\caption{Amount of modules used while analysing each experimental configuration for the answering of Research Question 2.}\label{tab:modrq2}
+\end{table}
 
 \begin{summary}{RQ2: Correlation of coverage improvement and OLR}
   The usage of the presented GBOS extension \textbf{does not} induce a correlated improvement in branch coverage results, when applied to Python modules that have a higher OLR metric.
@@ -814,10 +861,11 @@ implying, that there is no correlation between the aforementioned variables, whe
 \end{figure}
 
 The obtained answer for the second research question develops the same ideas as the discussion of the first research question, stating that the majority of Python modules in the testing set either, do not include type information or the necessity for complex object inputs.
-Following the same procedure as before, Figures~\ref{fig:worsta12}~and~\ref{fig:besta12} show the evolution in coverage results over the time budget, for those modules that obtained the worst \(\hat{A}_{12}\) effect size measure in the second research question.
-Once more, and supported by all the data gathered so far, the results in coverage for this effect size measure prove that both approaches of Pynguin shows in each chosen algorithm, either no statistical difference or a gap so big in the amount of runs between distributions, that the results in effect size bring no conclusive information.
-Examples of this are the plots for DYNAMOSA and MOSA in Figure~\ref{fig:worsta12}, which are instances were the \(\hat{A}_{12}\) is lower than \(0.5\) (meaning better results when using Pynguin without the extension) but the mean final coverage show two scenarios, one where the GBOS extension has a better final result and one where it does not.
-Finally, this could have been influenced once more by the fact that in most of the extreme cases of effect size results (best and worst), Pynguin without GBOS could finish most of its 30 proposed iterations and with the extension it only could finish one or two. 
+Following the same procedure as before, Figures~\ref{fig:worsta12}~and~\ref{fig:besta12} show the evolution in coverage results over the time budget, for those modules that obtained the worst  and best \(\hat{A}_{12}\) effect size measure in the second research question.
+Once more, the results in coverage for this effect size measure prove that both approaches of Pynguin show in each chosen algorithm, either no statistical difference or a gap so big in the amount of runs between distributions, that the results in effect size bring no conclusive information.
+
+One example of this, is the case of the fourth plot of Figure~\ref{fig:besta12}, showing the evolution in coverage for the modules that obtained the best \(\hat{A}_{12}\) effect size in the configurations that used MIO.\@
+In this instance both approaches had a difference in runs of 19, with default Pynguin having the most of them (30) and making the effect size value ambiguous. 
 
 \newpage
 
@@ -842,9 +890,27 @@ This variable is a collection of three boolean values, which start with False as
   \item a test template is added into the algorithm's population.
 \end{itemize}
 With this information, it was possible to understand that in the great majority of aforementioned modules, none of these three values was set to True, fact that further explains the coverage results and base the answers given to the proposed research questions.
+An example of this behaviour is the module ``flutils.packages'', which obtained one of the best \(\hat{A}_{12}\) effect size values, but still did not generate any test template, meaning that the coverage result distribution improvement is given merely by randomness.
+Further examination of this module, indicates that custom classes are defined in it, but the majority of its functions do not use them as parameters.
+Instead, they use Python primitives or unions of primitives, except for the function \callable[ver\_obj]{\_each\_version\_part} which uses a class \classname{StrictVersion} part of versions of Python before 3.12, and can be fully constructed with a single string, making it not count explicitly as a complex object.
 
-The only different case of value for the output variable, was the module ``pkg\_resources.\_vendor.packaging.tags'', whose test template generation process managed to create a valid PDG, but not a valid test template.
-Considering this case, questions arise about the element of the GBOS extension that made the second step fail, which is most likely due to a lack of information in terms of Data Dependency within the built inter procedural PDG.\@
+\begin{minted}{python}
+
+# Module flutils.packages
+
+def _each_version_part(
+        ver_obj: StrictVersion,
+) -> Generator[_VersionPart, None, None]:
+    version: Tuple[int, int, int] = ver_obj.version
+    prerelease: Union[Tuple[str, int], None] = ver_obj.prerelease
+    prerelease_built = False
+# ...
+\end{minted}
+
+However, an exception to the rule was the module ``humanfriendly.compat'' (encountering one of the best Cohen's D effect size in the first research question), whose test template generation process managed to create a valid PDG, but not a valid test template.
+After doing a detail inspection of the module in question, it was clear that the main reason for it to not continue the test template creation process was, that it had an OLR value of \(0\%\), with only functions that either have no parameters or a single parameter with no type information.
+
+Considering this cases, questions arise about the possible sections of the GBOS extension that might make the second step fail, which is most likely due to a lack of information in terms of Data Dependency within the built inter procedural PDG.\@
 One example of this information loss can be found in the presented implementation of the Frame execution when generating the DDG, specifically when the MUT has ``try-except'' or ``with'' clauses inside any of its basic blocks.
 The problem with these logic rules comes, because their implementation is given (on the 3.10 Python version) with Python instruction that conditionalize the stack frame state on the presence of an Exception, e.g.~\textbf{SETUP\_WITH} and \textbf{SETUP\_FINALLY}.
 An example of this behaviour is the snippet
@@ -880,19 +946,14 @@ Moreover, the way MIO is implemented into Pynguin makes the execution of it prio
 
 % TODO - change structure by approach (check Gordon's email)
 
-Before commenting on the different tools, techniques and methods that have a place in the current state of the art of automatic test generation for programming languages, it is worth describing the types of testing and their objectives. The following types were investigated by one or more of the tools mentioned in this section. 
-
-\begin{enumerate}
-  \item Unit testing: a type of functional testing that tries to test individual or atomic units of a software project.
-  \item Regression testing: a type of system testing, which tells if new functionalities of a system produce defects into the latest build of it.
-  \item Fuzz testing: a kind of security testing that consists of providing random, unexpected or large amounts of data to a system, to review its way of behaving to it.
-\end{enumerate}
+Before commenting on the different tools and techniques that have a place in the current state of the art of automatic test generation for programming languages, it is worth describing the types of testing and their objectives. Unit testing is a type of functional testing that tries to test individual or atomic units of a software project.
+Regression testing, on another side, is a type of system testing that tells if new functionalities of a system produce defects into the latest build of it.
 
 The various approaches that are part of the current state-of-the-art for Automatic Test Generation can be categorized in two main types depending on what are they based on: Large Language Models (LLMs) and Search-Based Algorithms or Static Analysis (SB).
 
 \section{LLM-Based}
 
-\subsection{CodaMOSA}
+\subsection*{CodaMOSA}
 
 One of the many tools presented in papers that have cited Pynguin in their research is CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, software created by Microsoft developers, has Pynguin as a base and extends its functionality calling OpenAI's Codex\footnote{https://openai.com/blog/openai-codex} API to get template suggestions for test cases that are in a coverage stall, similar to what this thesis works over.
 For the development, the authors used only MOSA as the search algorithm because is the only one that allowed the usage of both line and branch coverage as fitness functions, on the version of Pynguin at the time (0.19.0).
@@ -904,27 +965,7 @@ For the benchmark, modules from 35 projects from the Pynguin paper were filtered
 The baselines for the experimental phase were Pynguin with MOSA and CodexOnly, which while being compared to CodaMOSA were statistically compared using the Mann-Whitney U-Test.
 The results showed that CodaMOSA performs significantly better, reaching a higher coverage on 173 more modules compared to MOSA and 279 more modules compared to CodexOnly.
 
-\subsection{CodeT}
-
-Following the examples of software artefacts presented by Microsoft developers, in 2022 is published a paper regarding CodeT~\cite{DBLP:journals/corr/abs-2207-10397}, a LLM based code generation tool.
-The main purpose of CodeT is the solution of a programming problem by generating a code snippet, based on a context containing natural language.
-Regardless of this not following the same pattern as previous software examples, test generation using the same LLM is part of the whole process, although all of these just have the form of a single assertion, together with a set of inputs and the desired output.
-
-\begin{figure}[tb]
-  \centering 
-  \includegraphics[width=.99\textwidth]{Figures/codet.png}
-  \caption{CodeT structure}\label{fig:codet}
-\end{figure}
-
-A general structure of CodeT is shown in Figure~\ref{fig:codet}, which also depicts the functioning of it by first, prompting the generation of a set of tests (right on the figure) based on the natural language context of the programming problem, that are at the same time the context for the prompting of a set of code snippets (left on the figure).
-After the execution of the LLM model is finished and all the outputs are gathered, a Dual execution agreement criterion, based on the RANSAC~\cite{DBLP:journals/cacm/FischlerB81} algorithm, is used to select the best code solution.
-The selection in this criterion, is done by forming consensus sets of both code solutions and test cases, by selection a valid pair \((x_\text{code}, y_\text{test})\) as a hypothetical inlier, and grouping it with all tests that are also passed by \(x_\text{code}\) in set \(S_y\) and all other code snippets that pass the same tests as \(x_\text{code}\) in set \(S_x\).
-Finally, when all consensus sets \(S_x\) and \(S_y\) are formed from the different valid pairs \((x_\text{code}, y_\text{test})\), those with the highest cardinality \(f(S) = |S_x||S_y|\) have the best score for selection.
-
-As stated before, CodeT centres around code generation rather than test case generations, which makes the research of this paper focus mainly on metrics such as pass1 or pass100 (correct rate of single solutions, or at least one for every hundred).
-Nonetheless, to check the quality of the generated solutions, the authors also covered in their result analysis the code and branch coverage of the snippets generated from the different LLM models.
-Almost all the models obtained an overall average coverage of \(95\%\).
-\subsection{MutAP}
+\subsection*{MutAP}
 
 Mutation testing is one software testing technique, that aims to measure the ability of a test to reveal bugs.
 Taking this approach in mind, Dakhel et al.\@ presented in 2023 MutAP~\cite{DBLP:journals/corr/abs-2308-16557}, another LLM based code generation tool that also introduces prompt augmentation for killing mutants in an iterative process before the actual synthesis of test cases.
@@ -949,7 +990,7 @@ The overall results mainly cover the mutation score obtained by all the possible
 
 \section{SB-Based}
 
-\subsection{EvoSuite}
+\subsection*{EvoSuite}
 
 With respect to Unit Test Generation, EvoSuite~\cite{DBLP:conf/qsic/FraserA11} was (and still is) a state-of-the-art test generation tool for Java, pioneer of the usage of a genetic algorithm, so the branch coverage can be optimized as a whole.
 The internal representation of EvoSuite for a test suite is a set of chromosomes \(T\) as a sequence of statements \(t_i\) of length \(l_i\) and either type primitive statement, constructor statement, field statement, or method statement.
@@ -962,23 +1003,8 @@ Another limitation to the suites \(T\), are \(N\) as the maximum number of chrom
 For the experiment phase, a single branch approach was created by the authors, in which every branch \(b_t\) is seen as a single coverage goal to be met by the test cases.
 Then, the comparison between the single branch method and the whole suite optimization is done with the generation of test cases for five open source projects, accumulating a total of 1308 classes from which 727 were public.
 After the execution of test cases was complete and statistical tests were applied, it could be stated that the results show EvoSuite has a better branch coverage and creates smaller tests suites than the single objective method.
-\subsection{NxtUnit}
 
-\begin{figure}[bt]
-  \centering
-  \includegraphics[width=.99\textwidth]{Figures/nxtunit2.png}
-  \caption{NxtUnit structure}\label{fig:nxt}
-\end{figure}
-
-Having EvoSuite, Randoop and Pynguin as precedents, in 2023 developers from ByteDance (technology Chinese company) presented NxtUnit~\cite{DBLP:conf/ease/WangMCGSP23}, an automatic randomized test generation tool for the programming language Go.
-Similar to other state-of-the-art tools, the structure of NxtUnit (see Figure~\ref{fig:nxt}) is composed by an initial source code as input, that is translated into Static Single Assignment form as a way to get a graph with call dependencies between functions.
-After this preprocessing, NxtUnit proceeds to synthesize from the call graph a code template that is filled with appropriate randomly generated parameters and ran during the tool's execution.
-All the information for the template synthesis and posterior parameter changes are done thanks to the information provided by Go Reflect\footnote{https://pkg.go.dev/reflect}.
-During the code running phase, NxtUnit focuses in three main tasks: mutation of the parameter inputs at runtime, assertion generation for future regression testing, and test case selection based on code coverage.
-Once the tool comes to a halt, the best test cases are exported into a test suite.
-In the experiment proposed by the authors, NxtUnit was executed on 500 private ByteDance repositories and 13 out of the 100 highly-rated public repositories of Go, both sets that already contain tests.
-The main objective of this setup, was to review the code coverage increase while adding NxtUnit tests to the already existing ones, and it produced an average increase of \(5.51\%\) for the public repositories and \(17.26\%\) for the private ones.
-\subsection{JSEFT}
+\subsection*{JSEFT}
 
 As an example for automatic test generation in dynamic languages others than Python, JSEFT is presented in 2015 by Mirshokraie et al.~\cite{DBLP:conf/icst/Mirshokraie0P15} as a tool for generating not only unit tests, but also event-driven tests for web applications written in JavaScript.
 The general structure of JSEFT is presented in Figure~\ref{fig:jseft} and is composed of three main steps that process the data given by the HTML Document Object Model (DOM):
@@ -1004,10 +1030,10 @@ For the specified metrics, the tool got a \(68.4\%\) of line coverage and a \(10
 
 Through the conducted study, a Python implementation for Pynguin of the Graph Based Object Synthesis heuristic was presented for the generation of the previously defined complex object inputs.
 The expectation from the experiments aimed for an improvement in branch coverage results when running the approach into a set of Python modules, that served as generalization of the common publicly available Python module.
-Although, this prediction had the heuristic's original result on its Java implementation of a Cohen's D effect size improvement of \(0.21\) as baseline, the observed effect size in the general results presented a different outcome, with a negative value of \(-0.32\).
+Although, this prediction had the heuristic's original result on its Java implementation of a Cohen's D effect size improvement of \(0.21\) as baseline, the observed effect size in the general results presented a different outcome, with a negative value of \(-0.04\).
 
 At the same time, the introduced metric ``OLR'' helped as an intermediary measure for the presence of a need for complex object inputs within Python modules. 
-Nonetheless, not even by focusing the efforts of the experimental setup on those Python modules that had a greater OLR, any improvement was found at all, getting an \(\hat{A}_{12}\) Vargha-Delaney effect size of \(0.50\).
+Nonetheless, not even by focusing the efforts of the experimental setup on those Python modules that had a greater OLR, any improvement was found at all, getting an average \(\hat{A}_{12}\) Vargha-Delaney effect size of \(0.516\).
 This behaviour was analysed further with the idea of a possible correlation between the OLR and the improvement when using the GBOS approach, which was completely refuted by the computation of both Pearson's and Spearman's correlation coefficient.
 
 While the presented approach did not improve Pynguin's results on the set of Python modules beforehand, this might as well describe the current state of the usage of Python as a programming language, implying that even though there are many resources for a correct typing within the dynamically typed language, most developers still do not make full usage of them.
