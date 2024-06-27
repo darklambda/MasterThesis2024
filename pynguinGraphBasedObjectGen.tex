@@ -31,6 +31,9 @@
 \usepackage{rotating}
 
 \addbibresource{ref.bib}
+\input{Figures/Results/rq1_bar_plot_vars.tex}
+\input{Figures/Results/rq1_search_time_vars.tex}
+\input{Figures/Results/average_cohen.tex}
 
 
 
@@ -708,19 +711,18 @@ The values for percentage difference between both approaches over the average va
 Figure~\ref{fig:times} describes through two plots the overall search time and the time needed by the extension per phase.
 For these plots, only were accounted those modules that had valid results in the 8 configurations at the same time.
 The violin plot on the left, shows the Search Time distribution of the runs, revealing that both Pynguin and the extension use the full budget of 600 seconds for any computation that is not related to the GBOS extension.
-The percentage change (e.g.~\(\frac{\text{GBOSValue} - \text{PynguinValue}}{\text{PynguinValue}}\times 100\)) for the average values of the distributions presented in this plot, are \(-0.006\), \(-0.002\), \(0.005\) and \(-0.013\) respectively, from left to right.
+The percentage change (e.g.~\(\frac{\text{GBOSValue} - \text{PynguinValue}}{\text{PynguinValue}}\times 100\)) for the average values of the distributions presented in this plot are \(\SearchTimeDYNAMOSA\), \(\SearchTimeMOSA\), \(\SearchTimeWHOLESUITE\) and \(\SearchTimeMIO\) respectively, from left to right.
 
 Regarding the times that are considered while doing any GBOS-related operation, the bar plot on the right shows a comparison of the average values per module, per algorithm, of the time spent in deciding if the current iteration generates a test template or not (Decision Time), time spent generating the test templates (Generation Time), and the Search Time as baseline.
 By looking at the sizes of the different sections of each algorithms' bars, it is safe to state that compared to the other options, MIO is the algorithm that is affected the most with the extra computational effort that the GBOS extension generates.
 This can be explained by the lightweight nature of the evolution steps implemented in Pynguin, which are reduced to only selecting a new test case if necessary and mutating it the maximum amount of times possible depending on the algorithm's parameters.
-Considering a comparison between the Search Time and the Decision Time, MIO obtains a percentage change of \(-31.773\), while the other algorithms have values ranging between \(-99.293\) and \(-98.995\).
-With respect to the Generation Time, the comparison using percentage change of MIO gives a value of \(-71.011\), while the other algorithms have values ranging between \(-99.839\) and \(-98.385\).
+Considering a comparison between the Search Time and the Decision Time, MIO obtains a percentage change of \(\DiffDecMIO\), while the other algorithms have values ranging between \(\DiffDecMin\) and \(\DiffDecMax\).
+With respect to the Generation Time, the comparison using percentage change of MIO gives a value of \(\DiffGenMIO\), while the other algorithms have values ranging between \(\DiffGenMin\) and \(\DiffGenMax\).
 
 The data reported in Table~\ref{tab:performance} shows the mean coverage of all tested modules per approach, the p-Values obtained through statistical Mann-Whitney U tests and Cohen's D effect size measures, in any pair of algorithm and runtime budget.
 Generally, all p-Values are greater than \(0.05\) with respect to the sets of obtained branch coverage values in each module, accepting the null hypothesis that assumes no effect or statistical difference between the distributions.
 Complementary, Figure~\ref{fig:coverage} shows the branch coverage results and their distribution through the runs of the 8 different parameter configurations.
 The presented violin plots imply that in general, both approaches to the test generation for the set of Python modules got similar results, based on the form of the plots' probability density, the position of the median and the position of the interquartile range.
-%For more precise data, when calculating the percentage difference between Pynguin and the GBOS extension over the average value of the plotted distributions; DYNAMOSA, MOSA, WHOLE\_SUITE and MIO get values of \(-0.27\%\), \(-0.14\%\), \(-0.28\%\) and \(-0.68\%\) respectively. 
 
 \begin{figure}[tbh]
   \centering
@@ -729,7 +731,7 @@ The presented violin plots imply that in general, both approaches to the test ge
 \end{figure}
 
 Nonetheless, it is noticeable that all values of Cohen's D effect size in Table~\ref{tab:performance} are negative, meaning that the best distributions of coverage values are found while using Pynguin without the GBOS extension.
-This strongly implies that in a general Python developing scenario the usage of the GBOS extension is not advised nor makes any considerable improvement in coverage results, as the mean effect size found in the last time step budget of the runs gets a value of \(-0.04\) over all algorithms, contrary to the value of \(0.21\) (in favour of EvoObj) obtained by Yun Lin et al.\ over all the algorithms used in their experimental phase for the maximum budget of 300 seconds. 
+This strongly implies that in a general Python developing scenario the usage of the GBOS extension is not advised nor makes any considerable improvement in coverage results, as the mean effect size found in the last time step budget of the runs gets a value of \(\AverageCohen\) over all algorithms, contrary to the value of \(0.21\) (in favour of EvoObj) obtained by Yun Lin et al.\ over all the algorithms used in their experimental phase for the maximum budget of 300 seconds. 
 
 \begin{table}[h!]
   \centering
@@ -745,24 +747,7 @@ A summary of the amount of modules used in every step of this research question 
 
 \begin{table}[t]
   \centering
-  \begin{tabular}{lcccc}\toprule
-    \multicolumn{1}{c}{\multirow{2}{*}{\# Modules}} & \multicolumn{4}{c}{Pynguin}                \\ \cmidrule(lr){2-5}
-    \multicolumn{1}{c}{}                            & DynaMOSA & MOSA    & WHOLE SUITE & MIO     \\ \midrule
-    Initial Set                                     & \(557\)  & \(553\) & \(555\)     & \(551\) \\
-    RQ1 Before Intersection                         & \(541\)  & \(540\) & \(544\)     & \(538\) \\
-    RQ1 After Intersection                          & \(187\)  & \(187\) & \(187\)     & \(187\) \\ 
-    \bottomrule
-  \end{tabular} 
-  \centering 
-  \begin{tabular}{lcccc}\toprule
-    \multicolumn{1}{c}{\multirow{2}{*}{\# Modules}} & \multicolumn{4}{c}{GBOS}                   \\ \cmidrule(lr){2-5}
-    \multicolumn{1}{c}{}                            & DynaMOSA & MOSA    & WHOLE SUITE & MIO     \\ \midrule
-    Initial Set                                     & \(529\)  & \(523\) & \(551\)     & \(289\) \\
-    RQ1 Before Intersection                         & \(389\)  & \(407\) & \(449\)     & \(193\) \\
-    RQ1 After Intersection                          & \(187\)  & \(187\) & \(187\)     & \(187\) \\ 
-    \bottomrule
-  \end{tabular}
-
+  \input{Figures/Results/rq1-modules.tex}
 \caption{Amount of modules used while analysing each experimental configuration  for the answering of Research Question 1.}\label{tab:modrq1}
 \end{table}
 
@@ -776,25 +761,92 @@ A summary of the amount of modules used in every step of this research question 
 \subsection*{Discussion}
 
 With the results in Table~\ref{tab:performance}, it is shown once more how the extra computational effort needed while using the GBOS extension does not influence the obtained coverage results, at least as a rule of thumb.
-Another possible factor that explains the lack of improvement in the coverage results, is the absence of a need for complex object inputs by the modules under test in order to reach all target branches.
+One possible factor that explains the lack of improvement, is the absence of a need for complex object inputs by the modules under test in order to reach all target branches (which will be exemplified later).
 This latter argument can be backed up partially with the results in Figure~\ref{fig:times}, which tell that even after the applied filtering, some modules still could reach a full branch coverage with the tests provided by an initial population of test chromosomes (e.g.~getting a Search Time of 0 [sec]).
-In addition, the data per time budget step mostly says that during the coverage evolution of Pynguin using MIO, there is persistent difference in performance while using the extension, which can be attributed to the random nature of the Search Based algorithms, or to the inter-iteration time difference in the Search Time variable when using the extension, in the case of the final time step of 600 seconds.
+In addition, the data per time budget step mostly says that during the coverage evolution of Pynguin using MIO, there is a slightly bigger difference in performance while using the extension, which can be attributed to the random nature of the Search Based algorithms, or to the inter-iteration time difference in the Search Time variable when using the extension, in the case of the final time step of 600 seconds.
 
-Figures~\ref{fig:worst} and~\ref{fig:best} show the branch coverage evolution along the 600 seconds budget for those modules that obtained the best and worst effect size values on each algorithm.
-In the first and second graphs together, during the whole search time budget it can be remarked how both curves have the same results, following the behaviour already found in Table~\ref{tab:performance}.
-This can be backed by the number of runs successfully executed, as all of these modules had a small difference between the both main approaches, ranging from \(2\) to \(7\).
-
-\begin{figure}[pbth]
-  \centering
-  \includegraphics[width=0.9\textwidth]{Figures/Results/worstES.jpg}
-  \caption{Branch coverage evolution for the modules that obtained the worst Cohen's D effect size value in each algorithm.}\label{fig:worst}
-\end{figure}
+Figure~\ref{fig:best} shows the branch coverage evolution along the 600 seconds budget for those modules that obtained the best effect size values on each algorithm.
+In these, during the whole search time budget it can be remarked how both curves have the same results, following the behaviour already found in Table~\ref{tab:performance}.
+This can be backed by the number of runs successfully executed, as all of these modules had at most 10 runs of difference between both the main approaches.
 
 \begin{figure}[ptbh]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/bestES.jpg}
   \caption{Branch coverage evolution for the modules that obtained the best Cohen's D effect size value in each algorithm.}\label{fig:best}
 \end{figure}
+
+Although these graphs imply that the heuristic did not have any positive effect in the coverage results, this statement is not conclusive, as all the p-Values presented in Table~\ref{tab:performance} invalidate the statistical difference between both distributions.
+Taking this into account, the different information logs provided by Pynguin during the test template generation process were gathered in order to understand the general behaviour over the modules.
+Table~\ref{tab:flag_modules} shows the amount of modules in each one of the algorithms, that followed a certain scenario while using the GBOS heuristic.
+From the 588 original modules, the different sets that could be recognized are; those that had at least one correct run; those that had at least one log from the heuristic, and thus, started it; those that managed to create a non-empty template within their evolution process; those that created a template that brought no execution errors, and was added into the population; those that did not start a generation process because they had no branch coverage goals to choose from; and those that finished their execution early, because of a Pynguin-related runtime error (e.g.~a thread had to be killed, the maximum recursion depth was met, or the exception ``Bug in Pinguin!'' was raised). 
+
+
+\begin{table}[t]
+  \centering
+  \input{Figures/Results/flags-modules.tex}
+\caption{Sizes of the different relevant module groups gathered from the set of runs provided by the GBOS extension.}\label{tab:flag_modules}
+\end{table}
+
+At this point, the last two types of relevant modules would be those that either: got an increase in coverage, defying the current no improvement conclusions; or got a similar coverage result, but in fewer algorithm iterations.
+With these in mind, ``jose.backends.native'' and ``slugify.\_\_main\_\_'' are for each case the best modules respectively, with an improvement of \(0.045\) points in branch coverage, and a reduction of \(-99.587\%\) in the amount of iterations (both while executing the extension with MIO).
+
+Nonetheless, both of these modules have no type annotations regarding any class with attributes, nor any if-else guard that uses any complex object (see Listings~\ref{lst:7} and~\ref{lst:8}) as most of the boolean values are comparisons of string by themselves, or as collections keys.
+This would imply that the improvement in coverage was given by the chosen Pynguin seeds, and the reduction in iteration number obtained by the longer iteration time caused the usage of MIO, together with a convergence of coverage in the early evolution of the runs.
+
+\begin{figure}
+\begin{minted}[highlightlines={3, }]{python}
+  # Module jose.backend.native
+  def _process_jwk(self, jwk_dict):
+      if not jwk_dict.get("kty") == "oct":
+          raise JWKError("Incorrect key type. Expected: 'oct', Received: %s" % jwk_dict.get("kty"))
+      k = jwk_dict.get("k")
+      k = k.encode("utf-8")
+      k = bytes(k)
+      k = base64url_decode(k)
+      return k
+  def sign(self, msg):
+      return hmac.new(self.prepared_key, msg, self._hash_alg).digest()
+  '''
+  def new(key, msg=None, digestmod=''):
+      return HMAC(key, msg, digestmod)
+  '''
+  def verify(self, msg, sig):
+      return hmac.compare_digest(sig, self.sign(msg))
+  def to_dict(self):
+      return {"alg": self._algorithm,
+              "kty": "oct",
+              "k": base64url_encode(self.prepared_key).decode("ASCII"),}
+\end{minted}
+\caption{Example of methods from the module jose.backend.native, with highlighted branches.}\label{lst:7}
+\end{figure}
+
+\begin{figure}
+\begin{minted}[highlightlines={5, 7, 10, 14, 16, 18}]{python}
+  # Module slugify.__main__
+  def parse_args(argv: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Slug string")
+    # Intermediary code
+    if args.input_string and args.stdin:
+        parser.error("Input strings and --stdin cannot work together")
+    if args.replacements:
+        def split_check(repl):
+            SEP = '->'
+            if SEP not in repl:
+                parser.error("Replacements must be of the form: ORIGINAL{SEP}REPLACED".format(SEP=SEP))
+            return repl.split(SEP, 1)
+        args.replacements = [split_check(repl) for repl in args.replacements]
+    if args.input_string:
+        args.input_string = " ".join(args.input_string)
+    elif args.stdin:
+        args.input_string = sys.stdin.read()
+    if not args.input_string:
+        args.input_string = ''
+    return args
+\end{minted}
+\caption{Example method from the module slugify.\_\_main\_\_, with highlighted branches.}\label{lst:8}
+\end{figure}
+
+% TODO - Add generated tests
 
 \newpage
 
@@ -821,24 +873,7 @@ A summary of the amount of modules used in every step of this research question 
 
 \begin{table}[t]
   \centering
-  \begin{tabular}{lcccc}\toprule
-    \multicolumn{1}{c}{\multirow{2}{*}{\# Modules}} & \multicolumn{4}{c}{Pynguin}                \\ \cmidrule(lr){2-5}
-    \multicolumn{1}{c}{}                            & DynaMOSA & MOSA    & WHOLE SUITE & MIO     \\ \midrule
-    Initial Set                                     & \(557\)  & \(553\) & \(555\)     & \(551\) \\
-    RQ2 Before Intersection                         & \(492\)  & \(490\) & \(494\)     & \(487\) \\
-    RQ2 After Intersection                          & \(32\)   & \(31\)  & \(38\)      & \(8\)   \\ 
-    \bottomrule
-  \end{tabular} 
-  \centering 
-  \begin{tabular}{lcccc}\toprule
-    \multicolumn{1}{c}{\multirow{2}{*}{\# Modules}} & \multicolumn{4}{c}{GBOS}                   \\ \cmidrule(lr){2-5}
-    \multicolumn{1}{c}{}                            & DynaMOSA & MOSA    & WHOLE SUITE & MIO     \\ \midrule
-    Initial Set                                     & \(529\)  & \(523\) & \(551\)     & \(289\) \\
-    RQ2 Before Intersection                         & \(343\)  & \(360\) & \(401\)     & \(145\) \\
-    RQ2 After Intersection                          & \(32\)   & \(31\)  & \(38\)      & \(8\)   \\ 
-    \bottomrule
-  \end{tabular}
-
+  \input{Figures/Results/rq2-modules.tex}
 \caption{Amount of modules used while analysing each experimental configuration for the answering of Research Question 2.}\label{tab:modrq2}
 \end{table}
 
@@ -882,7 +917,7 @@ Analogously, the OLR distribution does not mean that for the great majority of m
   \caption{Histogram of Object-like ratio over the modules in the test set.}\label{fig:olr-hist}
 \end{figure}
 
-For a deeper understanding of the modules that reached the endmost effect size results in Figures~\ref{fig:worst},~\ref{fig:best},~\ref{fig:worsta12}~and~\ref{fig:besta12}, a final new developer output variable was added into the code of the GBOS extension, called ``GBOSFlags''.
+For a deeper understanding of the modules that reached the endmost effect size results in Figures~\ref{fig:best},~\ref{fig:worsta12}~and~\ref{fig:besta12}, a final new developer output variable was added into the code of the GBOS extension, called ``GBOSFlags''.
 This variable is a collection of three boolean values, which start with False as default, and change to True if any of the following conditions are met at any point during the test suite generation,
 \begin{itemize}
   \item a PDG, or a non-sliced OCG is created without errors
