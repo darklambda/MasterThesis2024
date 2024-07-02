@@ -1,12 +1,15 @@
 class Player:
+
+    _action: int = None
+
     def __init__(self, action: int):
         self._action = action
 
     # Getters and setters
 
 class Action:
-    _target = None
-    _actor = None
+    _target: int = None
+    _actor: int = None
 
     # Getters and setters
 

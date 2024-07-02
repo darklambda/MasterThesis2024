@@ -1,5 +1,8 @@
-Document/_minted-pynguinGraphBasedObjectGen/*
-Document/_minted-diff/*
-.vscode/*
-Document/pynguinGraphBasedObjectGen.*
+Document/_minted*/
+Analysis/CSV
+.vscode
+Document/document.*
 !Document/*.tex
+*.csv
+Analysis/Figures
+DataSet
