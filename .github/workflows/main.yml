@@ -1,0 +1,25 @@
+name: Build LaTeX document
+on:
+  push:
+    paths:
+      - 'Document/document.tex'
+      - '.github/workflows/main.yml'
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v4
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: Document
+          root_file: document.tex
+          latexmk_use_lualatex: true
+      - name: Rename file 
+        run: mv Document/document.pdf Document/oberreuterGonzalo-bscThesis.pdf
+      - name: Upload PDF file
+        uses: actions/upload-artifact@v4
+        with:
+          name: oberreuterGonzalo-bscThesis
+          path: Document/oberreuterGonzalo-bscThesis.pdf

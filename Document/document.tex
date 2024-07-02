@@ -179,7 +179,7 @@ This drawback appears when a software is updated with dead code, or is not writt
 
 Since at least the past two decades, there has been a collective effort to shrink the necessity for handwritten software tests, with the development of tools and techniques related to evolutionary algorithms~\cite{DBLP:conf/sigsoft/FraserA11}, software static analysis~\cite{DBLP:conf/osdi/CadarDE08}, and (in a more current solution) large language models~\cite{DBLP:journals/corr/abs-2207-10397}.
 Usually, automatic test generation is portrayed as an optimization problem, that takes test cases or test suites as solutions to the task of maximizing the fitness coverage of a module under test and minimizing the amount of test cases/statements within a test suite.
-In this scenario, the greatest obstacles are finding a correct representation of a test case for the chosen programming language, and finding a suitable way of going through the domain's search space .
+In this scenario, the greatest obstacles are finding a correct representation of a test case for the chosen programming language, and finding a suitable way of going through the domain's search space.
 
 \newpage
 
@@ -306,9 +306,9 @@ About the MOSA implementation in Pynguin, it follows the same structure as the o
 \subsection{DynaMOSA}\label{sec:dynamosa}
 
 DynaMOSA comes as a further extension of MOSA by Panichella et al.~\cite{DBLP:journals/tse/PanichellaKT18}, with the addition of a dynamic selection of the targets to be included into the first Pareto Frontier when executing the preference sorting.
-The idea of including a dynamic selection of targets starts from the representation of a program into a CFG.
+The idea of including a dynamic selection of targets starts from the representation of a program into a CFG.\@
 With it, is possible to note how those uncovered targets that have one or more already reached target predecessor are redundant to try to cover, because they always have objective score of \(f_r = \text{BranchDistance}(b) + 1\), where (\(+1\)) represents the approach level or the distance in the CFG to reach the successive target.
-This means that every target can be prioritized into a hierarchy according to the definition of a CDG.
+This means that every target can be prioritized into a hierarchy according to the definition of a CDG.\@
 
 The pseudocode of DynaMOSA is shown in Algorithm~\ref{alg:DynaMOSApseudo}, with the only differences to MOSA being found in the lines 1, 5 and 9 when calling the set of an initial set of non-dependant targets and the dynamic update of these.
 The \(\text{UpdateTarget}()\) procedure, is applied inside Pynguin by implementing a class for, a Control Flow Graph (named \classname{CFG}), as a wrapper of the \classname{ControlFlowGraph} class from the Python \classname{bytecode} module; and a Control Dependence Graph (called \classname{ControlDependenceGraph}).
@@ -681,21 +681,6 @@ With respect to the generalization of the benefits obtained from the presented e
 
 About \textbf{construct validity}, the usage of the extension cannot be decided through Parameter Tuning, but only via the knowledge of each developer of the presence of complex object inputs in a method or function, which implies that no automatic tuning was made into the experimental phase, threatening the study's operationalization.
 
-\iffalse
-
-\section{General Results}
-
-Figure~\ref{fig:iterations} reveals the distribution of algorithm iterations through the different configurations.
-Similar to the previous graph, the results' comparison between Pynguin and the GBOS extension show almost no difference while observing the probability density, median position and interquartile position (except for the notorious presence of higher values in WHOLE\_SUITE).
-The values for percentage difference between both approaches over the average value of plotted distributions, the different algorithms get \(-7.20\%\), \(-3.65\%\), \(-6.48\%\) and \(0.92\%\), in the same order from left to right as they are presented in the referenced Figure.
-
-\begin{figure}[th]
-  \centering
-  \includegraphics[width=0.9\textwidth]{Figures/Results/AlgorithmIterations.jpg}
-  \caption{Computed iterations between all 8 parameter configurations over the modules in the test set.}\label{fig:iterations}
-\end{figure}
-
-\fi
 
 \section{Research Question 1}
 
@@ -779,7 +764,7 @@ This can be backed by the number of runs successfully executed, as all of these 
 Although these graphs imply that the heuristic did not have any positive effect in the coverage results, this statement is not conclusive, as all the p-Values presented in Table~\ref{tab:performance} invalidate the statistical difference between both distributions.
 Taking this into account, the different information logs provided by Pynguin during the test template generation process were gathered in order to understand the general behaviour over the modules.
 Table~\ref{tab:flag_modules} shows the amount of modules in each one of the algorithms, that followed a certain scenario while using the GBOS heuristic.
-From the 588 original modules, the different sets that could be recognized are; those that had at least one correct run; those that had at least one log from the heuristic, and thus, started it; those that managed to create a non-empty template within their evolution process; those that created a template that brought no execution errors, and was added into the population; those that did not start a generation process because they had no branch coverage goals to choose from; and those that finished their execution early, because of a Pynguin-related runtime error (e.g.~a thread had to be killed, the maximum recursion depth was met, or the exception ``Bug in Pinguin!'' was raised). 
+From the 588 original modules, the different sets that could be recognized are; those that had at least one correct run; those that had at least one log from the heuristic, and thus, started it; those that managed to create a non-empty template within their evolution process; those that created a template that brought no execution errors, and was added into the population; those that did not start a generation process because they had no branch coverage goals to choose from; and those that finished their execution early, because of a Pynguin-related runtime error (e.g.~a thread had to be killed, the maximum recursion depth was met, or the exception ``Bug in Pinguin'' was raised). 
 
 
 \begin{table}[t]
@@ -789,36 +774,49 @@ From the 588 original modules, the different sets that could be recognized are; 
 \end{table}
 
 At this point, the last two types of relevant modules would be those that either: got an increase in coverage, defying the current no improvement conclusions; or got a similar coverage result, but in fewer algorithm iterations.
-With these in mind, ``jose.backends.native'' and ``slugify.\_\_main\_\_'' are for each case the best modules respectively, with an improvement of \(0.045\) points in branch coverage, and a reduction of \(-99.587\%\) in the amount of iterations, while executing the extension with MIO.\@
+With these in mind, ``setuptools.command.setopt'' and ``slugify.\_\_main\_\_'' are for each case the best modules respectively, with an improvement of \(0.066\) points in branch coverage, and a reduction of \(-99.587\%\) in the amount of iterations, while executing the extension with DynaMOSA and MIO.\@
 
-Nonetheless, both of these modules have no type annotations regarding any class with attributes, nor any if-else guard that uses any complex object (see Listings~\ref{lst:7} and~\ref{lst:8}) as most of the boolean values are comparisons of string by themselves, or as collections keys.
-This would imply that the improvement in coverage was given by the chosen Pynguin seeds, and the reduction in iteration number obtained by the longer iteration time caused the usage of MIO, together with a convergence of coverage in the early evolution of the runs.
+Nonetheless, both of these modules have no type annotations regarding any class with attributes, nor any if-else guard that uses any complex object (see Listing~\ref{lst:8}) as most of the boolean values are comparisons of strings, or collections keys.
+Another found case can be shown in Listing~\ref{lst:7}, where the function \callable[]{edit\_config} needs (implicitly) the paths to already created files, which goes over the capabilities of the heuristic.
+
+This would imply that the improvement in coverage was given by the chosen Pynguin seeds, and the reduction in iteration number obtained by the longer iteration time caused the added steps of the heuristic (decision and generation), together with a convergence of coverage in the early evolution of the runs.
 
 \begin{figure}
-\begin{minted}[highlightlines={3, }]{python}
-  # Module jose.backend.native
-  def _process_jwk(self, jwk_dict):
-      if not jwk_dict.get("kty") == "oct":
-          raise JWKError("Incorrect key type. Expected: 'oct', Received: %s" % jwk_dict.get("kty"))
-      k = jwk_dict.get("k")
-      k = k.encode("utf-8")
-      k = bytes(k)
-      k = base64url_decode(k)
-      return k
-  def sign(self, msg):
-      return hmac.new(self.prepared_key, msg, self._hash_alg).digest()
-  '''
-  def new(key, msg=None, digestmod=''):
-      return HMAC(key, msg, digestmod)
-  '''
-  def verify(self, msg, sig):
-      return hmac.compare_digest(sig, self.sign(msg))
-  def to_dict(self):
-      return {"alg": self._algorithm,
-              "kty": "oct",
-              "k": base64url_encode(self.prepared_key).decode("ASCII"),}
+\begin{minted}[highlightlines={8, 11, 12, 16, 19, 24, 30}]{python}
+  # Module setuptools.command.setopt
+  def edit_config(filename, settings, dry_run=False):
+    log.debug("Reading configuration from %s", filename)
+    opts = configparser.RawConfigParser()
+    opts.optionxform = lambda x: x
+    opts.read([filename])
+    for section, options in settings.items():
+        if options is None:
+            log.info("Deleting section [%s] from %s", section, filename)
+            opts.remove_section(section)
+        else:
+            if not opts.has_section(section):
+                log.debug("Adding new section [%s] to %s", section, filename)
+                opts.add_section(section)
+            for option, value in options.items():
+                if value is None:
+                    log.debug("Deleting %s.%s from %s", section, option, filename)
+                    opts.remove_option(section, option)
+                    if not opts.options(section):
+                        log.info(
+                            "Deleting empty [%s] section from %s", section, filename
+                        )
+                        opts.remove_section(section)
+                else:
+                    log.debug(
+                        "Setting %s.%s to %r in %s", section, option, value, filename
+                    )
+                    opts.set(section, option, value)
+    log.info("Writing %s", filename)
+    if not dry_run:
+        with open(filename, 'w') as f:
+            opts.write(f)
 \end{minted}
-\caption{Example of methods from the module jose.backend.native, with highlighted branches.}\label{lst:7}
+\caption{Example of methods from the module setuptools.command.setopt, with highlighted branches.}\label{lst:7}
 \end{figure}
 
 \begin{figure}
@@ -847,12 +845,48 @@ This would imply that the improvement in coverage was given by the chosen Pyngui
 \caption{Example method from the module slugify.\_\_main\_\_, with highlighted branches.}\label{lst:8}
 \end{figure}
 
-% TODO - add examples of generated test templates
+Listing~\ref{lst:9} presents examples of test templates generated (but not necessarly used) by the heuristic when working over the module setuptools.command.setopt, which focused on the method \callable[]{config\_file}.
+In this case, the only branches available are evaluated by comparing strings.
 
-Altough, considering that the nature of MIO's heuristic is different compared to the other algorithms, and it would have been also relevant to dig further other configurations, there was not any module that met the relevant scenarios previously proposed in any of the alternative algorithms.
+\begin{figure}
+\begin{minted}[highlightlines={}]{python}
+import setuptools.command.setopt as module_0
+'''
+def config_file(kind="local"):
+    if kind == 'local':
+        return 'setup.cfg'
+    if kind == 'global':
+        return os.path.join(os.path.dirname(distutils.__file__), 'distutils.cfg')
+    if kind == 'user':
+        dot = os.name == 'posix' and '.' or ''
+        return os.path.expanduser(convert_path("~/%spydistutils.cfg" % dot))
+    raise ValueError("config_file() type must be 'local', 'global', or 'user'", kind)
+'''
+def test_case_0():
+    dict_0 = dict()
+    any_0 = module_0.config_file(dict_0)
+
+def test_case_1():
+    float_0 = -2881.7
+    any_0 = module_0.config_file(float_0)
+
+def test_case_2():
+    str_0 = "'Vq.2 -oz+)-@l"
+    any_0 = module_0.config_file(str_0)
+\end{minted}
+\caption{Example of test templates generated by the heuristic for the module setuptools.command.setopt}\label{lst:9}
+\end{figure}
+
+On the other side, the test templates synthesized for slugify.\_\_main\_\_ were only empty ones, when trying to cover the branch present in the snippet
+
+\begin{minted}{python}
+if __name__ == '__main__':  # pragma: no cover
+  main()
+\end{minted}
+
+at the end of the module.
 
 \newpage
-
 
 \section{Research Question 2}
 
@@ -886,88 +920,125 @@ A summary of the amount of modules used in every step of this research question 
 
 \subsection*{Discussion}
 
-\iffalse
-\begin{figure}[ptbh]
-  \centering
-  \includegraphics[width=0.9\textwidth]{Figures/Results/worstA12.jpg}
-  \caption{Branch coverage evolution for the modules that obtained the worst Vargha-Delaney \(\hat{A}_{12}\) effect size value in each algorithm.}\label{fig:worsta12}
-\end{figure}
-
 \begin{figure}[ptbh]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/bestA12.jpg}
   \caption{Branch coverage evolution for the modules that obtained the best Vargha-Delaney \(\hat{A}_{12}\) effect size value in each algorithm.}\label{fig:besta12}
 \end{figure}
 
-\fi 
 
-The obtained answer for the second research question develops the same ideas as the discussion of the first research question, leaning to an initial tought, that the majority of Python modules in the testing set either, do not include enough type information or the necessity for complex object inputs.
+The obtained answer for the second research question develops the same ideas as the discussion of the first research question, leaning to an initial tought, that the majority of Python modules in the testing set either, do not include enough type information or the necessity for complex object inputs. 
+See Figure~\ref{fig:besta12} for a timeline of coverage for the modules that got the best \(\hat{A}_{12}\) values.
+
 To test this theory, once again modules were analysed from the two relevant scenarios: those were the extension results got a coverage improvement, or reached the same results as Pynguin but in less algorithm iterations.
-For these cases, the obtained modules were ``pymonet.utils'', with an increase of \(0.025\) in coverage, and ``py\_backwards.messages'', with a decrease of \(50.10\%\) in the number of computed iterations.
-The two modules have an OLR value of \(0.75\) and \(1.0\) respectively.
+For these, the modules were ``pkg\_resources.\_vendor.jaraco.functools'', with an increase of \(0.047\) in coverage, and ``setuptools.\_vendor.importlib\_resources.\_legacy'', with a decrease of \(86.45\%\) in the number of computed iterations.
+The two modules have an OLR value of \(0.75\) and \(0.78\) respectively.
 
-Listing~\ref{lst:9} shows two out of the three present callables within the ``pymonet.utils'' module that influenced the given OLR value.
-In them, the class Callable is an alias of the built-in class CallableType from Python 3.12, that does not hold any attributes in its definition nor need them for reaching the highlighted branches. 
-
-\begin{figure}
-\begin{minted}[highlightlines={4, 10}]{python}
-@curry
-def find(collection: List[T], key: Callable[[T], bool]):
-    for item in collection:
-        if key(item):
-            return item
-def memoize(fn: Callable, key=eq) -> Callable:
-    cache: List[Any] = []
-    def memoized_fn(argument):
-        cached_result = find(cache, lambda cacheItem: key(cacheItem[0], argument))
-        if cached_result is not None:
-            return cached_result[1]
-        fn_result = fn(argument)
-        cache.append((argument, fn_result))
-        return fn_result
-    return memoized_fn
-\end{minted}
-\caption{Example method from the module pymonet.utils, with highlighted branches.}\label{lst:9}
-\end{figure}
-
-% TODO - add examples of generated test templates
-
-For the next case, Listing~\ref{lst:10} presents two callables from the second relevant module with parameters of type \classname{CompilationError} and \classname{TransformationError}, subclasses of the \classname{Exception} class.
-The branches of the first function might be subjects of a possible test template, generated including a \classname{CompilationError} object with the attribute ``lineno'' assigned to a certain variable.
-Nonetheless, the type annotations of the class are given only in the \callable[]{\_\_init\_\_} method signature, fact that limits the knowledge of the heuristic prior to the OCG to statement translation process.
+Listing~\ref{lst:10} shows two out of the three present callables within the module ``pkg\_resources.\_vendor.jaraco.functools'' that influenced the given OLR value.
+In them, the class CallableT is an alias of the built-in class CallableType from the typing library added in Python 3.5, that does not hold any attributes in its definition, nor need them for any branch.
+This class is at the same time an alias for callables from the ``collections.abc'' module with two parameters. 
 
 \begin{figure}
-\begin{minted}[highlightlines={6, 8, 13}]{python}
-def _get_lines_with_highlighted_error(e: CompilationError) -> Iterable[str]:
-    error_line = e.lineno - 1
-    lines = e.code.split('\n')
-    padding = len(str(len(lines)))
-    from_line = error_line - const.SYNTAX_ERROR_OFFSET
-    if from_line < 0:
-        from_line = 0
-    if from_line < error_line:
-        for n in range(from_line, error_line):
-            yield _format_line(lines[n], n, padding)
-    # ... Inner code ...
-    to_line = error_line + const.SYNTAX_ERROR_OFFSET
-    if to_line > len(lines):
-        to_line = len(lines)
-    for n in range(error_line + 1, to_line):
-        yield _format_line(lines[n], n, padding)
-def transformation_error(e: TransformationError) -> str:
-    return ('{red}{bright}Transformation error in "{e.filename}", '
-            'transformer "{e.transformer.__name__}" '
-            'failed with:{reset}\n{e.traceback}\n'
-            '{bright}AST:{reset}\n{e.ast}').format(
-        red=Fore.RED,
-        e=e,
-        reset=Style.RESET_ALL,
-        bright=Style.BRIGHT)
+\begin{minted}[highlightlines={}]{python}
+CallableT = TypeVar("CallableT", bound=Callable[..., object])
+def method_cache(
+    method: CallableT,
+    cache_wrapper: Callable[
+        [CallableT], CallableT
+    ] = functools.lru_cache(),  # type: ignore[assignment]
+) -> CallableT:
+    def wrapper(self: object, *args: object, **kwargs: object) -> object:
+        bound_method: CallableT = types.MethodType(  # type: ignore[assignment]
+            method, self
+        )
+        cached_method = cache_wrapper(bound_method)
+        setattr(self, method.__name__, cached_method)
+        return cached_method(*args, **kwargs)
+    wrapper.cache_clear = lambda: None  # type: ignore[attr-defined]
+
+    return (  # type: ignore[return-value]
+        _special_method_cache(method, cache_wrapper) or wrapper
+    )
 \end{minted}
-\caption{Example method from the module py\_backwards.messages, with highlighted branches.}\label{lst:10}
+\caption{Example method \callable[]{method\_cache} with non-primitive types parameters from the module pkg\_resources.\_vendor.jaraco.functools}\label{lst:10}
 \end{figure}
 
-% TODO - add examples of generated test templates
+For the next case, Listing~\ref{lst:11} presents three callables from the second relevant module with parameters of type \classname{Package} and \classname{Resource}, aliases of either a string or the ModuleType class.
+These, together with the rest of modules that have any non-primitive type annotation on the signature, have no branches to cover.
+
+\begin{figure}[thbp]
+\begin{minted}[highlightlines={}]{python}
+Package = Union[types.ModuleType, str]
+Resource = str
+def open_binary(package: Package, resource: Resource) -> BinaryIO:
+    return (_common.files(package) / normalize_path(resource)).open('rb')
+def read_binary(package: Package, resource: Resource) -> bytes:
+    return (_common.files(package) / normalize_path(resource)).read_bytes()
+def open_text(
+    package: Package,
+    resource: Resource,
+    encoding: str = 'utf-8',
+    errors: str = 'strict',
+) -> TextIO:
+    return (_common.files(package) / normalize_path(resource)).open(
+        'r', encoding=encoding, errors=errors
+    )
+\end{minted}
+\caption{Example functions that have type annotations detected as object-like by the heuristic from the module setuptools.\_vendor.importlib\_resources.\_legacy}\label{lst:11}
+\end{figure}
+
+As a final aspect, Figures~\ref{lst:12}~and~\ref{lst:13} display the test templates created for the two specific modules when using heuristic, which focus mainly in callables that do have a branch to cover, but do not expose any type information.
+Similar to the already analysed case, this would imply that both ``improvements'' were not achieved by the heuristic.
+For example, the idea of the extension focusing callables without type information and synthesizing simple test templates over pkg\_resources.\_vendor.jaraco.functools, makes the improvement in coverage be explained once again only by Pynguin's random nature.
+Additionally, in the module with fewer iterations when using the extension rather than Pynguin, it happened that the test generation process had an unexpected error in the early stages while already getting the best coverage obtained by the default settings, thus ending the whole run earlier. 
+
+\begin{figure}
+\begin{minted}[highlightlines={}]{python}
+import pkg_resources._vendor.jaraco.functools as module_0
+'''
+class Throttler:
+    def __init__(self, func, max_rate=float('Inf')):
+        if isinstance(func, Throttler):
+            func = func.func
+        self.func = func
+        self.max_rate = max_rate
+        self.reset()
+def retry_call(func, cleanup=lambda: None, retries=0, trap=()):
+    attempts = itertools.count() if retries == float('inf') else range(retries)
+    for attempt in attempts:
+        try:
+            return func()
+        except trap:
+            cleanup()
+    return func()
+'''
+def test_case_0():
+    none_0 = None
+    throtler_0 = module_0.Throttler(none_0, none_0)
+def test_case_1():
+    none_0 = None
+    any_0 = module_0.retry_call(none_0, none_0)
+\end{minted}
+\caption{Example of test templates generated by the heuristic for the module pkg\_resources.\_vendor.jaraco.functools}\label{lst:12}
+\end{figure}
+
+\begin{figure}
+\begin{minted}[highlightlines={}]{python}
+import setuptools._vendor.importlib_resources._legacy as module_0
+'''
+def normalize_path(path: Any) -> str:
+    str_path = str(path)
+    parent, file_name = os.path.split(str_path)
+    if parent:
+        raise ValueError(f'{path!r} must be only a file name')
+    return file_name
+'''
+def test_case_0():
+    none_0 = None
+    str_0 = module_0.normalize_path(none_0)
+\end{minted}
+\caption{Example of test templates generated by the heuristic for the module setuptools.\_vendor.importlib\_resources.\_legacy}\label{lst:13}
+\end{figure}
 
 \newpage
 
@@ -984,8 +1055,6 @@ Analogously, the OLR distribution does not mean that for the great majority of m
   \caption{Histogram of Object-like ratio over the modules in the test set.}\label{fig:olr-hist}
 \end{figure}
 
-% TODO - FIX
-
 For a deeper understanding of the information logs that were introduced to Pynguin for the test template generation process, these mainly tried to check what steps of the test template generation were being reached during all tries.
 The logs are added into a Python set if any of the following conditions are met at any point during the test suite generation:
 \begin{itemize}
@@ -999,7 +1068,7 @@ Besides, any message from a raised Exception that was not related to any of the 
 With this information, it was possible to understand that for out \(90\%\) of the modules from the original test set that had a correct run, more than half of them created and added test templates into the population with no effect on the results. 
 This fact can be explained by a lack of type information (which made the heuristic create trivial templates) or a lack of necessity for complex objects, and backs up the answers given to the proposed research questions.
 
-An additional example of this behaviour (for an algorithm different to MIO) is the module ``py\_backwards.compiler'', which obtained one of the best \(\hat{A}_{12}\) effect size values for DynaMOSA, but still did not find any coverage improvement.
+An additional example of this behaviour is the module ``py\_backwards.compiler'', which obtained one of the best \(\hat{A}_{12}\) effect size values for DynaMOSA, but still did not find any coverage improvement.
 The encountered phenomenon can be attributed to the difference in runs (9) and that the value was not high (0.591).
 
 Further examination of this module, indicates that a class \classname{CompilationTarget} is imported and used as parameter in it (``target''), but is it only the alias for a Tuple of two integers.
