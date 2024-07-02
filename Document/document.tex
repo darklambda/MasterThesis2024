@@ -30,10 +30,11 @@
 \usepackage[caption=false]{subfig}
 \usepackage{rotating}
 
-\addbibresource{ref.bib}
+\addbibresource{references.bib}
 \input{Figures/Results/rq1_bar_plot_vars.tex}
 \input{Figures/Results/rq1_search_time_vars.tex}
 \input{Figures/Results/average_cohen.tex}
+\input{Figures/Results/rq2_values.tex}
 
 
 
@@ -788,7 +789,7 @@ From the 588 original modules, the different sets that could be recognized are; 
 \end{table}
 
 At this point, the last two types of relevant modules would be those that either: got an increase in coverage, defying the current no improvement conclusions; or got a similar coverage result, but in fewer algorithm iterations.
-With these in mind, ``jose.backends.native'' and ``slugify.\_\_main\_\_'' are for each case the best modules respectively, with an improvement of \(0.045\) points in branch coverage, and a reduction of \(-99.587\%\) in the amount of iterations (both while executing the extension with MIO).
+With these in mind, ``jose.backends.native'' and ``slugify.\_\_main\_\_'' are for each case the best modules respectively, with an improvement of \(0.045\) points in branch coverage, and a reduction of \(-99.587\%\) in the amount of iterations, while executing the extension with MIO.\@
 
 Nonetheless, both of these modules have no type annotations regarding any class with attributes, nor any if-else guard that uses any complex object (see Listings~\ref{lst:7} and~\ref{lst:8}) as most of the boolean values are comparisons of string by themselves, or as collections keys.
 This would imply that the improvement in coverage was given by the chosen Pynguin seeds, and the reduction in iteration number obtained by the longer iteration time caused the usage of MIO, together with a convergence of coverage in the early evolution of the runs.
@@ -846,7 +847,9 @@ This would imply that the improvement in coverage was given by the chosen Pyngui
 \caption{Example method from the module slugify.\_\_main\_\_, with highlighted branches.}\label{lst:8}
 \end{figure}
 
-% TODO - Add generated tests
+% TODO - add examples of generated test templates
+
+Altough, considering that the nature of MIO's heuristic is different compared to the other algorithms, and it would have been also relevant to dig further other configurations, there was not any module that met the relevant scenarios previously proposed in any of the alternative algorithms.
 
 \newpage
 
@@ -854,8 +857,8 @@ This would imply that the improvement in coverage was given by the chosen Pyngui
 \section{Research Question 2}
 
 Figure~\ref{fig:scatter} shows a scatter plot of the different modules that presented an OLR measure greater than \(50\%\) and their Vargha-Delaney \(\hat{A}_{12}\) effect size with respect with the two distributions available for each approach and algorithm.
-For each graph, modules that had valid runs while using both Pynguin and the extension were taken into account, leaving an amount of modules between \(8\) and \(38\) after the OLR filtering.
-In this figure, the general effect size average over all algorithms is given by the value \(0.516\). 
+For each graph, modules that had valid runs while using both Pynguin and the extension were taken into account, leaving an amount of modules between \(\MinMod\) and \(\MaxMod\) after the OLR filtering.
+In this figure, the general effect size average over all algorithms is given by the value \(\AverageA\). 
 
 \begin{figure}[bth]
   \centering
@@ -866,10 +869,10 @@ In this figure, the general effect size average over all algorithms is given by 
 To answer this research question, two types of correlations metrics were calculated; Pearson's correlation coefficient, for linear dependency; and Spearman's rank correlation coefficient, for monotonic relationship between the variables.
 Both of these metrics are categorized depending on the magnitude and sign of their values, ranging from \(-1\) to \(1\) and stating a strong correlation for magnitudes closer to \(1\), a direct relation for positive values and an inverse relation for negative values.
 
-The values obtained for each metric follow a repetitive behaviour in each algorithm; the Pearson's correlation coefficient values ranged between \(0.13\) and \(0.63\), meaning mostly no linear correlation between the variables OLR and \(\hat{A}_{12}\) effect size; the Spearman's rank correlation coefficient values ranged between \(0.08\) and \(0.49\), meaning no monotonic correlation between the variables OLR and \(\hat{A}_{12}\) effect size; implying, that there is no correlation (or a weak correlation) between the aforementioned variables, when using the GBOS extension in a general Python module scenario.
+The values obtained for each metric follow a repetitive behaviour in each algorithm; the Pearson's correlation coefficient values ranged between \(\MinPearson\) and \(\MaxPearson\), meaning mostly no linear correlation between the variables OLR and \(\hat{A}_{12}\) effect size; the Spearman's rank correlation coefficient values ranged between \(\MinSpearmans\) and \(\MaxSpearmans\), meaning no monotonic correlation between the variables OLR and \(\hat{A}_{12}\) effect size; implying, that there is no correlation (or a weak correlation) between the aforementioned variables, when using the GBOS extension in a general Python module scenario.
 One could infer a possible linear correlation when applying MIO, as it got a Pearson correlation greater than 0.5, but considering the gathered data this far from the previous research question, this values is not conclusive.
 
-A summary of the amount of modules used in every step of this research question is found in Table~\ref{tab:modrq2}, including once again the initial set before the filtering of those configurations that did not reach 10 runs, the preliminary filter of the modules that reached a coverage result greater than the import coverage, and the posterior intersection of modules for every configuration and filtering of modules that reached an OLR greater than \(50\%\).
+A summary of the amount of modules used in every step of this research question is shown in Table~\ref{tab:modrq2}, including once again the initial module set before the filtering of those configurations that did not reach 10 runs, the preliminary filter of the modules that reached a coverage result greater than the import coverage, and the posterior intersection of modules, which included only those modules that have an OLR greater than \(50\%\).
 
 \begin{table}[t]
   \centering
@@ -883,6 +886,7 @@ A summary of the amount of modules used in every step of this research question 
 
 \subsection*{Discussion}
 
+\iffalse
 \begin{figure}[ptbh]
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/Results/worstA12.jpg}
@@ -895,12 +899,75 @@ A summary of the amount of modules used in every step of this research question 
   \caption{Branch coverage evolution for the modules that obtained the best Vargha-Delaney \(\hat{A}_{12}\) effect size value in each algorithm.}\label{fig:besta12}
 \end{figure}
 
-The obtained answer for the second research question develops the same ideas as the discussion of the first research question, stating that the majority of Python modules in the testing set either, do not include type information or the necessity for complex object inputs.
-Following the same procedure as before, Figures~\ref{fig:worsta12}~and~\ref{fig:besta12} show the evolution in coverage results over the time budget, for those modules that obtained the worst  and best \(\hat{A}_{12}\) effect size measure in the second research question.
-Once more, the results in coverage for this effect size measure prove that both approaches of Pynguin show in each chosen algorithm, either no statistical difference or a gap so big in the amount of runs between distributions, that the results in effect size bring no conclusive information.
+\fi 
 
-One example of this, is the case of the fourth plot of Figure~\ref{fig:besta12}, showing the evolution in coverage for the modules that obtained the best \(\hat{A}_{12}\) effect size in the configurations that used MIO.\@
-In this instance both approaches had a difference in runs of 19, with default Pynguin having the most of them (30) and making the effect size value ambiguous. 
+The obtained answer for the second research question develops the same ideas as the discussion of the first research question, leaning to an initial tought, that the majority of Python modules in the testing set either, do not include enough type information or the necessity for complex object inputs.
+To test this theory, once again modules were analysed from the two relevant scenarios: those were the extension results got a coverage improvement, or reached the same results as Pynguin but in less algorithm iterations.
+For these cases, the obtained modules were ``pymonet.utils'', with an increase of \(0.025\) in coverage, and ``py\_backwards.messages'', with a decrease of \(50.10\%\) in the number of computed iterations.
+The two modules have an OLR value of \(0.75\) and \(1.0\) respectively.
+
+Listing~\ref{lst:9} shows two out of the three present callables within the ``pymonet.utils'' module that influenced the given OLR value.
+In them, the class Callable is an alias of the built-in class CallableType from Python 3.12, that does not hold any attributes in its definition nor need them for reaching the highlighted branches. 
+
+\begin{figure}
+\begin{minted}[highlightlines={4, 10}]{python}
+@curry
+def find(collection: List[T], key: Callable[[T], bool]):
+    for item in collection:
+        if key(item):
+            return item
+def memoize(fn: Callable, key=eq) -> Callable:
+    cache: List[Any] = []
+    def memoized_fn(argument):
+        cached_result = find(cache, lambda cacheItem: key(cacheItem[0], argument))
+        if cached_result is not None:
+            return cached_result[1]
+        fn_result = fn(argument)
+        cache.append((argument, fn_result))
+        return fn_result
+    return memoized_fn
+\end{minted}
+\caption{Example method from the module pymonet.utils, with highlighted branches.}\label{lst:9}
+\end{figure}
+
+% TODO - add examples of generated test templates
+
+For the next case, Listing~\ref{lst:10} presents two callables from the second relevant module with parameters of type \classname{CompilationError} and \classname{TransformationError}, subclasses of the \classname{Exception} class.
+The branches of the first function might be subjects of a possible test template, generated including a \classname{CompilationError} object with the attribute ``lineno'' assigned to a certain variable.
+Nonetheless, the type annotations of the class are given only in the \callable[]{\_\_init\_\_} method signature, fact that limits the knowledge of the heuristic prior to the OCG to statement translation process.
+
+\begin{figure}
+\begin{minted}[highlightlines={6, 8, 13}]{python}
+def _get_lines_with_highlighted_error(e: CompilationError) -> Iterable[str]:
+    error_line = e.lineno - 1
+    lines = e.code.split('\n')
+    padding = len(str(len(lines)))
+    from_line = error_line - const.SYNTAX_ERROR_OFFSET
+    if from_line < 0:
+        from_line = 0
+    if from_line < error_line:
+        for n in range(from_line, error_line):
+            yield _format_line(lines[n], n, padding)
+    # ... Inner code ...
+    to_line = error_line + const.SYNTAX_ERROR_OFFSET
+    if to_line > len(lines):
+        to_line = len(lines)
+    for n in range(error_line + 1, to_line):
+        yield _format_line(lines[n], n, padding)
+def transformation_error(e: TransformationError) -> str:
+    return ('{red}{bright}Transformation error in "{e.filename}", '
+            'transformer "{e.transformer.__name__}" '
+            'failed with:{reset}\n{e.traceback}\n'
+            '{bright}AST:{reset}\n{e.ast}').format(
+        red=Fore.RED,
+        e=e,
+        reset=Style.RESET_ALL,
+        bright=Style.BRIGHT)
+\end{minted}
+\caption{Example method from the module py\_backwards.messages, with highlighted branches.}\label{lst:10}
+\end{figure}
+
+% TODO - add examples of generated test templates
 
 \newpage
 
@@ -917,36 +984,54 @@ Analogously, the OLR distribution does not mean that for the great majority of m
   \caption{Histogram of Object-like ratio over the modules in the test set.}\label{fig:olr-hist}
 \end{figure}
 
-For a deeper understanding of the modules that reached the endmost effect size results in Figures~\ref{fig:best},~\ref{fig:worsta12}~and~\ref{fig:besta12}, a final new developer output variable was added into the code of the GBOS extension, called ``GBOSFlags''.
-This variable is a collection of three boolean values, which start with False as default, and change to True if any of the following conditions are met at any point during the test suite generation,
+% TODO - FIX
+
+For a deeper understanding of the information logs that were introduced to Pynguin for the test template generation process, these mainly tried to check what steps of the test template generation were being reached during all tries.
+The logs are added into a Python set if any of the following conditions are met at any point during the test suite generation:
 \begin{itemize}
-  \item a PDG, or a non-sliced OCG is created without errors
-  \item a test template is generated without exceptions raised
-  \item a test template is added into the algorithm's population.
+  \item a PDG, or a non-sliced OCG is created with or without errors
+  \item either the backward slice, interprocedural analysis or forward slice were performed without errors
+  \item a test template is (or not) generated
+  \item a test template is (or not) added into the algorithm's population.
 \end{itemize}
-With this information, it was possible to understand that in the great majority of aforementioned modules, none of these three values was set to True, fact that further explains the coverage results and base the answers given to the proposed research questions.
-An example of this behaviour is the module ``flutils.packages'', which obtained one of the best \(\hat{A}_{12}\) effect size values, but still did not generate any test template, meaning that the coverage result distribution improvement is given merely by randomness.
-Further examination of this module, indicates that custom classes are defined in it, but the majority of its functions do not use them as parameters.
-Instead, they use Python primitives or unions of primitives, except for the function \callable[ver\_obj]{\_each\_version\_part} which uses a class \classname{StrictVersion} part of versions of Python before 3.12, and can be fully constructed with a single string, making it not count explicitly as a complex object.
+Besides, any message from a raised Exception that was not related to any of the previous points, was also added into the set.
 
-\begin{minted}{python}
+With this information, it was possible to understand that for out \(90\%\) of the modules from the original test set that had a correct run, more than half of them created and added test templates into the population with no effect on the results. 
+This fact can be explained by a lack of type information (which made the heuristic create trivial templates) or a lack of necessity for complex objects, and backs up the answers given to the proposed research questions.
 
-# Module flutils.packages
+An additional example of this behaviour (for an algorithm different to MIO) is the module ``py\_backwards.compiler'', which obtained one of the best \(\hat{A}_{12}\) effect size values for DynaMOSA, but still did not find any coverage improvement.
+The encountered phenomenon can be attributed to the difference in runs (9) and that the value was not high (0.591).
 
-def _each_version_part(
-        ver_obj: StrictVersion,
-) -> Generator[_VersionPart, None, None]:
-    version: Tuple[int, int, int] = ver_obj.version
-    prerelease: Union[Tuple[str, int], None] = ver_obj.prerelease
-    prerelease_built = False
-# ...
+Further examination of this module, indicates that a class \classname{CompilationTarget} is imported and used as parameter in it (``target''), but is it only the alias for a Tuple of two integers.
+This parameter is evaluated in a single guard.
+
+\begin{minted}[highlightlines={1, 7}]{python}
+def _transform(path: str, code: str, target: CompilationTarget) -> Tuple[str, List[str]]:
+    debug(lambda: 'Compiling "{}"'.format(path))
+    dependencies = []  # type: List[str]
+    tree = ast.parse(code, path)
+    debug(lambda: 'Initial ast:\n{}'.format(dump(tree)))
+    for transformer in transformers:
+        if transformer.target < target:
+            debug(lambda: 'Skip transformer "{}"'.format(transformer.__name__))
+            continue
+        debug(lambda: 'Use transformer "{}"'.format(transformer.__name__))
+        working_tree = deepcopy(tree)
+        try:
+            result = transformer.transform(working_tree)
+        except:
+            raise TransformationError(path, transformer,
+                                      dump(tree), format_exc())
+        if not result.tree_changed:
+            debug(lambda: 'Tree not changed')
+            continue
+        # ... Branchless code ...
+    return fix_code(code), dependencies
 \end{minted}
 
-However, an exception to the rule was the module ``humanfriendly.compat'' (encountering one of the best Cohen's D effect size in the first research question), whose test template generation process managed to create a valid PDG, but not a valid test template.
-After doing a detail inspection of the module in question, it was clear that the main reason for it to not continue the test template creation process was, that it had an OLR value of \(0\%\), with only functions that either have no parameters or a single parameter with no type information.
+Considering the current cases, were most of the modules did not have correct type annotations for the heuristic to work, or a need for complex objects for the heuristic to be usefull, questions arise about the precense of logs informing of POP operations to an empty stack when generating the DDG, which is most likely due to certain cases that could not be resolved completely in the implementation and might have caused a variable information loss.\@
 
-Considering this cases, questions arise about the possible sections of the GBOS extension that might make the second step fail, which is most likely due to a lack of information in terms of Data Dependency within the built inter procedural PDG.\@
-One example of this information loss can be found in the presented implementation of the Frame execution when generating the DDG, specifically when the MUT has ``try-except'' or ``with'' clauses inside any of its basic blocks.
+One example of this is when the MUT has ``try-except'' or ``with'' clauses inside any of its basic blocks.
 The problem with these logic rules comes, because their implementation is given (on the 3.10 Python version) with Python instruction that conditionalize the stack frame state on the presence of an Exception, e.g.~\textbf{SETUP\_WITH} and \textbf{SETUP\_FINALLY}.
 An example of this behaviour is the snippet
 
@@ -962,10 +1047,9 @@ where the stack frame suffers no relative change in case of no Exception, or is 
 The procedure in this type of instruction for the development stage of the extension was to set the node's stack frame effect to be the one given by the successful execution.
 
 With this case present in the OCG generation, it is non-trivial to obtain the use and definition places, and consequently it is not possible to fully define the reaching definition equations.
-Sometimes, this problem is represented even by a runtime error, when an instruction of the extended OCG that is being executed, tries to do a POP operation on an empty stack frame.  
-Nonetheless, in the experiment runs this error did not raise any Exception, which still allowed the heuristic to generate a non-finished OCG.\@ 
+Nonetheless, a full control flow from the start of the callables to the return statements can still be found as a sub-graph within each CFG, meaning that it can still be possible to get the necessary instructions where variables are used or defined regarding the relevant ones.
 
-Regarding once more the example module presented in Figure~\ref{lst:1}, the line plots presented in Figure~\ref{fig:example_cov} show the evolution in branch coverage results over a Search Budget of 600 seconds for four cases of two characteristics each, either using or not the GBOS extension, and either using MIO and MOSA as examples of evolutionary and genetic algorithms.
+Regarding once more the example module presented in Figure~\ref{lst:1}, the line plots shown in Figure~\ref{fig:example_cov} show the evolution in branch coverage results over a Search Budget of 600 seconds for four cases of two characteristics each, either using or not the GBOS extension, and either using MIO and MOSA as examples of evolutionary and genetic algorithms.
 In them, it is remarkable how none of the baseline Pynguin approaches could escape the search landscape local optima, which is attributed to the random nature prevalent in both algorithms, together with the limited search time.
 Contrastingly, both GBOS approaches reached the full coverage before spending the whole search time budget, when using ``no\_change\_iteration'' arguments of 100 and 500 for MOSA and MIO respectively.
 These latter experimental instances show a better performance in terms of sooner convergence when using the MIO algorithm, which is explained by the fact that although MIO was configured to generate test templates less often compared to MOSA, previous results showed that the amount of iterations that MIO performs is exponentially greater to other algorithms.
@@ -978,8 +1062,6 @@ Moreover, the way MIO is implemented into Pynguin makes the execution of it prio
 \end{figure}
 
 \chapter{Related Work}\label{chap:related_work}
-
-% TODO - change structure by approach (check Gordon's email)
 
 Before commenting on the different tools and techniques that have a place in the current state of the art of automatic test generation for programming languages, it is worth describing the types of testing and their objectives. Unit testing is a type of functional testing that tries to test individual or atomic units of a software project.
 Regression testing, on another side, is a type of system testing that tells if new functionalities of a system produce defects into the latest build of it.
@@ -1065,16 +1147,17 @@ For the specified metrics, the tool got a \(68.4\%\) of line coverage and a \(10
 
 Through the conducted study, a Python implementation for Pynguin of the Graph Based Object Synthesis heuristic was presented for the generation of the previously defined complex object inputs.
 The expectation from the experiments aimed for an improvement in branch coverage results when running the approach into a set of Python modules, that served as generalization of the common publicly available Python module.
-Although, this prediction had the heuristic's original result on its Java implementation of a Cohen's D effect size improvement of \(0.21\) as baseline, the observed effect size in the general results presented a different outcome, with a negative value of \(-0.04\).
+Although, this prediction had the heuristic's original result on its Java implementation of a Cohen's D effect size improvement of \(0.21\) as baseline, the observed effect size in the general results presented a different outcome, with a negative value of \(\AverageCohen\).
 
 At the same time, the introduced metric ``OLR'' helped as an intermediary measure for the presence of a need for complex object inputs within Python modules. 
-Nonetheless, not even by focusing the efforts of the experimental setup on those Python modules that had a greater OLR, any improvement was found at all, getting an average \(\hat{A}_{12}\) Vargha-Delaney effect size of \(0.516\).
-This behaviour was analysed further with the idea of a possible correlation between the OLR and the improvement when using the GBOS approach, which was completely refuted by the computation of both Pearson's and Spearman's correlation coefficient.
+Nonetheless, not even by focusing the efforts of the experimental setup on those Python modules that had a greater OLR, any improvement was found at all, getting an average \(\hat{A}_{12}\) Vargha-Delaney effect size of \(\AverageA\).
+This behaviour was analysed further with the idea of a possible correlation between the OLR and the improvement when using the GBOS approach, which was completely refuted by the computation of both Pearson's and Spearman's correlation coefficients.
 
 While the presented approach did not improve Pynguin's results on the set of Python modules beforehand, this might as well describe the current state of the usage of Python as a programming language, implying that even though there are many resources for a correct typing within the dynamically typed language, most developers still do not make full usage of them.
 The latter statement is made based on the results of the OLR histogram, exhibited in Figure~\ref{fig:olr-hist}, explaining a general lack of explicit type information regarding callable parameters.
 
-With this last point, it would be reasonable to propose a repetition of the current study and its experimental setup sometime in the future, whenever there might be a change in Python's developer community over the way explicit type information is handled. 
+With this last point, it would be reasonable to propose a repetition of the current study and its experimental setup sometime in the future, whenever there might be a change in Python's developer community over the way explicit type information is handled.
+Besides, there were many specific scenarios regarding the type annotation gathering system or from the PDG generation that were not taken into account, and will be mentioned in the following section.
 
 \section{Future Work}
 
@@ -1084,7 +1167,7 @@ One of them, is the improvement of the \classname{DataDependenceGraph}, specific
 The idea for this point would be to add into the dictionary of \classname{Frame} instances, a tuple or collection instead of a single frame for those nodes that contain an instruction with different stack frame states depending on the presence of an Exception.
 
 Another idea that might be worth diving into, is the addition of functions into the interprocedural analysis (see Section~\ref{sec:pdgia}) made before the construction of the OCG.\@
-Here, a future update would need to ideate a way to link every argument from the Python Bytecode relevant for a function call, with the corresponding variable names in the function's particular sub PDG.\@
+Here, a possible update would need to ideate a way to link every argument from the Python Bytecode relevant for a function call, with the corresponding variable names in the function's particular sub PDG.\@
 
 Although it has not been mentioned before so far, considering the GBOS specific times regarding execution, it could be possible that further optimization of the developed code might improve some computation overhead produced by the heuristic e.g.~by saving the interprocedural PDG generated for a branch to be reused in another one that belongs to a same code object.
 

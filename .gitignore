@@ -1,7 +1,5 @@
-_minted-pynguinGraphBasedObjectGen/*
-_minted-diff/*
+Document/_minted-pynguinGraphBasedObjectGen/*
+Document/_minted-diff/*
 .vscode/*
-Drafts/*
-pynguinGraphBasedObjectGen.*
-diff.*
-!.tex
+Document/pynguinGraphBasedObjectGen.*
+!Document/*.tex
