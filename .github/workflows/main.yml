@@ -15,6 +15,7 @@ jobs:
         with:
           working_directory: Document
           root_file: document.tex
+          latexmk_shell_escape: true
       - name: Rename file 
         run: mv Document/document.pdf Document/oberreuterGonzalo-mscThesis.pdf
       - name: Upload PDF file
