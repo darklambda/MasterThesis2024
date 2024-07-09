@@ -59,8 +59,6 @@
 
 \maketitle
 
-\iffalse{}
-
 \authorshipDeclaration{}
 
 \begin{abstract}
@@ -74,14 +72,11 @@
 \end{abstract}
 
 \begin{acknowledgements}
-  Some acknowledgements. 
-  TBD.\@
+  No process is easy to start nor finish.
+  Thus, the effort put into this thesis is dedicated to the people that were with me along the way, in person or not, and made it possible.
 \end{acknowledgements}
-\fi
 
 \tableofcontents
-
-
 
 \mainmatter{}
 
@@ -91,14 +86,13 @@ Software testing is one of the key aspects of software development while trying 
 This quality can be achieved by the insight provided by the result of the tests, and even because of the defects that can be encountered during the testing phase.
 Nonetheless, even though coding different kinds of tests is a good practice, it is often ignored by new or inexperienced developers, who also make this mistake halfway by not getting a complete introspection of their own code or, in other words, not getting a complete kind of test coverage.
 As of 2017, a study by Trauch and Grabowski~\cite{DBLP:conf/icst/TrautschG17} presented that, over more than 4 million tests, most of them were not correctly categorized (as unit test or not) and approximately half of them use mocking as a testing technique, which tells some aspects about the developing community of the projects in review. 
-With this general idea into mind, is that researchers in the last decade   have put effort into autonomous test generation, the concept that implies the usage of different methods or techniques in order to identify patterns and generate test sets with little to zero external intervention.
+With this general idea into mind, researchers have in the last decade put effort into autonomous test generation, the concept that implies the usage of different methods or techniques in order to identify patterns and generate test sets with little to zero external intervention.
 In 2015, empirical proof was found by Fraser et al.~\cite{DBLP:journals/tosem/FraserSMAP15}, who showed that the usage of automated Java unit test generation increases the general structural coverage, does not lead to the detection of more faults and affects negatively the ability to capture intended class behaviour.
 The results of this study state fundamentally that this behaviour  comes from the early stages of the tool in question, and proposes to put more work into the readability of generated tests and  the process of test making itself.
 
-Within the scope of Python testing, Pynguin~\cite{DBLP:conf/icse/LukasczykF22} is command line interface for the generation of unit tests that applies various algorithms for input generation, such as DynaMOSA~\cite{DBLP:journals/tse/PanichellaKT18}, MIO~\cite{DBLP:conf/ssbse/Arcuri17}, MOSA~\cite{DBLP:conf/icst/PanichellaKT15}, Whole Test Suite~\cite{DBLP:journals/tse/FraserA13}, among others.
+Within the scope of Python testing, Pynguin~\cite{DBLP:conf/icse/LukasczykF22} is a command line interface for the generation of unit tests that applies various algorithms for input generation, such as DynaMOSA~\cite{DBLP:journals/tse/PanichellaKT18}, MIO~\cite{DBLP:conf/ssbse/Arcuri17}, MOSA~\cite{DBLP:conf/icst/PanichellaKT15}, Whole Test Suite~\cite{DBLP:journals/tse/FraserA13}, among others.
 
 At the time of its original release (25th of July 2020), Pynguin was a state-of-the-art open source tool that has been the first step for subsequent researches about how to improve the performance and functionalities of Pynguin itself, including CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, PyLC~\cite{DBLP:conf/sac/SalariEAS23} and many other tools that are briefly explained in the Section~\ref{chap:related_work}.
-These recent new extensions of Pynguin and the latter aforementioned problem at the time of generating complex object inputs are the principal motivations of this thesis and the related and future work to it.
 
 The original Pynguin research paper~\cite{DBLP:conf/icse/LukasczykF22} stated that after the test generation of 118 Python modules, the average branch coverage over all algorithms was $66.8\%$, which leads to think that improvement is possible.
 
@@ -106,6 +100,7 @@ Although automatic test generation is achievable while having type information a
 The major concerns about the argument generation, is that the lack of type information produces ambiguity for the heuristics of the tool at hand at the moment of synthesizing non-primitive types.
 Also, the complexity of these class instances in terms of their internal field values might produce runtime errors, which imply a local optima in the search landscape of the test representation~\cite{DBLP:conf/sigsoft/0001O00D21} and therefore an upper bound for coverage.
 This latter idea, brings a recurrent problem in the automatic test generation for languages that include any kind of Object-Oriented Programming, which is the reaching of branches that need an object instance as input in a specific variable-state.
+From now on, these are going to be refered as \textit{complex object input}.
 
 \begin{figure}
   \inputminted[linenos]{python}{Figures/example.py}
@@ -676,6 +671,7 @@ The definition of the Object-like ratio also makes an internal threat, as it was
 An example of this is a variation of the method \callable[]{checkRules} from Figure~\ref{lst:1}, but taken from line 1 until before line 10, where the method would have an OLR of \(100\%\) but the unique target (branch of line 8) would not need any complex object in order to be reached.
 The plausible presence of bugs in the multiple stages of the GBOS phase also threatens the internal validity, which is partially mitigated by the if-clauses that stop the whole process if one of the steps returns a None value (e.g.\ while constructing the PDG, OCG or the test template).
 The necessity of both complex object inputs and full knowledge of the variables' type information in order to obtain any improvement in terms of branch coverage threatens the internal validity too.
+The arbitrarly set timeout of 8 hours to execute the full amount of Pynguin runs is also a threat to internal validity, as it is not possible to generalize a minimum amount of time that would allow Pynguin to finish running over the modules while using the GBOS extension, while taking into account all the extra computational effort produced by the decision and generation step.
 
 With respect to the generalization of the benefits obtained from the presented extension, the \textbf{external validity} is threatened by the usage of Python modules that were already studied in previous studies of Pynguin, and might not represent the great majority of Python modules. 
 
@@ -739,7 +735,7 @@ A summary of the amount of modules used in every step of this research question 
 
 
 \begin{summary}{RQ1: Performance of GBOS over Pynguin}
-  The presented GBOS extension for Pynguin \textbf{does not} outperform Pynguin itself while being evaluated over previously studied modules, similarly as EvoObj outperformed EvoSuite. 
+  The results of the proposed GBOS extension for Pynguin \textbf{does not show} an improvement compared to Pynguin itself while being evaluated over previously studied modules, similarly as EvoObj outperformed EvoSuite. 
 \end{summary}
 
 \newpage
@@ -774,7 +770,7 @@ From the 588 original modules, the different sets that could be recognized are; 
 \end{table}
 
 At this point, the last two types of relevant modules would be those that either: got an increase in coverage, defying the current no improvement conclusions; or got a similar coverage result, but in fewer algorithm iterations.
-With these in mind, ``setuptools.command.setopt'' and ``slugify.\_\_main\_\_'' are for each case the best modules respectively, with an improvement of \(0.066\) points in branch coverage, and a reduction of \(-99.587\%\) in the amount of iterations, while executing the extension with DynaMOSA and MIO.\@
+With these in mind, setuptools.command.setopt and slugify.\_\_main\_\_ are for each case the best modules respectively, with an improvement of \(0.066\) points in branch coverage, and a reduction of \(-99.587\%\) in the amount of iterations, while executing the extension with DynaMOSA and MIO.\@
 
 Nonetheless, both of these modules have no type annotations regarding any class with attributes, nor any if-else guard that uses any complex object (see Listing~\ref{lst:8}) as most of the boolean values are comparisons of strings, or collections keys.
 Another found case can be shown in Listing~\ref{lst:7}, where the function \callable[]{edit\_config} needs (implicitly) the paths to already created files, which goes over the capabilities of the heuristic.
@@ -845,7 +841,7 @@ This would imply that the improvement in coverage was given by the chosen Pyngui
 \caption{Example method from the module slugify.\_\_main\_\_, with highlighted branches.}\label{lst:8}
 \end{figure}
 
-Listing~\ref{lst:9} presents examples of test templates generated (but not necessarly used) by the heuristic when working over the module setuptools.command.setopt, which focused on the method \callable[]{config\_file}.
+Listing~\ref{lst:9} presents examples of test templates generated (but not necessarly used) by the heuristic when focusing on a target branch of the method \callable[]{config\_file} of the module setuptools.command.setopt.
 In this case, the only branches available are evaluated by comparing strings.
 
 \begin{figure}
@@ -915,7 +911,7 @@ A summary of the amount of modules used in every step of this research question 
 \end{table}
 
 \begin{summary}{RQ2: Correlation of coverage improvement and OLR}
-  The usage of the presented GBOS extension \textbf{does not} induce a correlated improvement in branch coverage results, when applied to Python modules that have a higher OLR metric.
+  The usage of the presented GBOS extension \textbf{did not} induce a correlated improvement in branch coverage results, when applied to Python modules that have a higher OLR metric from the testing set.
 \end{summary}
 
 \subsection*{Discussion}
@@ -931,12 +927,12 @@ The obtained answer for the second research question develops the same ideas as 
 See Figure~\ref{fig:besta12} for a timeline of coverage for the modules that got the best \(\hat{A}_{12}\) values.
 
 To test this theory, once again modules were analysed from the two relevant scenarios: those were the extension results got a coverage improvement, or reached the same results as Pynguin but in less algorithm iterations.
-For these, the modules were ``pkg\_resources.\_vendor.jaraco.functools'', with an increase of \(0.047\) in coverage, and ``setuptools.\_vendor.importlib\_resources.\_legacy'', with a decrease of \(86.45\%\) in the number of computed iterations.
+For these, the modules were pkg\_resources.\_vendor.jaraco.functools, with an increase of \(0.047\) in coverage, and setuptools.\_vendor.importlib\_resources.\_legacy, with a decrease of \(86.45\%\) in the number of computed iterations.
 The two modules have an OLR value of \(0.75\) and \(0.78\) respectively.
 
-Listing~\ref{lst:10} shows two out of the three present callables within the module ``pkg\_resources.\_vendor.jaraco.functools'' that influenced the given OLR value.
+Listing~\ref{lst:10} shows two out of the three present callables within the module pkg\_resources.\_vendor.jaraco.functools that influenced the given OLR value.
 In them, the class CallableT is an alias of the built-in class CallableType from the typing library added in Python 3.5, that does not hold any attributes in its definition, nor need them for any branch.
-This class is at the same time an alias for callables from the ``collections.abc'' module with two parameters. 
+This class is at the same time an alias for callables from the collections.abc module with two parameters. 
 
 \begin{figure}
 \begin{minted}[highlightlines={}]{python}
@@ -984,11 +980,11 @@ def open_text(
         'r', encoding=encoding, errors=errors
     )
 \end{minted}
-\caption{Example functions that have type annotations detected as object-like by the heuristic from the module setuptools.\_vendor.importlib\_resources.\_legacy}\label{lst:11}
+\caption{Example functions that have type annotations detected as object-like from the module setuptools.\_vendor.importlib\_resources.\_legacy}\label{lst:11}
 \end{figure}
 
 As a final aspect, Figures~\ref{lst:12}~and~\ref{lst:13} display the test templates created for the two specific modules when using heuristic, which focus mainly in callables that do have a branch to cover, but do not expose any type information.
-Similar to the already analysed case, this would imply that both ``improvements'' were not achieved by the heuristic.
+Similar to the already analysed case, this would imply that both improvements were not achieved by the heuristic.
 For example, the idea of the extension focusing callables without type information and synthesizing simple test templates over pkg\_resources.\_vendor.jaraco.functools, makes the improvement in coverage be explained once again only by Pynguin's random nature.
 Additionally, in the module with fewer iterations when using the extension rather than Pynguin, it happened that the test generation process had an unexpected error in the early stages while already getting the best coverage obtained by the default settings, thus ending the whole run earlier. 
 
@@ -1055,9 +1051,12 @@ Analogously, the OLR distribution does not mean that for the great majority of m
   \caption{Histogram of Object-like ratio over the modules in the test set.}\label{fig:olr-hist}
 \end{figure}
 
+Considering the OLR definition, another case that was found and threatened the purpose of the metric, is that it does not take into account built-in type aliases that might have been set within the module.
+Factually, this idea implies that the real OLR values are even lower than the one measured.
+
 For a deeper understanding of the information logs that were introduced to Pynguin for the test template generation process, these mainly tried to check what steps of the test template generation were being reached during all tries.
 The logs are added into a Python set if any of the following conditions are met at any point during the test suite generation:
-\begin{itemize}
+\begin{itemize} 
   \item a PDG, or a non-sliced OCG is created with or without errors
   \item either the backward slice, interprocedural analysis or forward slice were performed without errors
   \item a test template is (or not) generated
@@ -1068,10 +1067,10 @@ Besides, any message from a raised Exception that was not related to any of the 
 With this information, it was possible to understand that for out \(90\%\) of the modules from the original test set that had a correct run, more than half of them created and added test templates into the population with no effect on the results. 
 This fact can be explained by a lack of type information (which made the heuristic create trivial templates) or a lack of necessity for complex objects, and backs up the answers given to the proposed research questions.
 
-An additional example of this behaviour is the module ``py\_backwards.compiler'', which obtained one of the best \(\hat{A}_{12}\) effect size values for DynaMOSA, but still did not find any coverage improvement.
+An additional example of this behaviour is the module py\_backwards.compiler, which obtained one of the best \(\hat{A}_{12}\) effect size values for DynaMOSA, but still did not find any coverage improvement.
 The encountered phenomenon can be attributed to the difference in runs (9) and that the value was not high (0.591).
 
-Further examination of this module, indicates that a class \classname{CompilationTarget} is imported and used as parameter in it (``target''), but is it only the alias for a Tuple of two integers.
+Further examination of this module, indicates that a class \classname{CompilationTarget} is imported and used as parameter in it (``target''), but it is only the alias for a Tuple of two integers.
 This parameter is evaluated in a single guard.
 
 \begin{minted}[highlightlines={1, 7}]{python}
@@ -1114,14 +1113,13 @@ except:
 
 where the stack frame suffers no relative change in case of no Exception, or is restored to its state before the ``try'' block and pushes different Exception-related variables onto the stack (e.g.~the raised Exception, the address of the exception handler, etc.) before continuing in the ``except'' block on the contrary case.  
 The procedure in this type of instruction for the development stage of the extension was to set the node's stack frame effect to be the one given by the successful execution.
-
 With this case present in the OCG generation, it is non-trivial to obtain the use and definition places, and consequently it is not possible to fully define the reaching definition equations.
 Nonetheless, a full control flow from the start of the callables to the return statements can still be found as a sub-graph within each CFG, meaning that it can still be possible to get the necessary instructions where variables are used or defined regarding the relevant ones.
 
 Regarding once more the example module presented in Figure~\ref{lst:1}, the line plots shown in Figure~\ref{fig:example_cov} show the evolution in branch coverage results over a Search Budget of 600 seconds for four cases of two characteristics each, either using or not the GBOS extension, and either using MIO and MOSA as examples of evolutionary and genetic algorithms.
 In them, it is remarkable how none of the baseline Pynguin approaches could escape the search landscape local optima, which is attributed to the random nature prevalent in both algorithms, together with the limited search time.
 Contrastingly, both GBOS approaches reached the full coverage before spending the whole search time budget, when using ``no\_change\_iteration'' arguments of 100 and 500 for MOSA and MIO respectively.
-These latter experimental instances show a better performance in terms of sooner convergence when using the MIO algorithm, which is explained by the fact that although MIO was configured to generate test templates less often compared to MOSA, previous results showed that the amount of iterations that MIO performs is exponentially greater to other algorithms.
+These latter experimental instances show a better performance in terms of sooner convergence when using the MIO algorithm, which is explained by the fact that although MIO was configured to generate test templates less often compared to MOSA, previous results showed that the amount of iterations that MIO performs is exponentially greater than other algorithms.
 Moreover, the way MIO is implemented into Pynguin makes the execution of it prioritize the mutation of each iteration's single solution, thing that is strictly necessary in order to reach branch targets after generating a test code template. 
 
 \begin{figure}[htb]
@@ -1132,7 +1130,7 @@ Moreover, the way MIO is implemented into Pynguin makes the execution of it prio
 
 \chapter{Related Work}\label{chap:related_work}
 
-Before commenting on the different tools and techniques that have a place in the current state of the art of automatic test generation for programming languages, it is worth describing the types of testing and their objectives. Unit testing is a type of functional testing that tries to test individual or atomic units of a software project.
+Before commenting on the most relevant tools and techniques that have a place in the current state of the art of automatic test generation for programming languages, it is worth describing the types of testing and their objectives. Unit testing is a type of functional testing that tries to test individual or atomic units of a software project.
 Regression testing, on another side, is a type of system testing that tells if new functionalities of a system produce defects into the latest build of it.
 
 The various approaches that are part of the current state-of-the-art for Automatic Test Generation can be categorized in two main types depending on what are they based on: Large Language Models (LLMs) and Search-Based Algorithms or Static Analysis (SB).
@@ -1216,17 +1214,17 @@ For the specified metrics, the tool got a \(68.4\%\) of line coverage and a \(10
 
 Through the conducted study, a Python implementation for Pynguin of the Graph Based Object Synthesis heuristic was presented for the generation of the previously defined complex object inputs.
 The expectation from the experiments aimed for an improvement in branch coverage results when running the approach into a set of Python modules, that served as generalization of the common publicly available Python module.
-Although, this prediction had the heuristic's original result on its Java implementation of a Cohen's D effect size improvement of \(0.21\) as baseline, the observed effect size in the general results presented a different outcome, with a negative value of \(\AverageCohen\).
+Although, this prediction had the heuristic's original result on its Java implementation of a Cohen's D effect size improvement of \(0.21\) as baseline, it was not possible to observe a similar outcome, as a negative value of \(\AverageCohen\) was achieved.
 
 At the same time, the introduced metric ``OLR'' helped as an intermediary measure for the presence of a need for complex object inputs within Python modules. 
-Nonetheless, not even by focusing the efforts of the experimental setup on those Python modules that had a greater OLR, any improvement was found at all, getting an average \(\hat{A}_{12}\) Vargha-Delaney effect size of \(\AverageA\).
+Nonetheless, even by focusing the efforts of the experimental setup on those Python modules that had a greater OLR, no improvement could be observed, getting an average \(\hat{A}_{12}\) Vargha-Delaney effect size of \(\AverageA\).
 This behaviour was analysed further with the idea of a possible correlation between the OLR and the improvement when using the GBOS approach, which was completely refuted by the computation of both Pearson's and Spearman's correlation coefficients.
 
 While the presented approach did not improve Pynguin's results on the set of Python modules beforehand, this might as well describe the current state of the usage of Python as a programming language, implying that even though there are many resources for a correct typing within the dynamically typed language, most developers still do not make full usage of them.
 The latter statement is made based on the results of the OLR histogram, exhibited in Figure~\ref{fig:olr-hist}, explaining a general lack of explicit type information regarding callable parameters.
 
 With this last point, it would be reasonable to propose a repetition of the current study and its experimental setup sometime in the future, whenever there might be a change in Python's developer community over the way explicit type information is handled.
-Besides, there were many specific scenarios regarding the type annotation gathering system or from the PDG generation that were not taken into account, and will be mentioned in the following section.
+Besides, there were many specific scenarios regarding the type annotation gathering system or the PDG generation that were not taken into account, which support the idea that the Graph Based Object Synthesis heuristic still needs further development before working at its full potential in a language like Python.
 
 \section{Future Work}
 
@@ -1239,6 +1237,11 @@ Another idea that might be worth diving into, is the addition of functions into 
 Here, a possible update would need to ideate a way to link every argument from the Python Bytecode relevant for a function call, with the corresponding variable names in the function's particular sub PDG.\@
 
 Although it has not been mentioned before so far, considering the GBOS specific times regarding execution, it could be possible that further optimization of the developed code might improve some computation overhead produced by the heuristic e.g.~by saving the interprocedural PDG generated for a branch to be reused in another one that belongs to a same code object.
+
+Following the ideas of drawbacks produced by the extra computational effort, in many test template generation processes, it happened that the generated test templates got rejected as candidates to be introduced into the population because they had exceptions when executed.
+This is something that contrasts the idea of the templates needing to be mutated before achieving higher coverage.
+A turnaround would be to either; allow the templates to be part of the population of each algorithm regardless if they have exceptions or not; or to use the heuristic as a new type of mutation operator, that would generate statements representing the creation of a complex object inputs to be used by other method calling statements already in the mutated test.
+The last idea would also need a mechanism to identify the necesity for complex objects, with stronger soundess than the proposed Object-Like ratio and at a callable level.
 
 Finally, one factor that would make the GBOS heuristic much more appliable to a general case, is the ability to not depend on explicit type annotations.
 This could be achieved in many ways, but considering the ongoing discovery of diverse application for LLMs and the good results obtained by the state-of-the-art automatic test generation tools that use this technology, it is safe to say applying one of the models might a first approach.
