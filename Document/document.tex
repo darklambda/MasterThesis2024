@@ -62,13 +62,25 @@
 \authorshipDeclaration{}
 
 \begin{abstract}
-  An English abstract to the thesis. 
-  TBD.\@
+  Automatic test generation is a technique that has been growing in popularity through the past years, mainly because of the many perspectives and challenges that comes with it.
+  One of them is the need for object inputs with a specific variable-state, in order to escape different local optima in the branch coverage search domain, which is at the same time the focus of this study.
+  Pynguin, the command line tool for automatic test generation in Python, was taken as a baseline for the implementation of a Graph Based Object Synthesis (GBOS) heuristic in charge of the generation of test templates that could help obtain better coverage through their mutation.
+  The results of the GBOS Pynguin implementation, when running over a set of 588 Python modules, were compared using Cohen's D effect size against the improvement obtained when applying this heuristic on EvoSuite in its original implementation for Java as EvoObj.
+  The average effect size of EvoObj was (0.21) versus the (\AverageCohen) obtained by the GBOS Pynguin extension.
+  While there was a lack of observable improvements, many of the factors that influenced in the results were given by either Python's specific features (e.g., dynamic typing) or the different behaviours given by the search algorithms available in Pynguin.
+  Nonetheless, various new ideas that were brought when conducting this thesis are presented as possible future development of the GBOS heuristic in its Python version.
 \end{abstract}
 
+\newpage
+
 \begin{abstract}[german]
-  Eine deutschsprachige Zusammenfassung der Arbeit.
-  TBD.\@
+  Automatische Testgenerierung ist eine Technik, die in den letzten Jahren stark an Popularität gewonnen hat, hauptsächlich wegen der vielen verschiedenen Herangehensweisen und Herausforderungen, die damit einhergehen.
+  Eine dieser Herausforderungen ist die Anforderung für Objekt-Inputs mit einem spezifischen Variablenstatus, um verschiedenen lokalen Optima im Suchbereich der Verzweigungsabdeckung zu entkommen, was indes auch der Fokus dieser Arbeit ist.
+  Pynguin, das Kommandozeilenwerkzeug für automatische Testgenerierung in Python, wurde hier als Basis für die Implementierung einer ``Graph Based Object Synthesis''-Heuristik (GBOS) zur Generierung der Test-Vorlagen genutzt, welche helfen können, eine bessere Abdeckung durch ihre Mutation zu erhalten.
+  Die Ergebnisse der GBOS-Pynguin-Implementierung, die über ein Set aus 588 Python-Modulen lief, wurden mit der Cohen's D Effektgröße gegen die Verbesserung verglichen, welche bei der Anwendung dieser Heuristik auf EvoSuite in seiner ursprünglichen Implementierung für Java als EvoObj erzielt wurde.
+  Die durchschnittliche Effektgröße von EvoObj war (0.21) gegen die (\AverageCohen), die durch die GBOS-Pynguin-Erweiterung erzielt wurde.
+  Auch wenn es keine beobachtbaren Verbesserungen gab, wurden viele der die Ergebnisse beeinflussenden Faktoren von entweder Python-spezifischen Features (z.B. dynamische Typisierung) oder von verschiedenen Verhaltensweisen, welche von den in Pynguin verfügbaren Suchalgorithmen vorgegeben sind, zugewiesen.
+  Nichtsdestotrotz werden verschiedene neue Ideen, welche während des Erarbeitens dieser Arbeit hervorgebracht wurden, als mögliche zukünftige Entwicklungen der GBOS-Heuristik in ihrer Python-Version präsentiert.
 \end{abstract}
 
 \begin{acknowledgements}
@@ -82,21 +94,20 @@
 
 \chapter{Introduction}\label{chap:introduction}
 
-Software testing is one of the key aspects of software development while trying to ensure quality over a final product, regardless of the context in which the developing process is made.
-This quality can be achieved by the insight provided by the result of the tests, and even because of the defects that can be encountered during the testing phase.
-Nonetheless, even though coding different kinds of tests is a good practice, it is often ignored by new or inexperienced developers, who also make this mistake halfway by not getting a complete introspection of their own code or, in other words, not getting a complete kind of test coverage.
-As of 2017, a study by Trauch and Grabowski~\cite{DBLP:conf/icst/TrautschG17} presented that, over more than 4 million tests, most of them were not correctly categorized (as unit test or not) and approximately half of them use mocking as a testing technique, which tells some aspects about the developing community of the projects in review. 
+Software testing is one of the key aspects of software development while trying to ensure quality over a final product, regardless of the context in which the developing process is taking course.
+This quality can be achieved through the insight provided by the result of the tests, and even, because of the defects that can be encountered during the testing phase.
+
+Although coding different kinds of tests is a good practice, it is often ignored by new or inexperienced developers, who also make this mistake partially by not getting a complete introspection of their own code or, in other words, not getting a complete kind of test coverage.
+As of 2017, a study by Trauch and Grabowski~\cite{DBLP:conf/icst/TrautschG17} presented that, regarding more than 4 million tests, most of them were not correctly categorized (as unit test or not) and approximately only half of them used mocking as a testing technique, which tells some aspects about the developing community of the projects in review.
 With this general idea into mind, researchers have in the last decade put effort into autonomous test generation, the concept that implies the usage of different methods or techniques in order to identify patterns and generate test sets with little to zero external intervention.
 In 2015, empirical proof was found by Fraser et al.~\cite{DBLP:journals/tosem/FraserSMAP15}, who showed that the usage of automated Java unit test generation increases the general structural coverage, does not lead to the detection of more faults and affects negatively the ability to capture intended class behaviour.
 The results of this study state fundamentally that this behaviour  comes from the early stages of the tool in question, and proposes to put more work into the readability of generated tests and  the process of test making itself.
 
 Within the scope of Python testing, Pynguin~\cite{DBLP:conf/icse/LukasczykF22} is a command line interface for the generation of unit tests that applies various algorithms for input generation, such as DynaMOSA~\cite{DBLP:journals/tse/PanichellaKT18}, MIO~\cite{DBLP:conf/ssbse/Arcuri17}, MOSA~\cite{DBLP:conf/icst/PanichellaKT15}, Whole Test Suite~\cite{DBLP:journals/tse/FraserA13}, among others.
-
 At the time of its original release (25th of July 2020), Pynguin was a state-of-the-art open source tool that has been the first step for subsequent researches about how to improve the performance and functionalities of Pynguin itself, including CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, PyLC~\cite{DBLP:conf/sac/SalariEAS23} and many other tools that are briefly explained in the Section~\ref{chap:related_work}.
+The original Pynguin research paper~\cite{DBLP:conf/icse/LukasczykF22} stated that after the test generation of 118 Python modules, the average branch coverage over all algorithms was $66.8\%$, which leads to think that improvements to the tool are possible.
 
-The original Pynguin research paper~\cite{DBLP:conf/icse/LukasczykF22} stated that after the test generation of 118 Python modules, the average branch coverage over all algorithms was $66.8\%$, which leads to think that improvement is possible.
-
-Although automatic test generation is achievable while having type information available for statically typed languages like Java~\cite{DBLP:journals/tse/FraserA13} or C, dynamically typed languages such as Python, JavaScript or Lua enforce further problems at the time of generating correct arguments for the execution of methods or functions under test.
+Although automatic test generation is more easily achievable while having type information available for statically typed languages like Java~\cite{DBLP:journals/tse/FraserA13} or C, dynamically typed languages such as Python, JavaScript or Lua enforce further problems at the time of generating correct arguments for the execution of methods or functions under test.
 The major concerns about the argument generation, is that the lack of type information produces ambiguity for the heuristics of the tool at hand at the moment of synthesizing non-primitive types.
 Also, the complexity of these class instances in terms of their internal field values might produce runtime errors, which imply a local optima in the search landscape of the test representation~\cite{DBLP:conf/sigsoft/0001O00D21} and therefore an upper bound for coverage.
 This latter idea, brings a recurrent problem in the automatic test generation for languages that include any kind of Object-Oriented Programming, which is the reaching of branches that need an object instance as input in a specific variable-state.
@@ -137,18 +148,19 @@ However, this template allows Pynguin to get out of the local optima thought mut
   \caption{Potential test template obtained through the use of an OCG\label{lst:4}}
 \end{figure}
 
-A type information gathering mechanism (e.g.~the analysis of every method or function's AST) is applied throughout the study in order to review the modules in the testing set of the experimental setup on how the general type information of a Python module correlates with the ability of the GBOS approach to generate correct object inputs templates and its results.
-The reason for this is, as stated before, Python being a dynamically typed language and not requiring the type of variables in the script in order to be executed.
-To illustrate this, if line 4 in Listing~\ref{lst:1} were to be replaced to \mint{python}|def checkRules(self, action, state) -> bool:| it would make Pynguin not have any information about the type of the parameters, and generate a test suite similar to the one in Listing\ref{lst:5}.
-The behaviour that allows Pynguin to generate the previous suite imply that the current type system implemented as part of it does not work completely well when trying to infer object types.
-Therefore, this idea tries to measure the coverage result effect of the variable amount of type information available.
+After the implementation part was done, a study of the extension was made through the selection of arbitrary sets of Python modules, being these a combination of the ones used for various studies done to Pynguin's updates over time.
+
+A type information gathering mechanism (e.g.~the analysis of every method or function's AST) is applied throughout the study in order to review the modules in the testing set of the experimental setup.
+This, to analyse how the general type information of a Python module correlates with the ability of the GBOS approach to generate correct object inputs templates and its results.
+The reason to perform the previous methodology is, as stated before, Python being a dynamically typed language and not requiring the type of variables in the script in order to be executed.
+As an example, if line 4 in Listing~\ref{lst:1} were to be replaced to \mint{python}|def checkRules(self, action, state) -> bool:| it would make Pynguin not have any information about the type of the parameters, and generate a test suite similar to the one in Listing~\ref{lst:5} and therefore, having a negative effect (test case with lower coverage).
+The behaviour that allows Pynguin to generate the previous suite imply that the current default type system implemented as part of it does not work completely well when trying to infer object types.
+Therefore, this idea tries to measure the coverage result effect of the variable amount of type information available when applying the implemented heuristic.
 
 \begin{figure}
   \inputminted[linenos]{python}{Figures/test2.py}
   \caption{Test suite generated by Pynguin for a variation of module example.py\label{lst:5}}
 \end{figure}
-
-After the implementation part was done, a study of the extension was made through the selection of arbitrary sets of Python modules, being these a combination of the ones used for various studies done to Pynguin's updates over time.
 
 As a summary, the main contributions of this study are
 
@@ -165,14 +177,14 @@ The Pynguin extension can be found, together with the example module presented i
 \section{Automatic Test Generation}
 
 Software testing is widely recognized among developers as a good practice, when developing any kind of software.
-This comes from the benefits, in terms of bug finding and correct functionality, that writing good software tests brings.
+This comes from the benefits, in terms of bug finding and assuring correct functionality, that writing good software tests brings.
 Anyhow, the latter adjective ``good'' is subjective as a concrete measure, and often replaced for a fitness metric, such as coverage.
 
-Code coverage can be represented in many ways, such as the amount of lines that are executed when running a test suite, the amount of branch-decisions that are taken or the amount of lines that are checked when evaluating the validity of a test assertion.
-Although these fitness functions are clearly defined, it is usually difficult and time-consuming for developers to come up with enough or high quality test cases that cover in terms of coverage their respective software completely.
+Code coverage can be represented in many ways, e.g., as the amount of lines that are executed when running a test suite, the amount of branch-decisions that are taken or the amount of lines that are checked when evaluating the validity of a test assertion.
+Although these fitness functions are clearly defined, it is usually difficult and time-consuming for developers to come up with enough or high quality test cases that cover, in terms of coverage, their respective software completely.
 This drawback appears when a software is updated with dead code, or is not written at the same time as its test cases, which are strong enough reasons to think of automatic test generation as a viable general-case alternative.
 
-Since at least the past two decades, there has been a collective effort to shrink the necessity for handwritten software tests, with the development of tools and techniques related to evolutionary algorithms~\cite{DBLP:conf/sigsoft/FraserA11}, software static analysis~\cite{DBLP:conf/osdi/CadarDE08}, and (in a more current solution) large language models~\cite{DBLP:journals/corr/abs-2207-10397}.
+Since at least the past decade, there has been a collective effort to shrink the necessity for handwritten software tests, with the development of tools and techniques related to evolutionary algorithms~\cite{DBLP:conf/sigsoft/FraserA11}, software static analysis~\cite{DBLP:conf/osdi/CadarDE08}, and (in a more current solution) large language models~\cite{DBLP:journals/corr/abs-2207-10397}.
 Usually, automatic test generation is portrayed as an optimization problem, that takes test cases or test suites as solutions to the task of maximizing the fitness coverage of a module under test and minimizing the amount of test cases/statements within a test suite.
 In this scenario, the greatest obstacles are finding a correct representation of a test case for the chosen programming language, and finding a suitable way of going through the domain's search space.
 
@@ -181,14 +193,14 @@ In this scenario, the greatest obstacles are finding a correct representation of
 \section{Program Slicing}\label{sec:slicing}
 
 While being part of the studied heuristic, program slicing is the technique of obtaining a subset of program statements according to a point of interest inside the program at hand.
-Within the scope of the GBOS heuristic, the type of slicing that bring the most interest is static slicing, which is done merely with the information that can be obtained statically from a program.
+Within the scope of the GBOS heuristic, the type of slicing that bring the most interest is static slicing, which is done merely with the information that can be obtained from a program without running it.
 Although slicing is a quite versatile tool, it is mostly used and related to the Program Dependence Graph (PDG), structure that represents all dependencies between statements or blocks in a program.
 
 A Control Flow Graph (CFG), is the first step to the gathering of data flow inside a program, as it defines the explicit jumps between statements.
 It can be defined as \(\text{CFG} = \langle V_{\text{CFG}}, E_{\text{CFG}} \rangle\) where every node represents an abstraction of statements or basic blocks and every directed edge, a path of execution.
 
 The Control Dependence Graph (CDG) is the second relevant structure working as a requisite for slicing.
-Before defining the elements of a CDG, it is necessary to define the concepts
+Before defining the elements of a CDG, it is necessary to define the following concepts:
 \begin{itemize}
   \item \textbf{Dominator}: a statement \(v_1\) dominates another statement \(v_2\), if every execution path to \(v_2\) in the CFG goes through \(v_1\).
   \item \textbf{Post-Dominator}: a statement \(v_1\) post-dominates another statement \(v_2\), if every execution path from \(v_2\) to an exit node in the CFG goes through \(v_1\).
@@ -216,17 +228,16 @@ To do them, in both cases one must start a graph traversal from the slicing crit
 A program slicing is usually bounded by the entry and exit nodes of a PDG, but custom stopping conditions can always be applied.
 The final slicing is obtained by removing any node that was not visited throughout the program slicing.
 
-% TODO - add example figure of forward and backward slicing
 
 \newpage
 \section{Pynguin}
 
-The \textbf{PY}tho\textbf{N} \textbf{G}eneral \textbf{U}n\textbf{I}t test ge\textbf{N}erator (Pynguin) is a Command Line Interface software intended for the automatic generation of unit tests for Python modules.
-Its way of generating these Unit tests, is by using a different selection of search-based algorithms oriented to the test generation task, taken straightforward from the literature and implemented according to the internal representation in an Object-Oriented paradigm.
+The \textbf{PY}tho\textbf{N} \textbf{G}eneral \textbf{U}n\textbf{I}t test ge\textbf{N}erator (Pynguin) is a command line interface software intended for the automatic generation of unit tests for Python modules.
+Its way of generating these unit tests, is by using a different selection of search-based algorithms oriented to the test generation task, taken straightforward from the literature and implemented according to the internal representation in an Object-Oriented paradigm.
 
-As mentioned previously, the main core of Pynguin's test representation is the abstract class \classname{Statement}, and its subsequent wrapper classes \classname{TestCase}, containing a list of \classname{Statement} instances, and \classname{TestCaseChromosome}, containing a \classname{TestCase}.
-In the prior one, the next child classes available are \classname{AssignmentStatement}, a direct assignment of any kind of reference to a variable (e.g.~foo.bar = var\_1); and \classname{VariableCreatingStatement}, representing anything that can be assigned to a variable such as primitive types, collection types, fields, or any type of call (e.g.~int\_1~=~1, list\_1~=~\callable{list}, foo~=~Foo\((\text{int\_1,~list\_1})\)).
-The following hierarchy of these two can be represented by Figure~\ref{fig:hierarchy}.
+The main core of Pynguin's test representation is the abstract class \classname{Statement}, and its subsequent wrapper classes \classname{TestCase}, containing a list of \classname{Statement} instances, and \classname{TestCaseChromosome}, containing a \classname{TestCase}.
+In the prior one, the next child classes available are \classname{AssignmentStatement}, a direct assignment of any kind of reference to a variable (e.g.~foo.bar = var\_1); and the class  \classname{VariableCreatingStatement}, representing anything that can be assigned to a variable such as primitive types, collection types, fields, or any type of call (e.g.~int\_1~=~1, list\_1~=~\callable{list}, foo~=~Foo\((\text{int\_1,~list\_1})\)).
+The following hierarchy of these two is represented in Figure~\ref{fig:hierarchy}.
 
 \begin{figure}[htb]\label{fig:hierarchy}
   \centering
@@ -240,7 +251,7 @@ One class that assures Pynguin's easiness at the time of expanding it, is the ab
 In the context of evolutionary and genetic algorithms, the \classname{Statement} class has an abstract method called \callable{mutate}, which depending on the instance's final class, mutates either the primitive value, or the references that are encapsulated in it.
 
 About the available algorithms\footnote{The work by Campos et al.~\cite{DBLP:journals/infsof/CamposGAFEA18} offers a further review and analysis of the different algorithms available in Pynguin.}, Pynguin has a total of 7: Random, Random Test Case Search, Random Test Suite Search, Whole Suite, MIO, MOSA and DynaMOSA.\@
-From these, the experimental phase considered the last 4, because those implement either an archive or a dynamic chromosome population, which is necessary for the extension.
+From these, the experimental phase considered the last 4, because those implement either a chromosome archive or apopulation that is mutated during evolution, which is necessary for the extension.
 
 \begin{figure}[tb]
   \centering
@@ -440,7 +451,7 @@ A pseudocode of MIO is presented in Algorithm~\ref{alg:MIOpseudo}, which compare
 
 \section{GBOS Heuristic}
 
-The Graph Based Object Synthesis heuristic is the name given to the methodology presented by Yun et al.~\cite{DBLP:conf/sigsoft/0001O00D21} for the generation of complex object instances to be used as arguments in methods to be tested in a test case of the Java programming language.
+The Graph Based Object Synthesis heuristic is the name given to the methodology presented by Yun et al.~\cite{DBLP:conf/sigsoft/0001O00D21} for the generation of test templates that include complex object as arguments for methods in a Java SUT to be tested.
 One of the motivations for this research study was the possible non-continuity of test cases' search space with respect to coverage, when some related targets have the need to evaluate multiple conditions on an object instances before even getting an actual distance to them.
 % TODO - maybe reference the example in the introduction?
 The procedure done by this heuristic, consists of two main phases; the creation of an Object Construction Graph (OCG), that represents all relevant dependency flows of a method from its inputs to the actual target to be reached; and the translation of the OCG into an actual test case template, that serves as an initial search point for the test generation algorithm.
@@ -453,9 +464,9 @@ As stated in Section~\ref{sec:slicing}, all dependencies of a program are repres
 The necessary PDG for the OCG's building process must also be interprocedural until a certain threshold level \(t_{\text{dep}}\), considering that one or many of the target method's input objects may be modified by a subsequent call.
 This new requirement is met by just adding to the main PDG new edges from the correspondent callee's basic block to the entry node of the other method or function PDG, which also needs to be generated beforehand.
 
-After having the full interprocedural PDG, a node containing a branch \(b\) (chosen target for the heuristic) must be used as entry criteria to apply a backward slice and either a node with an instruction reading a method input, a node with an instruction reading a global variable or an entry node, as stopping criteria.
+After having the full interprocedural PDG, a node containing a branch \(b\) (chosen target for the heuristic) must be used as entry criteria to apply a backward slice and, either a node with an instruction reading a method input, a node with an instruction reading a global variable or an entry node, as stopping criteria.
 
-The following step, is to analyse the sliced graph and link directly every instance of a node loading the complex method parameter objects with any node from the interprocedural methods' PDGs that retrieve a field or access an array, so the relevant variable state of these objects can be recorded flawlessly throughout the graph.
+The following step, is to analyse the sliced graph and link directly every instance of a node loading the complex method parameter objects with any node from the interprocedural methods' PDGs that retrieve a field or access an array, so that the relevant variable state of these objects can be recorded flawlessly throughout the graph.
 
 Finally, the sliced PDG is sliced further in a forward manner, using the object method inputs as slicing criteria and any field or array access as stopping condition, in order to leave only relevant paths for the heuristic's second phase.
 
@@ -735,7 +746,7 @@ A summary of the amount of modules used in every step of this research question 
 
 
 \begin{summary}{RQ1: Performance of GBOS over Pynguin}
-  The results of the proposed GBOS extension for Pynguin \textbf{does not show} an improvement compared to Pynguin itself while being evaluated over previously studied modules, similarly as EvoObj outperformed EvoSuite. 
+  The results of the proposed GBOS extension for Pynguin \textbf{does not show} an improvement compared to Pynguin itself while being evaluated over previously studied modules, similarly as EvoObj did against EvoSuite. 
 \end{summary}
 
 \newpage
@@ -1097,7 +1108,11 @@ def _transform(path: str, code: str, target: CompilationTarget) -> Tuple[str, Li
     return fix_code(code), dependencies
 \end{minted}
 
-Considering the current cases, were most of the modules did not have correct type annotations for the heuristic to work, or a need for complex objects for the heuristic to be usefull, questions arise about the precense of logs informing of POP operations to an empty stack when generating the DDG, which is most likely due to certain cases that could not be resolved completely in the implementation and might have caused a variable information loss.\@
+A recurrent case that made the heuristic create single or double line test templates, such as the ones from Listings~\ref{lst:9}~and~\ref{lst:12}, is the one were many of the objects that were necessary as object inputs did not have correct type annotations in their class definition.
+This is explained by the third phase of the heuristic's process, which after creating the respective OCG and generating an initial test template, needs a context dictionary with specific information regarding the variable names located in the instructions of every OCG node.
+In the contrary, no new statement is added, leaving the exemplified test cases.
+
+Considering the current circumstances, were most of the modules did not have correct type annotations for the heuristic to work, or a need for complex objects for the heuristic to be usefull, questions arise about the precense of logs informing of POP operations to an empty stack when generating the DDG, which is most likely due to certain cases that could not be resolved completely in the implementation and might have caused a variable information loss.\@
 
 One example of this is when the MUT has ``try-except'' or ``with'' clauses inside any of its basic blocks.
 The problem with these logic rules comes, because their implementation is given (on the 3.10 Python version) with Python instruction that conditionalize the stack frame state on the presence of an Exception, e.g.~\textbf{SETUP\_WITH} and \textbf{SETUP\_FINALLY}.
@@ -1130,8 +1145,10 @@ Moreover, the way MIO is implemented into Pynguin makes the execution of it prio
 
 \chapter{Related Work}\label{chap:related_work}
 
-Before commenting on the most relevant tools and techniques that have a place in the current state of the art of automatic test generation for programming languages, it is worth describing the types of testing and their objectives. Unit testing is a type of functional testing that tries to test individual or atomic units of a software project.
-Regression testing, on another side, is a type of system testing that tells if new functionalities of a system produce defects into the latest build of it.
+The most relevant tools and techniques that have a place in the current state of the art of automatic test generation for programming languages used mostly two types of tests as their respective candidates; Unit testing, a type of functional testing that tries to test individual or atomic units of a software project; and Regression testing, a type of system testing that tells if new functionalities of a system produce defects into the latest build of it.
+
+%Before commenting on the most relevant tools and techniques that have a place in the current state of the art of automatic test generation for programming languages, it is worth describing the types of testing and their objectives. Unit testing is a type of functional testing that tries to test individual or atomic units of a software project.
+%Regression testing, on another side, is a type of system testing that tells if new functionalities of a system produce defects into the latest build of it.
 
 The various approaches that are part of the current state-of-the-art for Automatic Test Generation can be categorized in two main types depending on what are they based on: Large Language Models (LLMs) and Search-Based Algorithms or Static Analysis (SB).
 
@@ -1139,14 +1156,14 @@ The various approaches that are part of the current state-of-the-art for Automat
 
 \subsection*{CodaMOSA}
 
-One of the many tools presented in papers that have cited Pynguin in their research is CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, software created by Microsoft developers, has Pynguin as a base and extends its functionality calling OpenAI's Codex\footnote{https://openai.com/blog/openai-codex} API to get template suggestions for test cases that are in a coverage stall, similar to what this thesis works over.
-For the development, the authors used only MOSA as the search algorithm because is the only one that allowed the usage of both line and branch coverage as fitness functions, on the version of Pynguin at the time (0.19.0).
+One of the many tools presented in papers that have cited Pynguin in their research is CodaMOSA~\cite{DBLP:conf/icse/LemieuxILS23}, software created by Microsoft developers, that used Pynguin as a base and extends its functionality calling OpenAI's Codex\footnote{https://openai.com/blog/openai-codex} API to get template suggestions for test cases that are in a coverage stall, similar to what this thesis works around.
+For the development, the authors used only MOSA as the search algorithm because it is the only one that allowed the usage of both line and branch coverage as fitness functions, on the version of Pynguin at the time (0.19.0).
 
-The procedure done by CodaMOSA, queries prompts to Codex after the coverage has not changed in a certain amount of iterations, and from a set of target generations of chromosomes that it statistically chooses to generate a test from either a function, method or constructor.
+The procedure done by CodaMOSA, queries prompts to Codex if the coverage has not changed in a certain amount of iterations, choosing to generate a test from either a function, method or constructor.
 After that, it deserializes the returned test case from Codex into the internal representation of Pynguin, while applying different heuristics, such as removing nested expressions and use single assignment.
 
-For the benchmark, modules from 35 projects from the Pynguin paper were filtered so just those that do not fail to produce result and those that do not reach \(100\%\) coverage in less than a minute are experimented over.
-The baselines for the experimental phase were Pynguin with MOSA and CodexOnly, which while being compared to CodaMOSA were statistically compared using the Mann-Whitney U-Test.
+For the benchmark, modules from 35 projects from the Pynguin paper were filtered, leaving only those that did not fail to produce result and those that did not reach \(100\%\) coverage in less than a minute.
+The baselines for the experimental phase were Pynguin with MOSA and CodexOnly (an approach that only used Codex for test generation), which were compared statistically against CodaMOSA using the Mann-Whitney U-Test.
 The results showed that CodaMOSA performs significantly better, reaching a higher coverage on 173 more modules compared to MOSA and 279 more modules compared to CodexOnly.
 
 \subsection*{MutAP}
@@ -1160,7 +1177,7 @@ Taking this approach in mind, Dakhel et al.\@ presented in 2023 MutAP~\cite{DBLP
   \caption{MutAP structure}\label{fig:mutap}
 \end{figure}
 
-A summary of MutAP's structure is shown in Figure~\ref{fig:mutap}, and after inputting a Python Program Under Test (PUT), it commences with the building of an initial prompt for the obtaining of an initial test case.
+A summary of MutAP's structure is shown in Figure~\ref{fig:mutap}, and after loading a Python Program Under Test (PUT), it starts with the building of a prompt for the generation of an initial test case.
 The first step (1), employs one of the two following learning methods; zero-shot, where the PUT is concatenated after the statement  ``Generate test case for the following code''; and few-shot, which concatenates the PUT after a sequence of pairs of a method and its respective unit test.
 After the initial test is synthesized, the second step (2) consists of re-prompting it, so possible syntax errors can be corrected and unintended behaviour can be repaired.
 Then, the third step (3) introduces mutations into the PUT using MutPy\footnote{https://pypi.org/project/MutPy/0.3.0/} so that the quality and effectiveness of the tests can be assessed.
@@ -1171,12 +1188,11 @@ following code'', one of the mutant survivors, and a final statement ``Provide a
 In the experimental trial of this tool's paper, two LLM models were used, OpenAI's Codex and llama2-chat, to be run together with MutAP over the benchmarks; HumanEval, which consists of 164 human written programming problems; and Refactory, consisting of 1710 buggy submissions from students for 5 assignments of a Python programming course.
 The overall results mainly cover the mutation score obtained by all the possibles methods of MutAP, obtaining numbers between \(89.13\%\) and \(93.57\%\) on the average over both models and both datasets.
 
-
 \section{SB-Based}
 
 \subsection*{EvoSuite}
 
-With respect to Unit Test Generation, EvoSuite~\cite{DBLP:conf/qsic/FraserA11} was (and still is) a state-of-the-art test generation tool for Java, pioneer of the usage of a genetic algorithm, so the branch coverage can be optimized as a whole.
+With respect to Unit Test Generation, EvoSuite~\cite{DBLP:conf/qsic/FraserA11} was (and still is) a state-of-the-art test generation tool for Java, that innovated with the Whole Test Suite algorithm, which tried to optimize all the targets of the coverage problem at the same time.
 The internal representation of EvoSuite for a test suite is a set of chromosomes \(T\) as a sequence of statements \(t_i\) of length \(l_i\) and either type primitive statement, constructor statement, field statement, or method statement.
 During the chromosome synthesis process, all the information regarding classes, methods and variables of the SUT are gathered via the Java Bytecode and Java Reflection\footnote{https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html}.
 These sequences can be crossovered as a random sequential combination of the two chromosomes, or mutated with the insertion, remotion or change of single statements.
@@ -1186,11 +1202,11 @@ where \(M\) is the total of methods to test, \(M_T\) is the number of methods th
 Another limitation to the suites \(T\), are \(N\) as the maximum number of chromosomes (\(T = \{t_1, \dots , t_n\}\)) and \(L\) as maximum length of the chromosomes (\(l_i < L\)).
 For the experiment phase, a single branch approach was created by the authors, in which every branch \(b_t\) is seen as a single coverage goal to be met by the test cases.
 Then, the comparison between the single branch method and the whole suite optimization is done with the generation of test cases for five open source projects, accumulating a total of 1308 classes from which 727 were public.
-After the execution of test cases was complete and statistical tests were applied, it could be stated that the results show EvoSuite has a better branch coverage and creates smaller tests suites than the single objective method.
+After the execution of test cases was complete and statistical tests were applied, it could be stated that the results showed EvoSuite while applying Whole Test Suite, had a better branch coverage and created smaller tests suites than the single objective method.
 
 \subsection*{JSEFT}
 
-As an example for automatic test generation in dynamic languages others than Python, JSEFT is presented in 2015 by Mirshokraie et al.~\cite{DBLP:conf/icst/Mirshokraie0P15} as a tool for generating not only unit tests, but also event-driven tests for web applications written in JavaScript.
+As an example for automatic test generation in dynamic languages others than Python, JSEFT is presented in 2015 by Mirshokraie et al.~\cite{DBLP:conf/icst/Mirshokraie0P15} as a tool for generating not only unit tests, but also event-driven tests for web applications written in JavaScript, that could help with the detection of regression faults.
 The general structure of JSEFT is presented in Figure~\ref{fig:jseft} and is composed of three main steps that process the data given by the HTML Document Object Model (DOM):
 \begin{itemize}
   \item In (1) the web app is dynamically analysed in order to get all the possible states of the program and, in consequence, construct a state flow graph (SFG)
@@ -1207,7 +1223,7 @@ The general structure of JSEFT is presented in Figure~\ref{fig:jseft} and is com
 
 For the export of event-driven and function-level tests, the frameworks Selenium\footnote{https://www.selenium.dev} and QUnit\footnote{https://qunitjs.com} are used respectively.
 
-The experiment section of the author's paper, shows the study of JSEFT's usage on 13 JavaScript web applications so the line coverage and usefulness of the assertions at the time of finding regression faults.
+The experiments regarding JSEFT's study worked over 13 JavaScript web applications, focusing on the line coverage and usefulness of the assertions at the time of finding regression faults.
 For the specified metrics, the tool got a \(68.4\%\) of line coverage and a \(100\%\) precision in fault detection.
 
 \chapter{Conclusions}~\label{chap:conclusions}
